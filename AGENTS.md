@@ -4,99 +4,108 @@ Repository-wide instructions for coding agents.
 
 ## Product intent
 
-`tep-sim` is a Tennessee Eastman Process simulation testbed with a hybrid deterministic/LLM control layer. The simulator is the plant. The LLM is an exception-handling reasoner, not the plant clock and not the safety controller.
+`tep-sim` is an **agent-agnostic Tennessee Eastman Process simulation sandbox**.
 
-## Hard architecture rules
+This repository models the environment. It does not implement an LLM agent runtime.
 
-1. **Do not put an LLM in the per-second simulation loop.** The normal path must run without model calls.
-2. **Do not let an LLM call `set_mv()` directly.** Model output must be parsed into a typed action proposal and passed through deterministic validation.
-3. **Do not hard-code variable meanings in prompts.** Resolve XMEAS/XMV/IDV metadata from a canonical registry derived from the vendored simulator.
-4. **Prefer code over prompts** for thresholds, bounds, cooldowns, rate limits, state transitions, schema validation, logging, and retry limits.
-5. **Keep incident context small.** Send only the variables, rolling features, events, candidate relationships, and constraints relevant to the current incident.
-6. **Make every side effect auditable.** Record observation -> detector result -> model input summary -> proposal -> gate decision -> applied action -> outcome.
-7. **Fail safe.** Invalid/missing model output means no control action, not a guessed fallback.
-8. **No silent recovery.** If parsing, validation, simulation, or persistence fails, surface an explicit error/event.
-9. **Preserve reproducibility.** Every experiment needs seed, disturbance schedule, controller mode, model/config version, and run ID.
-10. **Keep visualization read-only initially.** Dashboard/3D layers consume runtime state; they do not become another control path.
+## Hard boundaries
 
-## Runtime boundaries
+1. **Do not add LLM or agent-framework dependencies here.** No LangGraph, provider SDK, prompt framework, agent memory, or dynamic subagent orchestration belongs in this repo.
+2. **Do not implement HAZOP/RCA reasoning here.** The environment may expose the data and experiment primitives those workflows need, but the reasoning workflow lives elsewhere.
+3. **Do not implement P&ID image digitization or generic P&ID-to-simulation generation here.** That is a separate side project.
+4. **Preserve deterministic reproducibility.** Every run must be attributable to seed, simulator version, configuration, intervention schedule, and run ID.
+5. **Use typed environment APIs.** Callers should request observations, snapshots, forks, interventions, rollouts, or evaluations through explicit schemas rather than mutate simulator internals.
+6. **Fail explicitly for unsupported physics.** Never approximate an unsupported hazard by inventing behavior. Return a capability/unsupported-scenario error.
+7. **Keep runtime metadata canonical.** XMEAS/XMV/IDV identities come from the vendored simulator or generated registry, not duplicated prompt/document memory.
+8. **Make side effects auditable.** Record reset, intervention, fork, rollout, termination, and safety events.
+9. **Prefer small stable public interfaces.** Internal upstream details may change; callers should depend on `tep-sim` contracts.
+10. **Visualization is downstream.** UI/3D/dashboard consumers may read state and replay traces; they must not become a hidden mutation path.
 
-Use this separation unless there is a strong reason not to:
+## Target modules
+
+Keep responsibilities separated:
 
 - `simulation`: adapter around upstream `TEPSimulator`
 - `registry`: canonical XMEAS/XMV/IDV metadata and units
-- `telemetry`: rolling windows, downsampling, features, event summaries
-- `detectors`: deterministic threshold/rule/statistical detectors
-- `runtime`: finite-state/event orchestration
-- `agents`: LLM invocation and structured reasoning only
-- `gates`: action validation, bounds, rate limits, cooldown, permissions
-- `control`: approved action execution
-- `persistence`: run/event/action traces
-- `ui`: dashboard/visualization consumers
+- `contracts`: typed observation/intervention/scenario/result schemas
+- `telemetry`: rolling history, downsampling, feature-ready traces
+- `snapshot`: snapshot/fork/replay semantics
+- `scenario`: compile environment-neutral scenario requests to TEP-supported interventions
+- `safety`: deterministic safety limits, shutdown state, margins
+- `persistence`: run metadata, traces, scenario/result artifacts
+- `ui`: read-only dashboard/visualization adapters
 
-## Agent escalation policy
+## Required public capabilities
 
-Do not call the model merely because a measurement changed.
-
-Escalate only when deterministic logic produces an incident such as:
-
-- safety margin crossing;
-- sustained deviation for N windows;
-- anomaly detector trigger;
-- conflicting detector outputs requiring diagnosis;
-- previous corrective action failed verification;
-- operator explicitly asks for diagnosis/explanation.
-
-## Model I/O contract
-
-Agent input should be a compact `IncidentContext`, not raw history. It should include at most:
-
-- run/incident ID and simulation time;
-- active disturbance if this is an experiment (hide it when evaluating diagnosis quality);
-- top abnormal measurements and recent trend features;
-- relevant manipulated variables and current positions;
-- safety margins;
-- recent approved actions and outcomes;
-- allowed action space and constraints;
-- optional retrieved process knowledge for the implicated subsystem.
-
-Agent output should be structured and non-executable, conceptually:
+The environment should eventually support:
 
 ```text
-Diagnosis
-- hypotheses with confidence/evidence
-
-ActionProposal
-- target XMV
-- direction or requested value/delta
-- rationale
-- expected effect
-- verification horizon
-- confidence
+reset(seed, config)
+observe()
+capabilities()
+snapshot()
+fork(snapshot)
+inject(intervention)
+step(n)
+rollout(horizon)
+evaluate_safety(result)
+replay(run_id)
 ```
 
-The validator, not the LLM, resolves whether the proposal is permitted.
+Do not expose an API merely because the upstream simulator has a method; expose it when the semantic contract is clear and testable.
 
-## Token/context discipline
+## HAZOP-facing contract
 
-- Never dump all 41 XMEAS, 12 XMV, full history, source files, or papers into every model call.
-- Prefer numeric feature tables over prose summaries generated by another LLM.
-- Retrieve process documentation only for the implicated unit/variables.
-- Cache static domain metadata outside the prompt where the model/tool layer supports it.
-- Use one reasoning agent by default. Add subagents only when independent parallel work is measurably useful.
-- Cap diagnosis/recovery loops. Repeated failure must transition to deterministic safe mode or human review.
+The sandbox may accept typed process deviations, for example:
 
-## Development-agent usage
+```text
+Deviation(
+  node="reactor_cooling_loop",
+  parameter="flow",
+  guide_word="LESS",
+  magnitude=0.20
+)
+```
 
-Codex CLI, Claude Code, or similar coding agents are development tools for this repository. They may inspect/edit/test the codebase, but they should not become the production plant-control runtime.
+A deterministic scenario compiler may map a supported deviation to one or more TEP interventions. The environment does **not** decide whether the deviation is a credible HAZOP finding; it only reports whether and how it can be simulated.
+
+## Capability discipline
+
+Examples of currently plausible TEP capabilities:
+
+- feed-flow/composition/temperature disturbances;
+- cooling-water disturbances;
+- valve sticking represented by available IDVs;
+- reaction-kinetics variation represented by available IDVs;
+- bounded XMV interventions;
+- process-variable propagation and shutdown behavior.
+
+Examples that require extra physics and must not be fabricated:
+
+- pipe rupture/leak mass release;
+- atmospheric dispersion;
+- ignition/fire;
+- explosion/blast;
+- detailed relief-device sizing;
+- personnel consequence modeling.
+
+## Testing expectations
 
 When implementing a feature:
 
-1. inspect the upstream interface before duplicating functionality;
+1. inspect upstream behavior before duplicating it;
 2. add deterministic tests first where practical;
-3. make schemas/contracts explicit;
-4. keep the LLM dependency behind an interface so deterministic tests can use a fake agent;
-5. verify that the no-event path performs zero model calls.
+3. test same-seed replay;
+4. test snapshot/fork isolation;
+5. test registry consistency against upstream;
+6. test unsupported-scenario failure behavior;
+7. test that result artifacts include enough metadata to reproduce the run.
+
+## Development-agent usage
+
+Codex CLI, Claude Code, or similar tools may inspect/edit/test this repository as development assistants. They are not part of the runtime architecture.
+
+Keep this file concise. Domain reasoning, agent prompts, model-provider rules, and experiment-specific instructions belong in their own repositories so coding-agent context does not accumulate unrelated concerns.
 
 ## Known simulator constraint
 
