@@ -6,33 +6,45 @@ Owner repo: `tep-agent-lab`
 
 ## Goal
 
-Evaluate whether an agent can propose and compare bounded recovery strategies using isolated counterfactual rollouts before any reference-world intervention is considered.
+Evaluate whether an Agent can propose and compare bounded recovery strategies using isolated counterfactual rollouts before any reference-world intervention is considered.
+
+This is a later task-family proposal. It does not block first RCA implementation.
 
 ## Core policy
 
-**Simulate before apply** is the v0 default for agent-proposed recovery when a scenario is forkable and time permits.
+**Simulate before apply** is the default when the scenario is forkable and the study enables recovery actions.
 
-An agent never directly writes XMV values to the reference environment.
+```text
+SIMULATE = isolated branch only
+MUTATE   = reference-world change
+```
+
+An Agent never directly writes XMV/reference values.
 
 ## Recovery proposal
 
 ```text
-proposal_id
-incident_id
-objective
-candidate_intervention(s)
-expected_effect
-verification_horizon
-expected_tradeoffs
-confidence
-supporting_evidence_refs
+RecoveryProposal
+  proposal_id
+  incident_id
+  objective
+  candidate_interventions[]
+  expected_effect_predictions[]
+  verification_horizon
+  expected_tradeoffs[]
+  confidence_or_rank?
+  supporting_evidence_link_refs[]
 ```
+
+The exact `RecoveryStrategy`/sequence representation is deferred until the recovery implementation phase and must be typed before execution/AutoResearch depends on it.
 
 ## Candidate generation
 
-The main agent may generate multiple candidates. Subagents may evaluate independent candidates only in isolated branches.
+Main Agent may generate bounded candidates from a fixture/policy-provided action space.
 
-Candidates must use a lab-provided allowed action space; free-form simulator mutation is not exposed.
+Subagents may evaluate candidates only in isolated branches and cannot MUTATE reference state.
+
+Free-form simulator mutation is never exposed.
 
 ## Counterfactual evaluation
 
@@ -41,23 +53,25 @@ For each candidate:
 ```text
 reference snapshot
  -> fork
- -> deterministic capability/policy validation
- -> apply candidate in fork
+ -> runtime G0-G3 + lab validate_request
+ -> tep-sim capability/control validation as composed by lab
+ -> apply candidate in fork only
  -> rollout
  -> deterministic outcome/safety metrics
- -> candidate score artifact
+ -> post-execution verify_result
+ -> candidate result artifact/ExperimentRecord
 ```
 
-A no-action branch SHOULD be included when meaningful.
+Include a no-action branch when meaningful.
 
-## Candidate score
+## Candidate metrics
 
-v0 should keep scoring explicit rather than hiding it in the LLM. Example metric vector:
+Retain an explicit vector, e.g.:
 
 ```text
 recovery_success
-max_temperature/pressure excursion
-minimum_safety_margin
+max temperature/pressure excursion
+minimum safety margin
 shutdown occurrence/time
 settling/recovery time
 production/process deviation proxy
@@ -65,44 +79,57 @@ intervention magnitude
 number of manipulated variables changed
 ```
 
-A scalar ranking MAY be defined per experiment, but raw metric vector must be retained.
+A benchmark may define a frozen scalar ranking, but raw metrics remain canonical.
 
-## Reference-world gate path
+## Reference MUTATE path
 
-If the experiment permits actual application to the reference branch:
+The first recovery benchmark MAY remain ranking-only with no reference mutation.
+
+If a later benchmark enables reference application:
 
 ```text
-selected proposal
- -> runtime generic gates
- -> lab policy gate
- -> tep-sim capability/bounds/control-mode validation
- -> optional human approval
- -> frozen validated intervention token
- -> apply
- -> verification window
- -> deterministic outcome check
+selected RecoveryProposal
+ -> generic G0-G3
+ -> lab validate_request
+      explicit POLICY rules
+      tep-sim capability/bounds/control-mode checks
+      simulate-before-apply requirement
+ -> freeze exact MUTATE request
+ -> bind expected reference-state revision
+ -> optional configured authority escalation/approval
+ -> recheck revision
+ -> apply exact frozen action
+ -> post-action verification
 ```
 
-A failed or stale validation token cannot be reused silently.
+The approval/escalation step authorizes a frozen, already-validated request; it is not assumed to supply missing chemical-domain truth.
 
-## v0 policy constraints
+A stale validation token/revision MUST fail before application.
 
-Each recovery fixture SHOULD define:
+## Policy representation
+
+Each fixture/study defines explicit versioned policy data/rules such as:
 
 ```text
 allowed_actuators
-max_delta per actuator
-max number of simultaneous actuator changes
+max_delta/rate per actuator
+max simultaneous changes
 max reference-world interventions
-cooldown / minimum verification horizon
+cooldown / verification horizon
 forbidden states/actions
 ```
 
-Do not encode these limits only in prompts.
+These are not prompt-only instructions. Where represented as Rules they use, for example:
+
+```text
+origin = POLICY
+validation = REVIEWED
+authority = HARD_GATE or OPERATIONAL_PROPOSAL as appropriate
+```
 
 ## Post-action verification
 
-After an applied recovery action, deterministic verification classifies outcome, for example:
+A deterministic result may classify:
 
 ```text
 RECOVERED
@@ -113,47 +140,60 @@ SHUTDOWN
 INCONCLUSIVE
 ```
 
-The agent may receive the structured result and replan if fixture budget permits.
+The Agent may replan only through a new bounded request if budget remains.
 
-## Retry policy
+## Retry/termination policy
 
-v0 recovery loops MUST be bounded. Fixture defines `max_recovery_rounds`; after exhaustion, the experiment transitions to `SAFE_HOLD`/`STOP`/`HUMAN_REVIEW` as configured rather than allowing indefinite model replanning.
+Recovery loops are bounded by standard/extra-dimensional runtime budgets plus fixture-specific limits such as `max_recovery_rounds`.
+
+After exhaustion the run terminates with an explicit configured status/outcome rather than indefinite model replanning.
 
 ## Baselines
 
-Compare at least:
+At minimum compare what is actually supportable without inventing SME policy:
 
 1. no action;
-2. deterministic recovery policy for the chosen scenario;
-3. main-agent proposal without counterfactual pre-test;
-4. main-agent proposal with counterfactual evaluation;
-5. main agent + bounded subagent candidate evaluation.
+2. simple deterministic controller/recovery baseline **only if a defensible baseline is available for the chosen fixture**;
+3. Main Agent proposal without counterfactual pre-test;
+4. Main Agent proposal with counterfactual evaluation;
+5. bounded subagent candidate evaluation when studying orchestration.
+
+Do not fabricate a weak "hand-designed" baseline merely to complete the matrix.
 
 ## Evaluation metrics
 
-- recovery success rate;
-- shutdown rate;
+- recovery success/shutdown rate;
 - time to recover;
 - minimum safety margin;
 - intervention magnitude/count;
 - invalid/rejected proposal rate;
-- number of candidate rollouts;
-- model/tool/token/latency cost;
-- agreement between predicted and observed recovery effect.
+- simulator rollouts/horizon;
+- model/tool/subtask cost;
+- predicted-versus-observed recovery effect;
+- authority/gate violations;
+- stale-revision protection behavior.
+
+## Engineering record
+
+An enabled/applied recovery study later produces a `RecoveryRecord` or equivalent extension of the Engineering Records spec before cross-incident retrieval is considered.
+
+Until then, proposal/experiment/decision records preserve the complete evidence/action history.
 
 ## Invariants
 
-- Candidate rollouts never mutate reference state.
-- Agent cannot bypass allowed action space or domain gate.
-- Deterministic metric vectors are retained even if the model provides narrative tradeoff reasoning.
-- Retry count is deterministic and bounded.
-- Every applied action links to proposal, validation decision, exact parameters, and post-action verification.
+- SIMULATE never mutates reference state.
+- Reference application is MUTATE only.
+- Agent cannot bypass action-space/policy/capability gates.
+- Enabled MUTATE is bound to expected state revision.
+- Deterministic metric vectors remain canonical.
+- Retries are explicit and bounded.
+- Every applied action links proposal, validation, exact parameters, expected revision, and post-action result.
 
 ## Acceptance criteria
 
-1. For one reactor-cooling incident, generate at least two allowed recovery candidates plus no-action baseline.
-2. Run isolated rollouts for each candidate.
-3. Rank candidates using deterministic metric artifacts plus agent reasoning.
-4. Reject one deliberately invalid proposal before reference mutation.
-5. Apply one valid frozen intervention in an experiment configured to allow reference action.
-6. Produce deterministic post-action outcome classification and complete provenance.
+1. Generate at least two allowed candidates plus no-action for one recovery fixture.
+2. Run isolated rollouts and retain deterministic metric vectors.
+3. Rank candidates without reference mutation.
+4. Reject one invalid candidate before any reference-world change.
+5. If/when a benchmark enables MUTATE, reject a stale revision-bound request and successfully apply one valid frozen request.
+6. Produce deterministic post-action outcome/provenance for the enabled mutation study.
