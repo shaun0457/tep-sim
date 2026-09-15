@@ -1,208 +1,134 @@
 # Roadmap: TEP Process Sandbox
 
-This roadmap deliberately stops at the environment boundary. Agent orchestration, HAZOP reasoning, and P&ID digitization live in separate repositories.
+This roadmap stops at the environment boundary. The fastest path to useful agent research is to make TEP trustworthy, forkable, semantically queryable, and capability-aware — then move upward into `tep-agent-lab`.
 
-## Phase 0 — Lock the upstream simulator contract
+Canonical specs live in `docs/specs/`.
 
-**Goal:** establish a trustworthy baseline.
+## Phase 0 — Verify upstream contract
 
-Deliverables:
+**Goal:** remove uncertainty about the vendored simulator before wrapping it.
 
-- pin and record the upstream submodule commit;
-- verify the pure-Python backend on the target Windows environment;
-- document `step()`, XMEAS/XMV access, disturbance injection, controller modes, and shutdown behavior;
-- generate canonical runtime variable metadata from upstream;
-- add a registry consistency test;
-- correct/deprecate literature-derived tables that disagree with runtime mapping.
+Deliver:
 
-Exit criteria:
+- record/pin upstream revision;
+- verify target Python/Windows setup;
+- verify reset/step, XMEAS/XMV access, IDV injection, control modes, shutdown behavior;
+- generate/validate canonical runtime variable registry;
+- deprecate local tables that conflict with runtime truth.
+
+Exit:
 
 ```text
-initialize -> step -> observe -> inject IDV -> reproduce with same seed
+initialize -> baseline -> supported disturbance -> reproduce with same seed/config
 ```
 
-## Phase 1 — Stable environment adapter
+No new abstraction should hide an unverified upstream behavior.
 
-**Goal:** external callers no longer depend directly on upstream internals.
+## Phase 1 — Environment API v0
 
-Implement:
+Branch: `feat/environment-api-v0`  
+Spec: `docs/specs/environment-api-v0.md`
+
+Deliver:
 
 - `TEPEnvironment` facade;
-- `EnvironmentConfig`;
-- immutable `Observation`;
-- typed `DisturbanceIntervention` and `MVIntervention`;
-- explicit reset/step/rollout lifecycle;
-- run ID and provenance metadata;
-- explicit exception hierarchy.
+- config/observation/intervention/result contracts;
+- explicit control-mode validation;
+- run provenance and artifact policy;
+- typed failure behavior.
 
-Exit criteria:
+Exit: all Environment API v0 acceptance tests pass without agent dependencies.
 
-- normal scripts use only the public adapter;
-- invalid variable IDs/values fail before upstream mutation;
-- a one-hour run can be stored and replayed from config.
+## Phase 2 — Snapshot / fork / replay v0
 
-## Phase 2 — Snapshot / fork / replay
+Branch: `feat/snapshot-fork-v0`  
+Spec: `docs/specs/snapshot-fork-replay-v0.md`
 
-**Goal:** make counterfactual experiments first-class.
+Deliver:
 
-Implement:
+- snapshot fidelity investigation;
+- isolated branches;
+- RNG/state policy;
+- parent/branch provenance;
+- replay/reproduction tests;
+- explicit fidelity status (`EXACT`, `RECONSTRUCTED`, or unsupported).
 
-- `Snapshot` contract;
-- environment cloning/forking;
-- RNG/state handling;
-- parent/child provenance;
-- branch isolation tests;
-- replay from stored run metadata when exact binary snapshotting is not available.
-
-Exit criteria:
+Exit:
 
 ```text
-snapshot S
--> fork A + fork B
--> different interventions
--> isolated rollouts
--> reproducible comparison
+state S -> fork A/B -> different interventions -> isolated reproducible rollouts
 ```
 
-## Phase 3 — Capability registry
+This is the highest-value environment feature for agent research.
 
-**Goal:** make simulation limits machine-readable.
+## Phase 3 — DEXPI / process semantics v0
 
-Implement:
+Branch: `feat/dexpi-binding-v0`  
+Spec: `docs/specs/dexpi-binding-v0.md`
 
-- supported disturbances;
-- supported manipulated variables;
-- supported high-level scenario semantics;
-- unsupported consequence domains;
-- versioned capability schema.
+Deliver:
 
-Exit criteria:
+- choose/pin machine-readable TEP semantic fixture;
+- normalize into compact `ProcessGraph`;
+- topology queries;
+- validated entity <-> XMEAS/XMV/IDV binding registry;
+- provenance/validation tests.
 
-- a caller can query support before running an experiment;
-- unsupported hazard requests fail explicitly;
-- no generic fallback silently substitutes missing physics.
+Exit: callers can navigate reactor/cooling topology and resolve known runtime bindings without raw XML or prompt memory.
 
-## Phase 4 — Scenario compiler
+No P&ID OCR, symbol detection, generic model generation, or 3D reconstruction.
 
-**Goal:** translate higher-level process scenarios into TEP interventions without an LLM.
+## Phase 4 — Capability / safety v0
 
-Implement:
+Branch: `feat/capability-safety-v0`  
+Spec: `docs/specs/safety-capability-v0.md`
 
-- canonical process-node registry;
-- parameter/deviation vocabulary;
-- `ProcessDeviation` schema;
-- mapping rules from supported deviation -> intervention(s);
-- ambiguity handling;
-- scenario provenance.
+Deliver:
 
-Initial examples:
+- machine-readable capability registry;
+- minimal deterministic semantic scenario compiler;
+- explicit unsupported/ambiguous scenario results;
+- deterministic process/shutdown safety evaluation;
+- tests proving unsupported consequence physics are not fabricated.
+
+Exit: an external agent/tool adapter can determine whether an experiment is supported before any environment mutation and obtain deterministic outcome/safety evidence afterward.
+
+## Environment v0 complete
+
+`tep-sim` v0 is sufficient for the agent program when this path works reliably:
 
 ```text
-reactor cooling loop + flow + LESS
-reactor cooling-water inlet temperature + MORE
-feed flow + NO/LESS
-selected valve + STUCK
-reaction kinetics + DRIFT
+reset
+ -> observe topology + state
+ -> snapshot
+ -> fork
+ -> compile/apply supported scenario
+ -> rollout
+ -> safety/capability evidence
+ -> replay/provenance
 ```
 
-Exit criteria:
+At this point the critical path moves to `industrial-agent-runtime` and `tep-agent-lab` rather than adding more simulator features.
 
-- at least five representative deviation classes compile deterministically;
-- mappings have tests;
-- impossible mappings return an explicit error.
+## Optional extensions after first agent benchmark
 
-## Phase 5 — Deterministic safety evaluator
+Only implement when a concrete consumer needs them:
 
-**Goal:** expose process safety state as structured data.
+- batch rollout convenience API;
+- richer process/control-loop semantics;
+- performance/storage optimization;
+- additional scenario mappings;
+- simple serialization adapters for a 2D topology/telemetry UI.
 
-Implement:
+Do not make these block the first RCA benchmark.
 
-- current shutdown/limit state;
-- safety margins;
-- limit-crossing events;
-- unsafe interval summaries;
-- rollout-level `SafetyEvaluation`;
-- clear declaration of unsupported consequence models.
+## Explicitly out of roadmap
 
-Exit criteria:
+- LLM/provider integration;
+- dynamic subagents;
+- HAZOP/RCA reasoning and scoring;
+- recovery strategy selection;
+- generic P&ID digitization/model generation;
+- Blender/Omniverse/3D work.
 
-- a scenario run produces a machine-readable safety summary;
-- the result distinguishes `process unsafe/shutdown` from unmodeled leak/fire/explosion consequences.
-
-## Phase 6 — HAZOP-friendly experiment primitives
-
-**Goal:** make the environment convenient for external HAZOP agents without putting HAZOP reasoning here.
-
-Implement:
-
-- guide-word normalization;
-- node/parameter enumeration;
-- compile-only mode;
-- batch scenario runner;
-- branch comparison result;
-- experiment budget controls (max branches/horizon) as environment safeguards.
-
-Exit criteria:
-
-An external caller can do:
-
-```text
-list process nodes
--> list parameters
--> submit deviation
--> check simulability
--> fork
--> rollout
--> evaluate safety
-```
-
-without touching simulator internals.
-
-## Phase 7 — Visualization adapters
-
-**Goal:** observe the playground without changing it.
-
-Implement in increasing complexity:
-
-1. simple process topology + live telemetry dashboard;
-2. branch/rollout comparison view;
-3. intervention/safety event timeline;
-4. optional DEXPI/SVG process representation;
-5. optional Blender/Omniverse view if it adds value.
-
-UI remains read-only until a separately reviewed control interface is intentionally designed.
-
-## Phase 8 — Benchmark and performance suite
-
-**Goal:** make this environment useful as a research benchmark.
-
-Create scenario packs for:
-
-- healthy baseline;
-- IDV disturbances;
-- selected XMV interventions;
-- HAZOP-compatible deviations;
-- recovery/counterfactual comparisons.
-
-Track:
-
-- reproducibility;
-- simulation speed;
-- branch creation cost;
-- storage cost;
-- shutdown/safety outcomes;
-- environment API compatibility.
-
-## Not in this roadmap
-
-The following are intentionally separate projects:
-
-- agent runtime and dynamic subagents;
-- agent token/context budgeting;
-- HAZOP reasoning/evaluation methodology;
-- RCA agent workflows;
-- P&ID image/vector digitization;
-- DEXPI graph generation from arbitrary drawings;
-- generation of high-fidelity dynamic models from plant engineering data.
-
-See [`ecosystem/README.md`](ecosystem/README.md) for ownership.
+See `docs/ecosystem/program-charter.md` and `docs/ecosystem/implementation-plan.md` for the cross-repository plan.
