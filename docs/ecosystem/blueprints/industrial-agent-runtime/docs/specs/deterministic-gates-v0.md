@@ -6,57 +6,58 @@ Owner repo: `industrial-agent-runtime`
 
 ## Goal
 
-Separate model reasoning from execution authority through deterministic, auditable gates. Core runtime gates remain generic; domain-specific safety truth is delegated to consumer-owned validators.
+Separate model reasoning from execution authority through deterministic, auditable **pre-execution** gates. Post-execution result verification is a separate contract in `hybrid-orchestration-v0.md`.
 
-## Gate pipeline
+Core runtime gates remain generic. Domain-specific process/safety policy is supplied by consumer-owned validators.
 
-For any requested tool operation:
+## Pre-execution gate pipeline
 
 ```text
-Model ToolCallRequest
+Model ToolCallRequest / WorkItem
         |
         v
 G0 Parse / schema gate
         |
         v
-G1 Tool allowlist gate
+G1 Tool/operation allowlist gate
         |
         v
-G2 Budget / recursion gate
+G2 Budget / recursion / resource-reservation gate
         |
         v
 G3 Side-effect policy gate
         |
         v
-optional consumer/domain validator
+consumer.validate_request(...)
         |
         v
-optional human approval
+optional authority escalation / approval
         |
         v
-execute tool adapter
+freeze exact request + expected revision
+        |
+        v
+Executor dispatch
 ```
 
 A rejection at any stage prevents execution and produces a structured `GateDecision` trace event.
 
 ## Tool side-effect classes
 
-v0 proposes:
-
 ```text
 READ       - inspect external state, no mutation
-COMPUTE    - deterministic/local transformation, no external mutation
-SIMULATE   - isolated/sandboxed mutation with no reference-world side effect
-PROPOSE    - create a candidate change but do not apply it
+COMPUTE    - deterministic/local transformation, no external/reference mutation
+SIMULATE   - isolated/sandboxed execution that may mutate only a branch/sandbox, never reference state
+PROPOSE    - create candidate change data only; no reference mutation
 MUTATE     - change reference/external state
-ADMIN      - change policy/runtime configuration or high-authority external state
+ADMIN      - change runtime/policy/configuration or high-authority external state
 ```
 
-Consumers may refine classes but MUST preserve monotonic authority: child/task permissions cannot silently upgrade themselves.
+A tool that internally executes simulator rollouts is `SIMULATE` even when its top-level purpose is optimization, sensitivity analysis, or statistical experiment design.
+
+Consumers may add metadata/tags but must preserve monotonic authority. A child/task cannot upgrade itself to a stronger side-effect class.
 
 ## `GateDecision`
-
-Required fields:
 
 ```text
 request_id
@@ -65,82 +66,147 @@ stage
 reason_code
 reason
 policy_version
-validator_refs?
+validator_refs[]?
+reserved_budget_draw?
+expected_state_revision?
+normalized_request_ref?
 ```
 
-A model-authored rationale is not a gate decision.
+A model-authored rationale is never a GateDecision.
 
 ## G0 — schema gate
 
-Checks tool name, input schema, output expectations, required identifiers, and parse validity. No side effect occurs before G0 passes.
+Checks:
 
-## G1 — allowlist gate
+- operation/tool identity;
+- input schema;
+- required identifiers;
+- parse validity;
+- declared output expectations.
 
-Checks that the task and current agent/subagent were explicitly granted the tool. Absence means deny.
+No side effect occurs before G0 passes.
 
-## G2 — budget/recursion gate
+## G1 — allowlist/authority gate
 
-Checks model/tool/subagent/step budgets, recursion depth, and other deterministic task quotas.
+Checks that the current task/agent/subtask has explicit authority for the operation/tool/class.
 
-## G3 — side-effect policy gate
+Absence means deny.
 
-Default proposal:
+Delegation is monotonic: child authority is always a subset of task/parent authority. There is no host-policy exception that silently grants a child authority its parent did not delegate.
 
-- READ/COMPUTE: auto-allow after prior gates unless consumer policy says otherwise;
-- SIMULATE: allow only when adapter declares isolation and task policy grants it;
-- PROPOSE: allow creation of proposal data but not reference mutation;
-- MUTATE: require consumer validator; MAY also require human approval;
-- ADMIN: deny by default in v0 unless explicitly enabled by host application.
+## G2 — budget / recursion / resource reservation
 
-## Consumer/domain validator contract
+Checks standard budgets and configured `Budget.extra_dimensions`.
 
-Core runtime MAY call a registered deterministic validator owned by the consuming application:
+Before dispatch, runtime reserves the maximum/declared resource draw needed for the request where known.
+
+Examples:
 
 ```text
-validate(request, task_policy, application_context) -> GateDecision
+tool_calls += 1
+simulation_rollouts += requested/max trial count
+simulated_horizon_seconds += reserved horizon
+optimizer_trials += trial budget
+subagents += requested SUBTASK count
 ```
 
-The validator returns only a decision/reason/normalized constraints. It must not depend on model hidden reasoning.
+If the request cannot fit remaining quota, deny before adapter execution.
 
-For TEP, this allows `tep-agent-lab`/`tep-sim` to enforce process-specific intervention rules without importing TEP logic into core runtime.
+After execution, actual usage is reconciled against the reservation and recorded in trace/budget state. Adapters may not hide nested simulator/tool usage from declared configured dimensions.
 
-## Human approval
+## G3 — side-effect policy
 
-Human approval is optional in v0 and should be represented as a separate gate state rather than a special model turn.
+Default v0 policy:
 
-A pending approval MUST freeze the proposed operation and its exact validated parameters; resuming approval must not regenerate them silently.
+- READ / COMPUTE: eligible after G0–G2, subject to consumer policy;
+- SIMULATE: eligible only when the adapter declares isolation and task policy grants sandbox execution;
+- PROPOSE: may create candidate data but cannot mutate reference state;
+- MUTATE: requires consumer validation and any configured authority escalation/approval;
+- ADMIN: denied by default.
+
+`SIMULATE` never mutates the reference branch. A recovery action applied to the reference branch is always `MUTATE`.
+
+## Consumer pre-execution validator
+
+Core runtime invokes at most one logical consumer request-validation interface; the consumer may compose internal domain validators.
+
+```text
+validate_request(
+    request,
+    task_policy,
+    application_context,
+    expected_state_revision
+) -> GateDecision
+```
+
+For TEP, the lab may internally compose:
+
+```text
+lab experiment/recovery policy
++ tep-sim capability/bounds/control-mode validation
+```
+
+The generic runtime does not know those domain concepts.
+
+The validator returns deterministic decision/reason/normalized constraints and may freeze a normalized request. It does not depend on model hidden reasoning.
+
+## Post-execution result verification is separate
+
+After Executor returns, the runtime/consumer uses the post-execution `verify_result` contract from `hybrid-orchestration-v0.md`.
+
+Examples include:
+
+- artifact/ref existence;
+- result provenance;
+- actual budget draw;
+- state-update/result invariants.
+
+Do not implement these as pre-execution GateDecision checks when the result does not yet exist.
+
+## Authority escalation / approval
+
+A higher-authority application may configure an approval/escalation step after deterministic validation.
+
+The purpose is to authorize an already-frozen request, not ask a human to rediscover domain truth from scratch.
+
+A pending request must preserve the exact validated parameters and expected reference-state revision.
+
+## MUTATE revision binding
+
+Whenever a `MUTATE` operation is enabled, validation MUST bind the frozen request to the expected reference/external-state revision/version.
+
+Execution MUST reject the operation if that state changed between validation and application.
+
+This is mandatory for enabled MUTATE paths, not optional TOCTOU hardening.
 
 ## Replanning after denial
 
-A denied request MAY be returned to the main agent as structured feedback if budget remains. The runtime MUST cap such loops through existing task budgets; there is no special infinite retry behavior.
+A denial may be returned as structured feedback to the Main Agent if budget remains.
 
-## TOCTOU / stale validation
-
-For state-sensitive mutations, consumer validators MAY attach an expected-state/version token. The executor SHOULD reject application if the reference state changed between validation and execution.
-
-This is optional for initial TEP sandbox work but part of the contract to avoid later unsafe assumptions.
+There is no automatic retry loop. A retry/replan is a new explicit request and consumes normal budget.
 
 ## Invariants
 
 - Model text cannot override a gate.
-- Unknown policy means deny for side-effecting operations.
-- Gate logic is deterministic for identical request/policy/application state.
-- Denied operations produce no reference-world side effect.
-- Child authority never exceeds explicitly delegated parent/task authority.
-- Domain rules remain outside core generic runtime.
+- Unknown authority/policy means deny for side-effecting operations.
+- Same request/policy/state/budget produces the same deterministic gate outcome.
+- Denied operations produce no side effect.
+- Child authority never exceeds explicitly delegated task/parent authority.
+- SIMULATE cannot mutate reference state.
+- Compound tools reserve declared nested resource consumption before dispatch.
+- Domain rules remain outside generic runtime core.
+- MUTATE validation is state-revision bound.
 
 ## Acceptance tests
 
-1. Invalid schema fails at G0 with no tool call.
-2. Valid but unlisted tool fails at G1.
-3. Exhausted tool budget fails at G2.
-4. READ tool succeeds under allowlist/budget.
-5. MUTATE request is held for consumer validation rather than executed directly.
-6. Consumer denial is traceable and cannot be overridden by another model message.
-7. Child requesting parent-only authority is denied.
-8. Optional approval resumes the exact frozen request or is rejected if stale-state validation fails.
-
-## Open questions
-
-- Which approval/policy interface is simplest without tying core runtime to one UI?
-- Should `SIMULATE` be a first-class side-effect class or a capability tag on COMPUTE? v0 keeps it explicit because sandbox experimentation is central to intended consumers.
+1. Invalid schema fails at G0 with no adapter call.
+2. Unlisted operation fails at G1.
+3. Exhausted standard budget fails at G2.
+4. Compound SIMULATE tool whose requested trials exceed `extra_dimensions` fails at G2 before rollout.
+5. Allowed READ succeeds through request validation.
+6. SIMULATE adapter without isolation guarantee is denied.
+7. PROPOSE may return candidate data but cannot mutate reference state.
+8. MUTATE is held for deterministic consumer validation/approval and is bound to expected state revision.
+9. A stale approved MUTATE request is rejected before application.
+10. Consumer denial cannot be overridden by another model message.
+11. Child requesting parent-only authority is denied.
