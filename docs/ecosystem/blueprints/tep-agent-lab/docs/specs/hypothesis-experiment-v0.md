@@ -1,11 +1,13 @@
 # Hypothesis and Experiment Contracts v0
 
-Status: proposal  
+Status: accepted  
 Owner repo: `tep-agent-lab`
 
 ## Goal
 
 Represent hypotheses, predictions, experiments, deterministic results, and model interpretation as first-class typed objects so investigation/evaluation does not depend on free-form chat history.
+
+All model-authored changes to investigation state are carried through runtime `ModelStateUpdateProposal` / `StateDelta`; they are not implicit effects of prose.
 
 ## `Hypothesis`
 
@@ -56,7 +58,9 @@ Types are semantic metadata, not agent roles.
 
 ## Observation/evidence relationship
 
-Tool/simulator outputs create immutable observation/result refs as defined in `investigation-state-v0.md`.
+Every successful agent-visible ToolResult/simulator result is deterministically registered as an immutable `ObservationRecord` by the lab result-ingestion path defined in `investigation-state-v0.md`.
+
+Observation registration is automatic; evidence creation is not.
 
 Evidence for a hypothesis is an explicit `HypothesisEvidenceLink` from a visible observation to the hypothesis:
 
@@ -70,7 +74,15 @@ HypothesisEvidenceLink
   producer
 ```
 
-The model may propose the relation. Deterministic verification checks ref existence/visibility/provenance, not open-ended scientific correctness.
+The model proposes such a link through:
+
+```text
+StateDelta(operation=ADD_EVIDENCE_LINK, ...)
+```
+
+inside a runtime `ModelStateUpdateProposal` bound to the exact projection revision it saw.
+
+Deterministic state validation checks ref existence/visibility/provenance and legal operation shape, not open-ended scientific correctness.
 
 ## `Prediction`
 
@@ -152,6 +164,14 @@ RECOVERY_COMPARISON
 AUTORESEARCH_TRIAL
 ```
 
+A model-created `ExperimentProposal` becomes planned investigation state through:
+
+```text
+StateDelta(operation=PLAN_EXPERIMENT, value_or_ref=ExperimentProposal)
+```
+
+The planned state change is internal task state only. It does not execute the experiment.
+
 ## Discriminating-experiment principle
 
 A useful RCA experiment should identify which competing predictions differ and what result would distinguish them.
@@ -175,14 +195,15 @@ A discrimination metric should use typed predictions/feature distances and bench
 A proposal is data until validated/compiled:
 
 ```text
-ExperimentProposal
- -> runtime G0-G3
+planned ExperimentProposal
+ -> runtime G0-G3 for requested executable tool/work
  -> lab validate_request
  -> capability/scenario/tool resolution
  -> frozen ExperimentRunSpec
  -> isolated execution
  -> deterministic ExperimentResult
  -> post-execution verify_result
+ -> deterministic result ingestion
 ```
 
 ## `ExperimentRunSpec`
@@ -251,12 +272,15 @@ metric_distance?
 
 The model does not author numeric simulator/tool/scorer values that deterministic components can compute.
 
+After verification, the lab result-ingestion path deterministically registers the result/observations and moves the experiment from planned to completed state using runtime-bound current revision semantics.
+
 ## Model interpretation
 
 After execution, the Main Agent may propose:
 
 ```text
 ExperimentInterpretation
+  interpretation_id
   experiment_ref
   proposed_evidence_links[]
   hypothesis_updates[]
@@ -265,7 +289,32 @@ ExperimentInterpretation
   next_questions[]
 ```
 
-Interpretation is never substituted for the deterministic ExperimentResult.
+Interpretation is never substituted for the deterministic `ExperimentResult`.
+
+### Interpretation-to-state mapping
+
+`ExperimentInterpretation` is not a hidden side effect. The lab maps its model-proposed contents to explicit RCA StateDelta operations inside the same `ModelStateUpdateProposal`, for example:
+
+```text
+proposed_evidence_links[]
+  -> ADD_EVIDENCE_LINK
+
+hypothesis_updates[]
+  -> UPDATE_HYPOTHESIS
+
+next_questions[]
+  -> ADD_OPEN_QUESTION
+
+conclusion_summary / residual_uncertainty
+  -> UPDATE_WORKING_EXPLANATION
+
+interpretation object itself
+  -> ADD_EXPERIMENT_INTERPRETATION
+```
+
+All such deltas are bound to the `ContextProjection.base_revision` the model saw and are atomically validated/applied by the consumer TaskStateStore.
+
+A rejected/stale interpretation update does not silently mutate hypothesis/evidence state.
 
 ## Duplicate / low-value experiment control
 
@@ -303,12 +352,14 @@ Every experiment binds:
 - rule/policy versions used for validation;
 - artifacts/results;
 - proposer/interpreter identity;
+- model state-update proposal/ref used to persist interpretation;
 - actual resource usage.
 
 ## Invariants
 
 - Hypotheses are working claims, not persistent rules.
-- Observation is not automatically evidence.
+- Every successful result may create observations automatically, but Observation is not automatically evidence.
+- Evidence links and hypothesis interpretations are explicit model-proposed StateDelta operations.
 - Prediction is typed when used for deterministic discrimination scoring.
 - Proposed experiments never execute before deterministic validation/resource reservation.
 - ExperimentResult is separate from model interpretation.
@@ -317,10 +368,12 @@ Every experiment binds:
 
 ## Acceptance tests
 
-1. Create two competing hypotheses and typed predictions on the same measured variable/features.
-2. Propose a discriminating experiment referencing both predictions.
+1. Create two competing hypotheses through a model state-update batch and attach typed predictions.
+2. Propose a discriminating ExperimentProposal and persist it with PLAN_EXPERIMENT without executing it.
 3. Reject unsupported scenario before execution.
 4. Freeze/execute a valid ExperimentRunSpec in an isolated branch.
-5. Produce deterministic PredictionEvaluation values and then let the Agent propose evidence links separately.
-6. Reject an exact duplicate using canonical experiment key even when a new snapshot ID was created from identical content.
-7. Hand bounded numeric tuning to a SIMULATE optimizer bridge whose trial/rollout budget is pre-reserved.
+5. Produce deterministic PredictionEvaluation values and automatically register the successful result observation(s).
+6. Have the next ModelTurn return an ExperimentInterpretation whose proposed evidence links map to ADD_EVIDENCE_LINK StateDelta operations.
+7. Reject a stale interpretation update without changing hypothesis/evidence state.
+8. Reject an exact duplicate experiment using canonical experiment key even when a new snapshot ID was created from identical content.
+9. Hand bounded numeric tuning to a SIMULATE optimizer bridge whose trial/rollout budget is pre-reserved.
