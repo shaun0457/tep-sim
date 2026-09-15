@@ -2,251 +2,182 @@
 
 ## Purpose
 
-Provide a domain-independent **control plane** for goal-driven agent work while separating model reasoning from execution authority.
+Provide a domain-independent **control plane** for goal-driven Agent work while keeping domain state/semantics in consumers and execution authority in deterministic code.
 
-The runtime must support simple local ReAct-style work and complex bounded Dynamic DAGs without hard-coding TEP or any other domain.
-
-## Hybrid runtime model
+## Reference architecture
 
 ```text
-Task / Goal
-   |
-   v
-Context / Information Refs
-   |
-   v
-+--------------------------+
-| Deterministic Coordinator|
-+------------+-------------+
-             |
-             v
-+--------------------------+
-| Main Agent               |
-| goal-driven reasoning    |
-| local ReAct-style loop   |
-+-----+----------------+---+
-      |                |
- direct tool       Dynamic DAG proposal
-      |            /    |     \
-      |         tool  subtask  simulation
-      |            \    |     /
-      |              merge
-      +----------------+
-             |
-             v
-+--------------------------+
-| Deterministic Verifier   |
-+------------+-------------+
-             |
-             v
-+--------------------------+
-| Deterministic Executor   |
-+------------+-------------+
-             |
-             v
- external tools / consumers / worlds
+Task + InformationRef(s)
+        |
+        v
+consumer TaskStateStore.project()
+        |
+        v
+ContextProjection
+        |
+        v
+Main Agent
+        |
+ ToolCall / WorkBatch / FinishProposal
+        |
+        v
+pre-execution G0-G3
++ consumer.validate_request
+        |
+        v
+Deterministic Executor
+        |
+        v
+post-execution verify_result
+        |
+        v
+consumer TaskStateStore.apply(StateDelta)
+        |
+        +----> project / next Main Agent turn / finish
 ```
 
-Coordinator, Executor, and Verifier are runtime components, not permanent LLM personas.
+Only the Main Agent is assumed to require an LLM.
 
-## Main responsibilities
+Coordinator/Executor/Verifier are module responsibilities, not independent services or permanent LLM personas.
 
-### Main Agent
+## Main Agent
 
-Open-ended reasoning:
+Open-ended work:
 
-- understand the goal/current structured state;
-- choose tools/evidence;
-- decide whether simple direct work is sufficient;
-- propose Dynamic DAGs/subtasks when useful;
-- integrate evidence;
-- produce structured results/proposals;
-- recommend semantic stopping.
+- reason over the current ContextProjection;
+- choose useful tools;
+- propose dependency-aware work/subtasks;
+- integrate returned results;
+- propose final structured output;
+- provide semantic judgment that evidence appears sufficient.
 
-### Coordinator
+The model never grants its own execution authority.
 
-Deterministic orchestration:
+## Coordinator
 
-- maintain task execution state;
-- budget accounting;
-- route model decisions;
-- validate/schedule Dynamic DAG nodes;
-- track dependencies/status;
-- expose allowed tools;
-- apply hard termination rules;
-- coordinate checkpoint/resume through adapters.
+Generic deterministic loop/control responsibilities:
 
-### Executor
+- route Main Agent outputs;
+- track generic TaskStatus/budget;
+- validate WorkBatch dependency structure;
+- schedule ready work;
+- enforce cumulative child/resource limits;
+- freeze validated requests before dispatch;
+- call consumer TaskStateStore/projection interfaces;
+- enforce hard runtime termination.
 
-Deterministic dispatch:
+Coordinator does not understand TEP/RCA fields.
 
-- execute exact validated requests;
-- enforce timeout/resource limits;
-- bind request/result/artifact refs;
-- never reinterpret intent or expand permissions.
-
-### Verifier
-
-Machine-checkable verification:
-
-- schema/output validity;
-- evidence/artifact ref existence;
-- dependency completion;
-- policy/rule-validator verdicts;
-- provenance/budget consistency;
-- stop-readiness structural requirements.
-
-An optional LLM critic may be used as a normal bounded subtask, but its opinion is not execution authority.
-
-## Core public contracts
-
-### `Task`
+## Pre-execution gates
 
 ```text
-task_id
-goal
-context_refs
-allowed_tools
-budget
-output_schema
-parent_task_id?
-metadata?
+G0 schema/parse
+G1 allowlist/authority
+G2 budget/resource reservation/recursion
+G3 side-effect policy
+consumer.validate_request
+optional approval/escalation
 ```
 
-### `Budget`
+These happen before dispatch and are not the post-execution Verifier.
+
+## Executor
+
+Small deterministic dispatch responsibility:
+
+- execute the exact frozen request;
+- dispatch tool/subtask adapter;
+- enforce timeout/resource caps;
+- bind request/result refs;
+- collect actual resource usage/provenance;
+- never re-plan/reinterpret intent.
+
+## Post-execution Verifier
+
+Mechanically verifies results/state updates that only exist after dispatch:
+
+- output/ref/artifact existence;
+- required provenance/version fields;
+- actual versus reserved budget accounting;
+- WorkBatch dependency completion;
+- visibility/ground-truth isolation metadata;
+- consumer-supplied result invariants;
+- structural final-output readiness.
+
+Open-ended critique is an optional ordinary subtask, not deterministic authority.
+
+## Public contracts
+
+Canonical schemas are owned by `specs/runtime-v0.md` and related specs.
+
+Important contracts:
 
 ```text
-max_model_calls
-max_tool_calls
-max_subagents
-max_subagent_depth
-max_steps
-max_plan_nodes?
-max_plan_revisions?
-max_parallel_width?
-max_tokens/cost/time?
+InformationRef
+Task
+Budget + extra_dimensions
+ToolSpec + declared/max budget draw
+ToolCallRequest / ToolResult
+TaskStatus
+StateDelta
+ContextProjection
+TaskStateStore
+WorkBatch / WorkItem
+Subtask / SubtaskResult
+RuntimeResult
+TraceEvent
 ```
 
-### `ToolSpec`
+## Dependency-aware work
+
+v0 supports:
 
 ```text
-name
-description
-input_schema
-output_schema
-side_effect_class
-required_policy_tags
+WorkBatch
+  WorkItem(kind=TOOL | SUBTASK, depends_on=[...])
 ```
 
-### `InvestigationPlan` / generic dynamic plan
+- acyclic dependency graph;
+- ready items may execute in parallel within budget;
+- failed required dependency => dependent skipped;
+- no silent retries;
+- merge/open-ended reasoning = next Main Agent turn.
 
-Framework-neutral plan data:
+Simulation is a TOOL whose ToolSpec class is SIMULATE.
+
+A richer mutable Dynamic DAG engine is intentionally not a v0 core component.
+
+## State boundary
+
+Runtime owns only the generic `TaskStateStore` interface/status/revision envelope.
+
+Consumers implement application state and legal updates.
+
+Example:
 
 ```text
-plan_id
-objective
-nodes[]
-edges[]
-plan_budget
-completion_policy
-revision
+industrial-agent-runtime knows TaskStateStore
+tep-agent-lab implements it with RcaState
 ```
 
-A plan is never executable solely because the model produced valid JSON; Coordinator validation is required.
+No runtime import of consumer state classes is allowed.
 
-### `Subtask`
+## Context boundary
 
-Temporary child task with explicit goal, context refs, tools, budget, schema, and reason for delegation.
+Consumer constructs domain-relevant ContextProjection.
 
-### `EvidenceBundle`
+Runtime validates generic:
 
-Compact child result/evidence refs returned to parent; child full transcript is not inherited by default.
+- InformationRef integrity;
+- visibility metadata;
+- token/size policy;
+- exact projection persistence/checksum.
 
-### `TraceEvent`
+There is no generic domain-relevance ContextBroker in v0.
 
-Every significant transition records task/plan/node lineage, input/output summaries, budget delta, model/tool metadata, status/error, and artifact refs.
+## Tool/budget boundary
 
-## Orchestration semantics
-
-Reference flow:
-
-```text
-INIT
- -> LOAD_CONTEXT
- -> MAIN_AGENT_TURN
- -> PARSE/ROUTE
- -> {TOOL | SUBTASK | DYNAMIC_DAG | FINISH}
- -> GATES / PLAN VALIDATION
- -> EXECUTE READY WORK
- -> VERIFY
- -> UPDATE STATE/TRACE
- -> STOP CHECK
- -> repeat / finish / fail
-```
-
-Simple tasks should not pay the cost of Dynamic DAG construction.
-
-## Dynamic DAG semantics
-
-Coordinator validates:
-
-- unique node IDs;
-- acyclicity;
-- valid dependencies;
-- node/depth/parallel/revision budgets;
-- authority monotonicity;
-- schema/tool compatibility;
-- hidden/evaluator ref isolation as supplied by consumer policy.
-
-Independent nodes may run in parallel behind the same contract.
-
-Plan revisions are append-only trace events; prior plans/results remain auditable.
-
-## Deterministic gates
-
-Generic runtime gate pipeline:
-
-```text
-schema
- -> tool allowlist
- -> budget/recursion/plan limits
- -> side-effect policy
- -> optional consumer/domain validator
- -> optional human approval
- -> Executor
-```
-
-Domain safety truth stays outside this repo.
-
-## Information / context boundary
-
-The runtime operates on refs and projections supplied by consumers.
-
-It may provide a generic `ContextBroker` interface for:
-
-- ref visibility;
-- budget limits;
-- projection hooks;
-- caching/materialization;
-
-but it does not decide domain relevance or encode process knowledge.
-
-Conversation history is trace/context material, not guaranteed canonical application state.
-
-## LangGraph boundary
-
-Hybrid semantics are framework-neutral.
-
-Recommended:
-
-- core contracts/Coordinator/Executor/Verifier do not require LangGraph;
-- `orchestration/langgraph_adapter.py` may map runtime/application state to LangGraph nodes/checkpoints;
-- consumers such as `tep-agent-lab` may use the adapter for deterministic macro workflows, durable checkpointing, interrupts, and visualization;
-- LangGraph message/state objects do not appear in public runtime contracts.
-
-## Tool permissions
-
-Side-effect classes:
+Tool side-effect classes:
 
 ```text
 READ
@@ -257,19 +188,35 @@ MUTATE
 ADMIN
 ```
 
-Authority can only narrow through delegation unless host policy explicitly grants otherwise.
+Authority only narrows through delegation; there is no implicit host exception that grants children stronger authority.
+
+Budget supports named extra dimensions so consumers can govern simulator rollouts/horizon/optimizer trials without teaching runtime their domain meaning.
+
+Compound tools declare/reserve nested resource draw before dispatch.
+
+## Tracing
+
+Every significant transition records lineage/resource/status/provenance.
+
+Every model turn MUST reference the exact immutable ContextProjection plus prompt/model/tool metadata. Input/output summaries alone are insufficient for replay/leakage audit.
+
+## Framework boundary
+
+Public contracts remain serializable/framework-neutral.
+
+LangGraph is not a v0 dependency or scheduled deliverable. It may be considered later for concrete durable checkpoint/resume/interrupt needs.
+
+MCP is not runtime architecture; it may later provide external tools behind the ordinary ToolSpec/adapter/gate path.
 
 ## Memory
 
-v0 does not implement global learned cross-run memory.
+v0 has durable per-run records/traces but no automatic learned cross-run memory.
 
-It supports Information Plane/evidence/artifact references supplied by consumers and durable per-task traces/checkpoints.
+Historical Engineering Records/retrieval remain consumer capability experiments, not core runtime behavior.
 
 ## Domain boundary
 
-Core runtime contains no TEP variables/equations, HAZOP mappings, process rules, benchmark fixtures, or domain safety thresholds.
-
-The same runtime should be able to support process simulation, manufacturing, software, or other labs through consumer-owned tools/state/schemas.
+Core runtime contains no TEP variables/equations, DEXPI parsing, HAZOP mappings, process rules, benchmark fixtures, scientific Tool Bridge code, or domain safety thresholds.
 
 ## Canonical specs
 
