@@ -87,7 +87,7 @@ Keep independent. It solves a different problem: personal orchestration, memory,
 
 ## Parked research — generic P&ID -> simulator
 
-Generic `pid2sim` is **not a current core project**. Existing notes/blueprint are parking-lot material only.
+Generic `pid2sim` is **not a current core project**. The single research note [`pid-to-sim-automation.md`](pid-to-sim-automation.md) is retained for future reference, but no `pid2sim` repository scaffold or implementation milestone is maintained in the active branch.
 
 For the present TEP program, avoid raster P&ID OCR, YOLO/U-Net symbol pipelines, generic CAD/P&ID digitization, automatic arbitrary-plant simulator generation, and 3D reconstruction.
 
@@ -145,8 +145,6 @@ Future-repo scaffolds:
 
 - `blueprints/industrial-agent-runtime/`
 - `blueprints/tep-agent-lab/`
-
-The `blueprints/pid2sim/` material is parked and not part of the implementation plan.
 
 ## What not to build now
 
