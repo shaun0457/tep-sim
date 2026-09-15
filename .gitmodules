@@ -1,0 +1,3 @@
+[submodule "vendor/tep-sim-upstream"]
+	path = vendor/tep-sim-upstream
+	url = https://github.com/jkitchin/tennessee-eastman-profbraatz.git

@@ -1,0 +1,8 @@
+# 原始資料集 3.2 GB，不進 git（來源：Rieth et al. TEP dataset）
+data/raw/
+# Python
+.venv/
+__pycache__/
+*.pyc
+# 上游 meson build 殘留
+vendor/tep-sim-upstream/build/
