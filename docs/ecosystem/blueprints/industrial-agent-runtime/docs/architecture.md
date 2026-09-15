@@ -16,24 +16,31 @@ consumer TaskStateStore.project()
 ContextProjection
         |
         v
-Main Agent
+Main Agent / ModelTurn
         |
- ToolCall / WorkBatch / FinishProposal
-        |
-        v
-pre-execution G0-G3
-+ consumer.validate_request
-        |
-        v
-Deterministic Executor
-        |
-        v
-post-execution verify_result
-        |
-        v
-consumer TaskStateStore.apply(StateDelta)
-        |
-        +----> project / next Main Agent turn / finish
+        +-- ModelStateUpdateProposal? -------------------+
+        |                                                |
+        |                                    TaskStateStore.apply_batch
+        |                                                |
+        +-- action: NONE | TOOL | WORK_BATCH | FINISH ---+
+                         |
+                         v
+               pre-execution G0-G3
+               + consumer.validate_request
+                         |
+                         v
+                 Deterministic Executor
+                         |
+                         v
+               post-execution verify_result
+                         |
+                         v
+              deterministic result ingestion
+                         |
+                         v
+              TaskStateStore.apply_batch
+                         |
+                         +----> project / next Main Agent turn / finish
 ```
 
 Only the Main Agent is assumed to require an LLM.
@@ -45,30 +52,57 @@ Coordinator/Executor/Verifier are module responsibilities, not independent servi
 Open-ended work:
 
 - reason over the current ContextProjection;
+- propose internal typed investigation-state changes;
 - choose useful tools;
 - propose dependency-aware work/subtasks;
 - integrate returned results;
 - propose final structured output;
 - provide semantic judgment that evidence appears sufficient.
 
-The model never grants its own execution authority.
+The model never grants its own execution authority and never calls TaskStateStore directly.
+
+## ModelTurn / state-update semantics
+
+Canonical shape is owned by `specs/runtime-v0.md`:
+
+```text
+ModelTurn
+  context_projection_ref
+  base_revision
+  state_update?: ModelStateUpdateProposal
+  action: NONE | TOOL_REQUEST | WORK_BATCH | FINISH_PROPOSAL
+```
+
+A model-proposed state-update batch:
+
+- is bound to the exact ContextProjection revision seen by the model;
+- is atomically validated/applied through consumer `TaskStateStore.apply_batch`;
+- consumes one `max_steps` and zero `max_tool_calls`;
+- may change only allowlisted consumer task-state fields/objects;
+- cannot change runtime budget/policy/generic status/authority or external/reference state;
+- prevents the same turn's executable action from dispatching if stale/invalid.
 
 ## Coordinator
 
 Generic deterministic loop/control responsibilities:
 
-- route Main Agent outputs;
+- validate ModelTurn routing/base revision;
+- apply valid model-proposed state-update batches;
+- route Main Agent actions;
 - track generic TaskStatus/budget;
 - validate WorkBatch dependency structure;
 - schedule ready work;
 - enforce cumulative child/resource limits;
 - freeze validated requests before dispatch;
 - call consumer TaskStateStore/projection interfaces;
+- serialize deterministic result ingestion;
 - enforce hard runtime termination.
 
 Coordinator does not understand TEP/RCA fields.
 
 ## Pre-execution gates
+
+Executable work only:
 
 ```text
 G0 schema/parse
@@ -79,7 +113,7 @@ consumer.validate_request
 optional approval/escalation
 ```
 
-These happen before dispatch and are not the post-execution Verifier.
+Internal ModelStateUpdateProposal processing is a separate TaskStateStore path and is not a fake tool call.
 
 ## Executor
 
@@ -94,7 +128,7 @@ Small deterministic dispatch responsibility:
 
 ## Post-execution Verifier
 
-Mechanically verifies results/state updates that only exist after dispatch:
+Mechanically verifies results/state-ingestion inputs that only exist after dispatch:
 
 - output/ref/artifact existence;
 - required provenance/version fields;
@@ -105,6 +139,19 @@ Mechanically verifies results/state updates that only exist after dispatch:
 - structural final-output readiness.
 
 Open-ended critique is an optional ordinary subtask, not deterministic authority.
+
+## Deterministic result ingestion
+
+Successful verified results may produce consumer-owned StateDelta batches.
+
+Generic rule:
+
+- model-proposed deltas remain bound to the projection revision the model saw;
+- deterministic tool/result-derived deltas bind the **current** task-state revision immediately before apply;
+- parallel WorkBatch result-ingestion batches are applied in a deterministic stable work-item order;
+- each ingestion batch is atomic and trace-visible.
+
+This prevents multiple results originating from the same old projection from false-failing stale revision checks.
 
 ## Public contracts
 
@@ -119,9 +166,9 @@ Budget + extra_dimensions
 ToolSpec + declared/max budget draw
 ToolCallRequest / ToolResult
 TaskStatus
-StateDelta
+StateDelta / ModelStateUpdateProposal / ModelTurn
 ContextProjection
-TaskStateStore
+TaskStateStore.apply_batch
 WorkBatch / WorkItem
 Subtask / SubtaskResult
 RuntimeResult
@@ -149,9 +196,9 @@ A richer mutable Dynamic DAG engine is intentionally not a v0 core component.
 
 ## State boundary
 
-Runtime owns only the generic `TaskStateStore` interface/status/revision envelope.
+Runtime owns only generic task-state interfaces/status/revision envelopes.
 
-Consumers implement application state and legal updates.
+Consumers implement application state, legal operations, deterministic result-ingestion mapping, and ContextProjection selection.
 
 Example:
 
@@ -198,7 +245,7 @@ Compound tools declare/reserve nested resource draw before dispatch.
 
 Every significant transition records lineage/resource/status/provenance.
 
-Every model turn MUST reference the exact immutable ContextProjection plus prompt/model/tool metadata. Input/output summaries alone are insufficient for replay/leakage audit.
+Every model turn MUST reference the exact immutable ContextProjection plus prompt/model/tool metadata. State-update proposal disposition/resulting revision is also trace-visible. Input/output summaries alone are insufficient for replay/leakage audit.
 
 ## Framework boundary
 
