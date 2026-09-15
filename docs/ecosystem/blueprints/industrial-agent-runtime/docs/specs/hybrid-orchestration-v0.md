@@ -1,262 +1,285 @@
 # Hybrid Orchestration v0
 
-Status: accepted direction / v0 contract proposal  
+Status: proposal  
 Owner repo: `industrial-agent-runtime`  
 Primary consumer: `tep-agent-lab`
 
 ## Goal
 
-Define a hybrid agent runtime that combines:
+Define a small hybrid runtime that combines:
 
-- a goal-driven Main Agent for open-ended investigation;
-- deterministic coordination, execution, verification, budgets, and authority;
-- local ReAct-style iteration for simple cases;
-- bounded dynamically generated DAGs for complex investigations;
-- framework-neutral public contracts, with LangGraph allowed as an orchestration adapter.
+- one goal-driven Main Agent for open-ended reasoning;
+- deterministic coordination, authorization, execution, result verification, budgets, and tracing;
+- local ReAct-style iteration for open-ended investigation;
+- dependency-aware bounded work batches when independent/dependent work can be executed in parallel;
+- framework-neutral public contracts.
 
-The design must preserve agent autonomy where reasoning is useful without turning deterministic engineering constraints into repeated LLM decisions.
+The architecture is an implementation contract, not a claim that Hybrid orchestration is superior. Its value must be measured against simpler orchestration baselines.
 
-## Core components
+## Core flow
 
 ```text
-Engineering Goal / Incident
+Engineering Goal / Task
           |
           v
-+-------------------------+
++--------------------------+
 | Deterministic Coordinator|
-+------------+------------+
++------------+-------------+
              |
              v
-+-------------------------+
-| Main Agent              |
-| goal-driven reasoning   |
-| local ReAct-style loop  |
-+-----+---------------+---+
-      |               |
- simple work       complex work
-      |               |
-      |               v
-      |        Dynamic Investigation DAG
-      |         /       |        \
-      |      subtask  analysis  simulation
-      |         \       |        /
-      |          evidence merge
-      |               |
-      +---------------+
++--------------------------+
+| Main Agent               |
+| goal-driven reasoning    |
+| local ReAct-style loop   |
++------+-------------------+
+       |
+       | proposes ToolCall / WorkBatch / Finish
+       v
++--------------------------+
+| Pre-execution gates      |
+| G0-G3 + validate_request |
++------------+-------------+
              |
              v
-+-------------------------+
-| Deterministic Verifier  |
-+------------+------------+
++--------------------------+
+| Deterministic Executor   |
++------------+-------------+
              |
              v
-+-------------------------+
-| Deterministic Executor  |
-+------------+------------+
+        tools / subtasks
              |
              v
-        tools / world
++--------------------------+
+| Post-execution Verifier  |
+| verify_result            |
++------------+-------------+
+             |
+             v
++--------------------------+
+| TaskStateStore.apply     |
++------------+-------------+
+             |
+             +----> next Main Agent turn / finish
 ```
 
-Only the Main Agent is assumed to require an LLM. Coordinator, Executor, and Verifier are runtime components, not permanent agent personas.
+Only the Main Agent is assumed to require an LLM. Coordinator, gates, Executor, and post-execution Verifier are deterministic runtime components unless an experiment explicitly adds a model-based critic as an ordinary bounded subtask.
 
-## Responsibilities
+## Responsibility boundaries
 
 ### Main Agent
 
 May:
 
-- interpret the goal/current investigation state;
+- interpret the current projected task/domain state;
 - choose the next useful action;
-- query tools;
-- form/update hypotheses;
-- propose experiments;
-- propose a dynamic DAG for independent/dependent work;
-- spawn bounded ephemeral reasoning workers through the DAG/subtask interface;
-- integrate evidence;
-- decide whether evidence is sufficient to finish;
-- produce structured conclusions/proposals.
+- request typed tools;
+- propose a bounded `WorkBatch`;
+- propose bounded subtasks through the WorkBatch/subtask contract;
+- integrate returned results;
+- propose a final structured result;
+- provide semantic judgment that evidence appears sufficient.
 
-It cannot directly execute unvalidated side effects or alter runtime policies.
+It cannot execute tools directly, change budgets/policies, mutate runtime state directly, or grant itself/children additional authority.
 
 ### Coordinator
 
-Deterministic control-plane component responsible for:
+Generic deterministic control component responsible for:
 
-- owning canonical task/investigation execution state;
-- maintaining budgets and step counters;
-- routing Main Agent decisions;
-- validating dynamic DAG structure;
-- scheduling ready DAG nodes;
-- tracking node dependencies/status;
-- exposing only currently allowed tools/capabilities;
-- freezing requests before approval/execution;
-- deciding whether runtime termination conditions have been reached.
+- routing Main Agent outputs;
+- tracking generic `TaskStatus` and budget usage;
+- validating `WorkBatch` structure and dependencies;
+- scheduling ready work items;
+- enforcing cumulative subtask/work-item limits;
+- freezing validated requests before dispatch;
+- requesting consumer projections/state updates only through generic interfaces;
+- deciding whether hard runtime termination conditions have been reached.
 
-The Coordinator does not invent domain conclusions.
+The Coordinator does not understand TEP-specific fields and does not import consumer state types.
+
+### Pre-execution gates
+
+Defined in `deterministic-gates-v0.md`.
+
+They validate requests before any execution:
+
+```text
+G0 schema/parse
+G1 tool/operation allowlist
+G2 budget/recursion/resource reservation
+G3 side-effect policy
+consumer.validate_request(...)
+optional authority escalation/approval
+```
+
+Pre-execution checks must not be called the post-execution Verifier.
 
 ### Executor
 
-Deterministic dispatcher responsible for:
+A deterministic dispatcher responsible for:
 
-- executing the exact validated tool/subtask/simulation request;
+- executing the exact frozen request;
 - enforcing timeout/resource limits;
+- dispatching tool adapters or bounded subtasks;
 - binding request/result IDs;
-- recording provenance and artifacts;
-- never broadening authority beyond the validated request.
+- collecting actual budget/resource usage;
+- recording raw result/artifact provenance;
+- never broadening authority beyond the frozen request.
 
-The Executor does not re-plan or reinterpret the request.
+The Executor does not re-plan or interpret engineering meaning.
 
-### Verifier
+### Post-execution Verifier
 
-Deterministic verifier responsible for checks that can be mechanically evaluated, including:
+A deterministic `verify_result` stage over the returned result and proposed state update.
 
-- output/schema validity;
-- evidence/artifact reference existence;
-- rule/policy compliance;
-- DAG dependency completion;
-- simulator/tool result provenance;
-- ground-truth isolation policy;
-- budget/accounting consistency;
-- stop-condition inputs;
-- exact constraint checks supplied by the consumer.
+It may mechanically verify:
 
-Semantic criticism that requires open-ended judgment MAY be requested as an ordinary bounded subtask, but it is evidence only and cannot override deterministic verification.
+- output schema validity;
+- artifact/information reference existence;
+- declared versus actual budget/resource accounting;
+- required provenance/tool-version fields;
+- work dependency completion;
+- result visibility/ground-truth isolation metadata;
+- exact consumer-provided result invariants;
+- structural finish requirements.
 
-## Macro orchestration
+It does not perform open-ended engineering critique. A model-based critic, when studied, is an ordinary `Subtask` whose output is evidence/advice only.
 
-The reference semantic flow is:
+## Reference runtime loop
 
 ```text
-INIT
- -> LOAD_CONTEXT_REFS
+LOAD / PROJECT STATE
  -> MAIN_AGENT_TURN
  -> ROUTE_DECISION
-      -> DIRECT_TOOL_REQUEST
-      -> SUBTASK_REQUEST
-      -> DYNAMIC_DAG_PROPOSAL
+      -> TOOL_REQUEST
+      -> WORK_BATCH
       -> FINISH_PROPOSAL
- -> GATE / VALIDATE
+ -> PRE_EXECUTION_GATES
  -> EXECUTE_READY_WORK
- -> INGEST_RESULTS
- -> VERIFY
- -> UPDATE_STATE
- -> STOP_CHECK
-      -> MAIN_AGENT_TURN
+ -> POST_EXECUTION_VERIFY
+ -> APPLY_STATE_DELTA
+ -> HARD_STOP_CHECK
+      -> PROJECT / MAIN_AGENT_TURN
       -> FINISH
-      -> FAIL / BUDGET_EXHAUSTED
+      -> FAIL / EXHAUSTED / CANCELLED
 ```
 
-This is the stable semantic contract. A framework implementation may represent stages as LangGraph nodes, an explicit state machine, or another executor without changing the public contracts.
+This loop is the v0 semantic reference. It may be implemented with ordinary Python control flow or another framework without changing public contracts.
 
-## Local ReAct mode
+## Local ReAct behavior
 
-For simple investigation steps, the Main Agent may iterate:
+A Main Agent may locally iterate:
 
 ```text
-reason over current structured state
- -> request one tool/action
- -> receive verified observation
- -> update state
- -> continue/finish
+projected state
+ -> reason
+ -> request one useful tool/work batch
+ -> receive verified results
+ -> update domain state through the consumer state adapter
+ -> repeat/finish
 ```
 
-The transcript is not the source of truth. Important state is externalized into typed runtime/application state.
+Conversation history is supplementary trace data, not canonical application state.
 
-## Dynamic Investigation DAG
+## Dependency-aware `WorkBatch`
 
-A complex investigation MAY be represented by a model-proposed `InvestigationPlan`.
+v0 deliberately does **not** require a general model-revisable Dynamic DAG engine.
 
-Conceptual contract:
+A Main Agent may propose:
 
 ```text
-plan_id
-objective
-nodes[]
-edges[]
-plan_budget
-completion_policy
-rationale_summary
+WorkBatch
+  batch_id
+  objective
+  items[]
+  budget_request
+  completion_policy
 ```
 
-### `PlanNode`
+### `WorkItem`
 
 ```text
-node_id
-type: TOOL | ANALYSIS | SIMULATION | SUBTASK | MERGE
-goal
+work_id
+kind: TOOL | SUBTASK
 depends_on[]
-input_refs[]
-allowed_tools[]
-budget
-output_schema
+request_or_subtask
+budget_request
 status
 ```
 
-### Deterministic DAG validation
+Simulation is represented as a `TOOL` item whose registered `ToolSpec.side_effect_class` is `SIMULATE`.
+
+There is no v0 `ANALYSIS` node type: deterministic analysis is a TOOL; open-ended analysis is performed by the Main Agent or a SUBTASK.
+
+There is no v0 `MERGE` node type: the next Main Agent turn integrates completed work.
+
+## WorkBatch validation
 
 Before scheduling, the Coordinator MUST check:
 
-- unique node IDs;
-- graph acyclicity;
-- all dependency references exist;
-- node count/depth/parallelism budgets;
-- child tool authority does not exceed parent/task policy;
-- node output/input schemas are compatible where declared;
-- mutation nodes are rejected or routed through the side-effect gate;
-- no evaluator-only/hidden-ground-truth ref enters agent-visible nodes.
+- unique item IDs;
+- acyclicity of `depends_on`;
+- all dependencies exist;
+- requested cumulative work/subtask/resource budgets fit the remaining task budget;
+- SUBTASK items count against the task's cumulative subagent budget;
+- child/subtask authority is a subset of task/parent authority;
+- hidden/evaluator-only refs are absent from agent-visible work;
+- nested SUBTASK creation is disallowed when depth/policy forbids it.
 
-Invalid plans are returned as structured denial/replan evidence.
+## Work execution/failure semantics
 
-## Dynamic replanning
+- Items with all dependencies satisfied may execute in parallel within the configured parallel/resource limit.
+- A failed item is recorded as `FAILED`.
+- An item depending on a failed required dependency is marked `SKIPPED_DEPENDENCY` and is not executed.
+- No item silently retries. Retry requires a new explicit Main Agent request within remaining budget.
+- Completed/failed/skipped items remain immutable trace history.
+- The Main Agent receives compact structured results/failures and may propose a new WorkBatch on a later turn.
 
-A completed/failed node MAY cause the Main Agent to propose a revised plan. Replanning creates a new plan revision and preserves prior nodes/results in the trace; it does not silently rewrite history.
+## Full Dynamic DAG research boundary
 
-The Coordinator enforces a bounded number of plan revisions.
+The following are **not required v0 infrastructure**:
+
+- mutable graph revisions in place;
+- model-directed cancellation of running branches;
+- graph-specific MERGE nodes;
+- arbitrary recursive graph generation;
+- persistent graph execution across process restarts.
+
+A later orchestration ablation may compare the simple dependency-aware WorkBatch against a richer Dynamic DAG planner/replanner. Richer semantics must be specified before implementation.
 
 ## Tool exposure
 
-The Main Agent SHOULD NOT receive every installed tool on every turn.
+For comparable orchestration experiments, the same task/capability tool allowlist SHOULD be held fixed across modes.
 
-The Coordinator/consumer may dynamically expose a subset based on:
+The runtime may narrow tools for explicit policy, authority, capability, or exhausted-budget reasons. It must not silently change tool exposure merely because an orchestration mode uses a different internal stage unless tool exposure itself is the independent variable being studied.
 
-- task policy;
-- current macro stage;
-- current investigation state;
-- authority class;
-- remaining budget;
-- environment capabilities.
+## Framework boundary
 
-Tool discovery itself should be structured and traceable.
+v0 public contracts are framework-neutral and serializable.
 
-## LangGraph boundary
+LangGraph is not a v0 core dependency. It may be added later if a concrete consumer demonstrates a need for durable checkpoint/resume, human interrupt, or long-running graph persistence that materially exceeds the reference loop.
 
-Recommended architecture:
-
-- `industrial-agent-runtime` owns framework-neutral Coordinator/Executor/Verifier/state contracts;
-- it MAY provide a `langgraph_adapter` that maps those contracts to graph state/nodes;
-- `tep-agent-lab` may use LangGraph for its deterministic macro workflow and durable investigation state;
-- no public contract exposes LangGraph-native message/state types.
-
-This allows the TEP playground to benefit from graph orchestration without making every future domain depend on one framework.
+MCP is not an orchestration dependency; if used later, it is only one possible external Tool Provider protocol behind registered tool adapters.
 
 ## Invariants
 
-- Main Agent reasons; deterministic runtime components hold execution authority.
-- Coordinator/Executor/Verifier are not fixed LLM roles.
-- A model-proposed DAG is data until deterministically validated.
-- A child/subtask never gains more authority than the parent/task grants.
-- Important investigation state exists outside conversation transcripts.
-- Every plan revision, node execution, denial, verification, and merge is traceable.
-- Simple tasks do not require building a dynamic DAG.
+- Model reasoning proposes; deterministic code authorizes and executes.
+- Pre-execution validation and post-execution result verification are distinct stages.
+- Runtime core does not import domain-specific state classes.
+- Child authority never exceeds explicit task/parent authority.
+- SUBTASK work counts against cumulative task subagent budgets.
+- Important state exists outside conversation transcripts.
+- No work item silently retries or mutates prior history.
+- Simple tasks do not require a WorkBatch.
 
 ## Acceptance tests
 
-1. Simple task completes through local Main Agent tool loop without a dynamic DAG.
-2. Main Agent proposes a three-node parallel DAG; Coordinator validates and schedules it.
-3. Cyclic DAG is rejected before execution.
-4. Node requesting forbidden mutation authority is denied.
-5. Failed node produces structured evidence and bounded replan rather than silent retry.
-6. Verifier rejects a conclusion citing a nonexistent artifact/evidence ref.
-7. Same validated DAG and deterministic tool results produce identical scheduling/verification trace.
-8. Runtime contracts remain importable without LangGraph installed.
+1. Simple task completes through one Main Agent/tool loop without a WorkBatch.
+2. Main Agent proposes three work items with dependencies; Coordinator validates and schedules ready items deterministically.
+3. Cyclic WorkBatch is rejected before execution.
+4. SUBTASK item exceeding task subagent budget is rejected before spawn.
+5. Child cannot propose/spawn another SUBTASK when depth policy forbids it.
+6. Failed work item causes dependent item to become `SKIPPED_DEPENDENCY`, with no silent retry.
+7. Pre-execution consumer `validate_request` denial prevents dispatch.
+8. Post-execution `verify_result` rejects a result/final claim referencing a nonexistent artifact/ref.
+9. Same WorkBatch plus deterministic tool results produces identical scheduling/result-verification trace.
+10. Runtime package operates without LangGraph or MCP installed.
