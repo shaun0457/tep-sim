@@ -1,33 +1,35 @@
 # Evaluation v0
 
-Status: accepted direction / v0 contract proposal  
+Status: proposal  
 Owner repo: `tep-agent-lab`
 
 ## Goal
 
-Make agent experiments reproducible, ablatable, resistant to ground-truth leakage, and capable of evaluating not only final correctness but **how the Agent investigated the problem**.
+Provide the sole canonical benchmark/evaluation matrix for the TEP Agent Lab and measure both task outcome and investigation process without conflating capability, orchestration, tool exposure, or hidden scoring information.
+
+Other RCA/charter/roadmap documents reference this spec rather than maintaining competing ablation lists.
 
 ## Experiment fixture
 
-Each benchmark case SHOULD be versioned with evaluator-only and agent-visible sections:
+Each case is versioned with evaluator-only and Agent-visible sections:
 
 ```text
 case_id
 case_version
-seed(s)
+benchmark_version
+partition: DEVELOPMENT | RESEARCH | HIDDEN_EVAL
 environment_config
 reference_run_setup
 hidden_ground_truth
-agent_visible_projection
+agent_visible_projection_policy
 tool_policy
-subagent_policy
 orchestration_policy
-simulation_budget
-recovery_policy?
+subagent_policy
+budget
 scoring_config
 ```
 
-The fixture is evaluator-owned. A deterministic projection function builds agent-visible input.
+The evaluator owns the hidden section. A deterministic consumer projection function creates the Agent-visible task/context.
 
 ## Run identity
 
@@ -36,286 +38,392 @@ Every run MUST record:
 ```text
 run_id
 case_id/version
+benchmark_version
 tep-sim revision
 upstream simulator revision
 industrial-agent-runtime revision
 tep-agent-lab revision
 model/provider/model version
 prompt/template version
-orchestration mode
-rule/tool-bridge versions
-seed
-policy/spec versions
+sampling/model settings
+orchestration condition
+capability condition
+tool exposure policy/version
+rule/policy/tool-bridge versions
+environment/model run seeds where supported
 start/end timestamps
 ```
 
 ## Trace completeness
 
-A run is invalid for quantitative comparison if required tracing is missing for model calls, plan/DAG revisions, tool calls, subagent spawns, gate decisions, experiment refs, rollout artifacts, or final evidence refs.
+A run is invalid for quantitative comparison if required records are missing for:
 
-## Metric families
+- model turns and exact ContextProjection refs;
+- tool calls/resource draws;
+- WorkBatch/subtask requests/results;
+- pre-execution GateDecisions;
+- post-execution verification;
+- state revisions;
+- experiment/run-spec/result refs;
+- rollout/artifact refs;
+- final evidence links;
+- final InvestigationReport.
 
-### E0 — Environment validity
+## E0 — Environment validity
 
-- same-seed reproducibility;
+Measure/check:
+
+- deterministic environment same-seed reproducibility;
 - snapshot/fork isolation;
-- hidden-truth fixture correctness;
-- simulation/tool artifact completeness;
-- supported/unsupported capability classification.
+- fixture/hidden-truth correctness;
+- artifact/run completeness;
+- supported/unsupported capability classification;
+- canonical variable/binding consistency.
 
-### E1 — Runtime / gate behavior
+## E1 — Runtime / authority correctness
 
-- invalid schema/tool requests blocked;
-- permission/budget enforcement;
-- Dynamic DAG validation failures;
-- mutation attempts denied/approved correctly;
-- stale-state/revision errors;
-- verifier evidence/artifact checks;
-- termination reason correctness.
+- invalid schema/unknown operation blocked;
+- allowlist/authority enforcement;
+- standard/extra-dimensional budget enforcement;
+- compound tool reservation/accounting;
+- child depth/count enforcement;
+- WorkBatch dependency/failure semantics;
+- reference mutation denial for SIMULATE;
+- stale-state/revision protection;
+- consumer `validate_request` behavior;
+- post-execution ref/provenance/result verification;
+- correct termination reason.
 
-### E2 — Task quality
+## E2 — Task quality
 
-Task-specific metrics:
+### RCA
 
-- RCA top-1/top-k diagnosis correctness;
-- hypothesis ranking/calibration;
+- structured CausalClaim top-1/top-k/family/mechanism match;
+- healthy/no-abnormal correctness;
 - evidence validity/relevance;
-- HAZOP simulability classification and consequence evidence;
-- recovery success/safety/recovery-time/production metrics;
-- AutoResearch best-candidate performance/generalization.
+- typed prediction consistency;
+- unsupported/hallucinated environment claims;
+- confidence calibration only where confidence has explicit probability semantics.
 
-### E3 — Investigation / scientific behavior
+### HAZOP
 
-Measure whether the Agent performs useful engineering investigation rather than simply consuming budget.
+- supported/unsupported/partial classification;
+- evidence-backed consequence quality;
+- unsupported physics honesty.
+
+### Recovery
+
+- recovery success;
+- safety/shutdown outcomes;
+- recovery/settling time;
+- production/performance proxy;
+- intervention magnitude/complexity.
+
+### AutoProcessResearch
+
+- best visible/research candidate score;
+- hidden-eval generalization;
+- robustness/constraint compliance;
+- experiment efficiency.
+
+## E3 — Investigation / scientific behavior
+
+Evaluate whether the Agent performs useful investigation rather than consuming budget or gaming metrics.
 
 Candidate metrics:
 
 ```text
-relevant evidence query rate
-irrelevant query rate
-hypotheses proposed
-hypotheses supported/rejected
-hypotheses eliminated per experiment
-experiments linked to explicit hypothesis/question
-experiment discrimination score
-information gain proxy per rollout
-redundant experiment rate
-duplicate experiment rate
+relevant observation query rate
+irrelevant/unused observation rate
+plausible competing hypotheses considered
+prediction coverage
+experiment discriminativeness
+plausible hypotheses weakened/eliminated per experiment
+redundant/duplicate experiment rate
 unsupported experiment request rate
-useful evidence per model/tool call
-belief/rank change after informative evidence
-open-question resolution rate
-stop efficiency after sufficient evidence
+useful evidence links per model/tool/rollout cost
+rank/belief change after informative evidence
+critical open-question resolution
+stop efficiency
 ```
 
-Not every metric must be used in every study. Each benchmark freezes the subset/formula before runs.
+### Anti-gaming denominator rule
 
-#### Information-value proxy
+Do not reward an Agent for inventing many implausible hypotheses/questions and then eliminating/closing them.
 
-For RCA, a practical deterministic proxy MAY score an experiment by how much it separates predicted/observed outcomes across competing hypotheses or how much it changes correct-hypothesis rank, normalized by rollout cost.
+Metrics such as:
 
-Do not call this formal Shannon information gain unless the probability model supports that interpretation.
+```text
+hypotheses eliminated per experiment
+open-question resolution
+```
 
-### E4 — Agent/runtime efficiency
+must use evaluator/fixture-defined plausible competitor/question sets where possible, or explicitly report raw Agent-generated counts separately.
 
-- model calls;
-- input/output tokens;
-- tool calls by class;
-- topology/history/analysis calls;
-- subagents spawned and depth;
-- Dynamic DAG node count/revisions/parallel width;
-- number/total horizon of counterfactual rollouts;
-- simulation/tool/model latency;
+### Typed experiment discrimination
+
+When `Prediction` objects are available, discrimination should be computed from the frozen prediction feature/range space and deterministic ExperimentResult features.
+
+A benchmark may measure:
+
+```text
+predicted separation between plausible hypotheses
+observed result-to-prediction distances
+cost-normalized separation
+```
+
+Do not use a free-text LLM judge where deterministic prediction/feature comparison suffices.
+
+### Information-value terminology
+
+A deterministic separation/rank-change proxy may be reported as an **information-value proxy**.
+
+Do not call it Shannon information gain unless the benchmark defines a probability model/update rule supporting that interpretation.
+
+## E4 — Efficiency
+
+- model calls/tokens/context size;
+- tool calls by side-effect class;
+- WorkBatch item count/parallelism;
+- subagent count/depth;
+- number/total horizon of simulator rollouts;
+- optimizer trials/sensitivity samples;
+- model/tool/simulation latency;
 - provider cost when available;
-- context size/ref materialization volume.
+- artifact/materialization volume.
 
-### E5 — Safety / authority behavior
+Report nested compound-tool usage explicitly rather than hiding it under one top-level call.
 
-- direct mutation attempts;
-- gate rejection rate;
-- policy violations attempted;
-- unsupported physics claimed as fact;
-- stale/invalid validation-token attempts;
+## E5 — Safety / authority behavior
+
+- direct reference mutation attempts;
+- denied authority escalation attempts;
+- policy/gate violations;
+- SIMULATE reference-state mutation attempts;
+- stale validation-token attempts;
 - hidden-ground-truth access attempts;
-- shutdown/safety metrics for recovery runs.
+- unsupported physics claimed as fact;
+- recovery safety/shutdown results where applicable.
 
-## Two orthogonal ablation matrices
+# Canonical comparison axes
 
-### Capability ablation
+## Capability axis
 
-This tests what information/tools create value while holding orchestration as fixed as practical.
-
-```text
-C0 deterministic/no-agent baseline
-C1 static compact LLM context only
-C2 + read telemetry tools
-C3 + topology/DEXPI tools
-C4 + Tool Bridge analysis tools
-C5 + counterfactual simulation
-C6 + bounded subagents
-C7 + rule/knowledge evidence
-C8 + AutoResearch/search tools where task-appropriate
-```
-
-### Orchestration architecture ablation
-
-This tests how the same capabilities are orchestrated.
+This tests what information/tool capability is available while holding orchestration/tool-exposure rules otherwise fixed.
 
 ```text
-O0 static one-shot LLM
-O1 local ReAct-style Main Agent
-O2 fixed deterministic DAG/workflow
-O3 Hybrid: deterministic macro + local ReAct
-O4 Hybrid + model-proposed Dynamic DAG
-O5 O4 + bounded ephemeral subagents
-O6 Hybrid AutoProcessResearch mode (task-specific)
+C0  deterministic no-Agent enumerate/simulate/match baseline
+C1  static compact LLM context only
+C2  C1 + read telemetry/history tools
+C3  C2 + non-answer-leaking process topology tools
+C4  C3 + first Tool Bridge analysis tools
+C5  C4 + counterfactual simulation tools
+C6  C5 + external/validated rule/knowledge evidence (later)
+C7  C5/C6 + numerical research/optimization tools where task-appropriate (later)
 ```
 
-Not every combination must be run. Use a fractional study design that isolates the research question without combinatorial explosion.
+Subagents are **not** a capability-axis condition; they are orchestration.
 
-## Dynamic DAG metrics
+AutoProcessResearch is a separate research task family, not simply another capability row.
 
-When enabled, record:
+### C0 definition
 
-- proposed plans;
-- rejected plans and reasons;
-- plan revisions;
-- node types/count/dependencies;
-- parallelism actually used;
-- failed/skipped nodes;
-- merge quality/evidence coverage;
-- plan overhead relative to direct ReAct.
+C0 is a strong evaluator-side baseline:
 
-## Subagent metrics
+```text
+evaluator-known family candidate causes
+ -> instantiate supported variants
+ -> isolated rollouts
+ -> frozen deterministic trajectory/feature matching
+ -> best candidate or NO_ABNORMAL_CAUSE
+```
 
-Record:
+Report C0 accuracy, simulation cost, and latency. Never weaken C0 to make Agent conditions appear useful.
 
-- reason for delegation;
-- unique vs duplicate work;
-- context size per child;
-- evidence accepted/ignored by parent;
-- incremental quality gain;
-- token/tool/latency overhead;
-- whether a simpler parent-only path would have sufficed.
+## Orchestration axis
 
-The objective is not to maximize subagent usage; a good Main Agent should learn when **not** to delegate.
+Compare orchestration while holding the same Agent-visible capability/tool policy fixed.
 
-## AutoResearch evaluation
+```text
+O0  one-shot LLM over the configured static visible projection; no iterative tools
+O1  ReAct: Main Agent selects one next tool/action per turn; no fixed investigation stages
+O2  fixed workflow: observe -> hypothesize -> experiment/analyze -> conclude;
+    fixed stage order, one bounded model decision/output per stage, no strategic replan
+O3  Hybrid reference loop: deterministic authority/state shell + local ReAct; no WorkBatch/subagents
+O4  O3 + dependency-aware WorkBatch planning for TOOL work only; no SUBTASK items
+O5  O4 + bounded ephemeral SUBTASK items/subagents
+```
 
-For each campaign report:
+A future full mutable Dynamic-DAG replanning engine, if implemented, receives a new orchestration condition/version after its semantics are specified. It is not assumed by O4.
+
+## Tool exposure control
+
+For O1–O5 comparisons, the same task-level Agent-visible tool set MUST be used unless tool exposure is the independent variable.
+
+Do not silently expose different tools based on hidden orchestration stages and then attribute the result to orchestration architecture.
+
+Tool-exposure strategy may be studied separately as its own experiment.
+
+## WorkBatch/subagent metrics
+
+When enabled:
+
+- batch/work proposals;
+- rejected work requests/reasons;
+- dependency graph size/parallelism;
+- failed/skipped dependency work;
+- subtask reason/context size;
+- child observation refs used/ignored by parent;
+- incremental quality versus resource overhead;
+- whether a simpler parent-only path sufficed.
+
+Do not maximize work/subagent count as an objective.
+
+## AutoProcessResearch evaluation
+
+AutoProcessResearch is evaluated as its own task/campaign family after recovery/optimization infrastructure exists.
+
+Report:
 
 - baseline score;
-- best dev/research score;
-- hidden-eval score;
-- trials to first/best improvement;
+- trials/Agent turns to first/best improvement;
 - accept/reject/neutral/failure counts;
-- plateau length;
 - duplicate/repeated idea rate;
-- optimizer trials versus Agent research turns;
+- deterministic optimizer trials versus model research turns;
 - total simulation/model/tool budget;
 - constraint/safety violations attempted;
-- robustness across scenarios/seeds;
-- accepted-strategy complexity.
+- visible/research score versus hidden-eval score;
+- robustness across scenario/seed distribution;
+- accepted strategy complexity.
 
-## Randomization / robustness
+It is not included as O6 because changing the research task itself would confound a pure orchestration comparison.
 
-Benchmark over multiple seeds, disturbance magnitudes/times, and scenario variants when feasible. Scenario generation is deterministic given fixture/seed.
+## Randomization / stochasticity
 
-The first benchmark suite SHOULD include difficulty tiers based on measured distinguishability, not subjective labels alone.
+Environment scenario generation is deterministic for a frozen fixture/seed.
 
-## Ground-truth leakage checks
+LLM provider behavior may be stochastic/non-reproducible. Architecture comparisons should:
 
-Automated tests SHOULD inspect:
+- pair fixtures/environment seeds across conditions;
+- freeze model/provider/settings per study;
+- repeat stochastic conditions when pilot variance indicates material uncertainty;
+- report all failures;
+- use paired comparisons/confidence intervals once sample size supports them.
 
-- agent-visible fixture projection;
-- registered tools;
-- Information Plane refs/visibility;
-- Rule Registry entries;
-- prompts/context snapshots;
+Early smoke tests may be descriptive but may not support broad superiority claims.
 
-for prohibited hidden disturbance IDs/evaluator labels.
+## Ground-truth leakage audit
 
-## Evidence reference validation
+Automated/manual audit inspects:
 
-Any claim scored as evidence-backed must reference an existing visible evidence/tool/artifact result in the trace. The scorer distinguishes:
+- fixture Agent-visible projection;
+- ContextProjection artifacts;
+- registered tools/descriptions/results;
+- ProcessGraph/binding visibility;
+- Rule metadata;
+- artifact filenames/metadata;
+- engineering-record retrieval configuration;
+
+for injected cause labels/evaluator candidate sets/hidden fixture IDs.
+
+## Evidence/reference scoring
+
+A final evidence-backed claim references valid `HypothesisEvidenceLink`/ObservationRecords.
+
+Scorer distinguishes:
 
 ```text
 VALID_RELEVANT_REF
 VALID_BUT_IRRELEVANT_REF
+UNUSED_OBSERVATION
 MISSING_REF
 HIDDEN_REF_VIOLATION
 UNSUPPORTED_NARRATIVE_CLAIM
 ```
 
+Case scoring configuration defines evaluator-known relevant/plausible evidence categories where needed; it is not inferred only from Agent assertions.
+
+## Scorer versus Agent-visible analysis tools
+
+If the scorer and an Agent-visible analysis bridge use the same underlying metric/library, this is disclosed/versioned.
+
+Prefer independent/complementary scoring where practical. At minimum do not conceal that the Agent has access to the same similarity function used by C0/evaluator.
+
 ## Semantic stopping evaluation
 
-Beyond hard budget exhaustion, measure whether the Agent stops appropriately when evidence becomes sufficient.
-
-Record:
-
-- extra low-value calls after correct stable diagnosis;
-- premature conclusion before required evidence;
-- unresolved critical question count at finish;
-- marginal value of final N actions.
-
-## Statistical reporting
-
-Early MVP reports may be descriptive. Once enough cases/seeds/repeats exist, report uncertainty/confidence intervals or paired comparisons rather than only point estimates.
-
-Repeated stochastic model runs SHOULD be used when evaluating architecture differences large enough to be affected by model sampling.
-
-## Benchmark-overfitting protection
-
-Separate:
+v0 stopping mechanism:
 
 ```text
-DEVELOPMENT fixtures — used while building/debugging
-RESEARCH fixtures — allowed feedback for experiments
-HIDDEN EVALUATION fixtures — final evaluator-only comparison
+Agent proposes finish
+ -> deterministic structural readiness verification
+ -> DONE or return missing requirements
 ```
 
-Do not claim general improvement from repeated optimization on the visible benchmark alone.
+Measure:
+
+- premature conclusion;
+- extra low-value actions after correct stable conclusion;
+- unresolved critical benchmark-defined questions at finish;
+- cost/value of final N actions.
+
+Formal information-gain stopping is OPEN_RESEARCH until an explicit belief/probability update model exists.
+
+## Benchmark partitions / overfitting
+
+Use:
+
+```text
+DEVELOPMENT
+RESEARCH
+HIDDEN_EVAL
+```
+
+HIDDEN_EVAL cases/variants are not repeatedly exposed after every AutoResearch iteration. A campaign defines when hidden evaluation is consumed and preserves a fresh/unseen evaluation set or version for reported final checks.
+
+Historical Engineering Records are not retrieved into HIDDEN_EVAL context unless memory retrieval is the explicit capability being studied.
 
 ## Reproducibility bundle
 
-A report SHOULD reconstruct:
+A report can reconstruct:
 
-- exact case fixture;
-- code revisions;
-- model configuration;
-- orchestration/tool/rule policies;
-- environment seeds;
-- Investigation State revisions;
-- Dynamic DAG revisions;
-- tool/subagent/rollout artifacts;
-- scorer versions;
-- final metrics.
+- exact benchmark fixture/version;
+- environment/runtime/lab revisions;
+- provider/model/config/prompt version;
+- exact ContextProjection refs per model turn;
+- tool/rule/policy versions;
+- TaskState revisions/deltas;
+- WorkBatch/Subtask/tool/rollout records;
+- ExperimentRunSpecs/results;
+- final evidence links/InvestigationReport;
+- scorer versions/metrics.
 
-## v0 first benchmark suite
+## Initial suite
 
 Start small:
 
-1. one healthy/reference case;
-2. 2–3 reactor/cooling-water RCA variants with measured distinguishability;
-3. a small supported/unsupported HAZOP deviation set;
-4. one recovery case with multiple candidate strategies;
-5. one bounded AutoProcessResearch campaign after recovery scoring is stable.
+1. healthy/reference case;
+2. 2–3 RCA variants with identifiability/C0 measurements;
+3. expand scenario/difficulty coverage only after RCA tracing/scoring is reliable;
+4. HAZOP/recovery/AutoResearch remain later task families and must not delay first RCA evaluation.
 
 ## Invariants
 
-- Evaluator has truth; Agent does not unless explicitly configured.
-- Same saved trace is scored deterministically by the same scorer version.
-- Capability and orchestration ablations are not conflated in the same comparison unless intentionally designed.
-- Failure runs remain in datasets/reports.
-- Model output does not define its own score.
-- Scientific-behavior metrics are frozen per benchmark version before comparison.
+- Evaluator truth is hidden from the Agent.
+- C0 is a mandatory strong baseline for first RCA family.
+- Capability and orchestration axes change one intended factor at a time.
+- Tool exposure is held fixed across orchestration comparisons.
+- Subagents appear only on orchestration axis.
+- AutoProcessResearch is a separate task family.
+- Model output never defines its own numeric score.
+- Scientific-behavior formulas/plausible sets are frozen per benchmark version before comparison.
+- Failure runs remain in reports/datasets.
 
 ## Acceptance criteria
 
-1. Execute one case under at least three capability ablations with identical fixture/seed.
-2. Execute at least two orchestration modes over the same capability set.
-3. Verify hidden-truth leakage tests.
-4. Produce machine-readable task, scientific-behavior, efficiency, and safety metrics.
-5. Validate every final evidence ref.
-6. Re-score a saved trace identically.
-7. Generate a human-readable comparison report that separates final correctness from investigation efficiency/quality.
+1. Run one frozen RCA case with C0 and at least two Agent capability conditions.
+2. Run at least O1 and O3 with identical visible tool/capability policy.
+3. Verify exact ContextProjection refs exist for every model turn.
+4. Pass hidden-truth/candidate-leakage audit.
+5. Score typed CausalClaim, Prediction results, evidence refs, efficiency, and authority behavior deterministically where defined.
+6. Re-score a saved run identically under the same scorer versions.
+7. Produce a human-readable report separating correctness, investigation behavior, and resource/safety behavior.
