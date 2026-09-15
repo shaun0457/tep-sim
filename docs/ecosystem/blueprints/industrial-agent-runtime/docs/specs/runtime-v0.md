@@ -1,12 +1,12 @@
 # Runtime v0
 
-Status: proposal  
+Status: accepted  
 Version: v0  
 Owner repo: `industrial-agent-runtime`
 
 ## Goal
 
-Define the domain-independent contracts used by the Hybrid runtime: one Main Agent, deterministic pre-execution gates, a deterministic dispatcher, post-execution verification, bounded subtasks/work batches, generic state interfaces, extensible budget accounting, and complete trace/provenance without embedding application-specific safety truth.
+Define the domain-independent contracts used by the Hybrid runtime: one Main Agent, deterministic pre-execution gates, a deterministic dispatcher, post-execution verification, bounded subtasks/work batches, generic state interfaces, explicit model-proposed state updates, extensible budget accounting, and complete trace/provenance without embedding application-specific safety truth.
 
 Detailed orchestration semantics are defined in `hybrid-orchestration-v0.md`.
 
@@ -22,21 +22,27 @@ TaskStateStore.project()
 ContextProjection
         |
         v
-Main Agent
+Main Agent / ModelTurn
         |
- ToolCall / WorkBatch / FinishProposal
+        +---- state_update? ----> TaskStateStore.apply_batch()
+        |                         (validated internal task state only)
         |
-        v
-G0-G3 + consumer.validate_request
-        |
-        v
-Executor
-        |
-        v
-consumer.verify_result
-        |
-        v
-TaskStateStore.apply(delta)
+        +---- action -----------> ToolCall / WorkBatch / FinishProposal
+                                      |
+                                      v
+                           G0-G3 + consumer.validate_request
+                                      |
+                                      v
+                                   Executor
+                                      |
+                                      v
+                           consumer.verify_result
+                                      |
+                                      v
+                          result-ingestion StateDelta(s)
+                                      |
+                                      v
+                           TaskStateStore.apply_batch()
 ```
 
 Runtime core never imports application-specific state, TEP semantics, RCA schemas, or domain safety rules.
@@ -169,19 +175,80 @@ Domain-specific investigation phases/statuses belong in consumer state/metadata.
 
 ### `StateDelta`
 
-Generic envelope for a consumer-owned state mutation request:
+Generic envelope for a consumer-owned task-state mutation request:
 
 ```text
 StateDelta
-  base_revision
   operation
   target_ref_or_path
   value_or_ref
   producer
+  proposed_base_revision?
   reason_ref?
 ```
 
-Runtime does not interpret application fields. The consumer `TaskStateStore` validates legal fields/operations.
+`producer` identifies whether the delta came from a model proposal, deterministic result ingestion, or runtime control logic.
+
+For a **model-proposed** delta, `proposed_base_revision` is REQUIRED and MUST equal the `ContextProjection.base_revision` seen by that model turn. Runtime does not interpret application fields; the consumer `TaskStateStore` validates legal fields/operations and visibility.
+
+For a **result-ingestion/runtime-derived** delta, the Coordinator binds the current task-state revision immediately before application. Such deltas are not rejected merely because several parallel work items originated from the same earlier projection.
+
+### `ModelStateUpdateProposal`
+
+A model may propose internal investigation/task-state changes independently of tool execution:
+
+```text
+ModelStateUpdateProposal
+  proposal_id
+  base_revision
+  deltas[]
+```
+
+All deltas in one proposal share the same model-visible base revision and are validated/applied atomically as one batch.
+
+Typical consumer-defined operations include adding/updating a hypothesis, linking an observation as evidence, adding an open question, recording an experiment interpretation, or updating a working explanation.
+
+A model state update:
+
+- changes only consumer-owned task/investigation state;
+- does not execute a tool or mutate the external/reference world;
+- is validated by generic schema/ref checks plus `TaskStateStore` domain validation;
+- consumes **zero** `max_tool_calls`;
+- consumes **one** `max_steps` unit per accepted/rejected update proposal batch;
+- is always traced as an accepted or denied state-update event.
+
+If a model state update is rejected, any execution action from the same `ModelTurn` MUST NOT be dispatched. The next turn receives structured rejection feedback.
+
+### `ModelTurn`
+
+The provider abstraction returns a typed turn rather than unstructured text alone:
+
+```text
+ModelTurn
+  turn_id
+  context_projection_ref
+  base_revision
+  state_update?: ModelStateUpdateProposal
+  action: NONE | TOOL_REQUEST | WORK_BATCH | FINISH_PROPOSAL
+  tool_request?
+  work_batch?
+  finish_proposal?
+  prose_summary?
+```
+
+Exactly one action variant is active. `state_update` is orthogonal and MAY accompany an action.
+
+Processing order is deterministic:
+
+```text
+1. validate ModelTurn schema and projection/base revision
+2. validate/apply model state_update atomically, if present
+3. if state update failed -> do not dispatch action
+4. bind the resulting current task-state revision to the action context
+5. route TOOL_REQUEST / WORK_BATCH / FINISH_PROPOSAL / NONE
+```
+
+This allows the Agent to externalize a newly formed hypothesis/evidence link before requesting work that references it, without requiring a separate model call.
 
 ### `ContextProjection`
 
@@ -209,14 +276,17 @@ Consumer-implemented protocol used by the generic Coordinator:
 revision() -> Revision
 status() -> TaskStatus
 project(policy) -> ContextProjection
-apply(delta, expected_revision) -> NewRevision
+apply_batch(deltas[], expected_revision) -> NewRevision
 ```
+
+A consumer MAY expose `apply(delta, expected_revision)` as a convenience wrapper around a single-element batch, but `apply_batch` defines the atomic semantics for model-proposed multi-delta updates.
 
 Required properties:
 
 - optimistic revision checking;
+- atomic all-or-nothing validation/application for one batch;
 - deterministic rejection of illegal/stale deltas;
-- domain field validation remains in consumer implementation;
+- domain field/operation validation remains in consumer implementation;
 - runtime depends only on this interface, never the consumer state class.
 
 ### `RuntimeResult`
@@ -260,6 +330,8 @@ sampling/config parameters
 registered_tool_set_version or tool-spec refs
 ```
 
+For every model-proposed state update, trace MUST record proposal ID, projection/base revision, accepted/denied operation names, resulting revision when accepted, and budget step delta.
+
 Summaries are for human display; they are not sufficient evidence for replay/leakage audit.
 
 ## Provider abstraction
@@ -270,7 +342,7 @@ Core runtime depends on an internal model interface rather than one provider SDK
 generate(context_projection, tool_specs, output_schema, limits) -> ModelTurn
 ```
 
-A deterministic fake provider is mandatory for tests.
+A deterministic fake provider is mandatory for tests and MUST be able to emit each `ModelTurn` action variant plus model-proposed state updates.
 
 Provider-specific message objects must not appear in public runtime contracts.
 
@@ -278,6 +350,7 @@ Provider-specific message objects must not appear in public runtime contracts.
 
 May:
 
+- propose validated internal task-state updates through `ModelStateUpdateProposal`;
 - request allowed READ/COMPUTE/SIMULATE tools;
 - propose WorkBatch/Subtask work;
 - consume `SubtaskResult`s;
@@ -288,16 +361,32 @@ Cannot:
 
 - bypass gates/consumer validation;
 - execute adapters directly;
-- update TaskStateStore directly without validated delta;
-- change policy/budgets;
+- call `TaskStateStore` directly;
+- change generic task status/budget/policy through a model state delta;
 - grant child authority;
 - directly mutate reference-world state.
+
+## Model state-update path versus tool path
+
+A model-proposed state update is **not** a tool call. It modifies only the consumer's investigation/task state through the validated `TaskStateStore` contract.
+
+```text
+ModelStateUpdateProposal
+ -> schema / projection-base-revision checks
+ -> consumer TaskStateStore validates legal operations + refs + visibility
+ -> atomic apply_batch
+ -> trace + max_steps accounting
+```
+
+A tool/work action follows the separate pre-execution authorization path below.
+
+This distinction prevents internal reasoning-state bookkeeping from inflating `max_tool_calls` while still making every model-authored state mutation explicit, validated, revision-bound, and auditable.
 
 ## Pre/post validation split
 
 ### Pre-execution
 
-`deterministic-gates-v0.md` owns:
+`deterministic-gates-v0.md` owns tool/work execution authorization:
 
 ```text
 G0 parse/schema
@@ -310,13 +399,13 @@ optional approval/escalation
 
 ### Post-execution
 
-`hybrid-orchestration-v0.md` owns deterministic `verify_result` checks over returned data/provenance/state update.
+`hybrid-orchestration-v0.md` owns deterministic `verify_result` checks over returned data/provenance and result-ingestion state updates.
 
 Do not use one ambiguous "Verifier" term for both phases.
 
 ## Failure behavior
 
-Fail closed for malformed output, unknown tools, exhausted/unreservable budget, invalid WorkBatch/subtask request, stale state revision, denied authority, missing refs, hidden-ref exposure, or consumer request/result validation failure.
+Fail closed for malformed output, stale/rejected model state update, unknown tools, exhausted/unreservable budget, invalid WorkBatch/subtask request, denied authority, missing refs, hidden-ref exposure, or consumer request/result validation failure.
 
 A denial/failure is a structured trace event. Replanning/retry requires a new explicit Main Agent decision within remaining budget.
 
@@ -332,7 +421,8 @@ v0 requires:
 
 - durable per-run trace/events;
 - immutable ContextProjection artifacts for model turns;
-- serializable task/state references sufficient for audit/replay.
+- serializable task/state references sufficient for audit/replay;
+- persisted model-proposed and result-derived state-update events.
 
 It does not require learned cross-run Agent memory.
 
@@ -348,6 +438,9 @@ MCP is not a runtime dependency. A future adapter may register MCP-provided tool
 
 - No domain-specific variables/rules/safety truth in runtime core.
 - Runtime does not import consumer state types.
+- Model-authored internal state changes are explicit `ModelStateUpdateProposal`s, never hidden transcript effects.
+- Model-proposed state updates are projection-revision-bound and atomically validated/applied.
+- Tool/result-derived updates are rebound to the current revision during deterministic ingestion.
 - Pre-execution authorization and post-execution result verification are distinct.
 - Every tool/WorkBatch/subtask is validated before dispatch.
 - Child authority never exceeds explicit parent/task authority.
@@ -359,16 +452,19 @@ MCP is not a runtime dependency. A future adapter may register MCP-provided tool
 ## Acceptance tests
 
 1. Fake provider completes a typed no-tool task.
-2. Fake provider requests an allowed read tool and consumes a typed result.
-3. Unknown/denied tool is rejected without dispatch.
-4. Standard and extra-dimension budget exhaustion deterministically stops/denies execution.
-5. A SIMULATE compound tool reserves rollout/trial budget before adapter execution and reconciles actual usage after.
-6. Consumer `TaskStateStore` implementation can project/apply state without runtime importing consumer types.
-7. Stale StateDelta is rejected by expected revision.
-8. Model turn trace includes immutable ContextProjection ref, prompt/model/tool metadata.
-9. Parent spawns one valid child and receives only `SubtaskResult`.
-10. Post-execution verifier rejects a final result referencing a nonexistent artifact/ref.
-11. Core package imports no TEP/domain, LangGraph, or MCP requirement.
+2. Fake provider emits a model state update that adds a consumer-defined hypothesis and then requests a tool referencing it in the same turn.
+3. Stale model-proposed state update is rejected and the accompanying action is not dispatched.
+4. Atomic multi-delta proposal either applies all legal deltas in one revision transition or applies none.
+5. State-update proposal consumes one `max_steps` unit and zero `max_tool_calls`.
+6. Unknown/denied tool is rejected without dispatch.
+7. Standard and extra-dimension budget exhaustion deterministically stops/denies execution.
+8. A SIMULATE compound tool reserves rollout/trial budget before adapter execution and reconciles actual usage after.
+9. Consumer `TaskStateStore` implementation can project/apply state without runtime importing consumer types.
+10. Parallel WorkBatch result-ingestion deltas are applied in deterministic work-item order against the then-current revision rather than all reusing the originating projection revision.
+11. Model turn trace includes immutable ContextProjection ref, prompt/model/tool metadata, and any state-update disposition.
+12. Parent spawns one valid child and receives only `SubtaskResult`.
+13. Post-execution verifier rejects a final result referencing a nonexistent artifact/ref.
+14. Core package imports no TEP/domain, LangGraph, or MCP requirement.
 
 ## Non-goals
 
