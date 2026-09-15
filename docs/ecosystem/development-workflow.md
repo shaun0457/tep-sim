@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make human + coding-agent development predictable. A branch should have one bounded architectural purpose and an explicit acceptance target.
+Make human + coding-agent development predictable. A branch has one bounded purpose, one owning contract, explicit dependencies, and measurable acceptance criteria.
 
 ## Branch types
 
@@ -19,9 +19,18 @@ refactor/<topic>    behavior-preserving structural change
 
 Avoid broad branches such as `agent-improvements`, `new-architecture`, or `everything-v2`.
 
+## Design Freeze rule
+
+Current program state after independent review:
+
+- `tep-sim` A1–A4 may begin independently because their contracts are self-contained;
+- `industrial-agent-runtime` and `tep-agent-lab` feature implementation remains held until the focused post-adjudication re-review closes BLOCKER/implementation-defining MAJOR contradictions.
+
+Do not treat an existing roadmap/branch name as authorization to start held work.
+
 ## Spec-before-code rule
 
-A new externally visible contract or major runtime behavior SHOULD have an accepted/proposed spec before implementation.
+A new externally visible contract or major runtime behavior SHOULD have an owning proposal/accepted spec before implementation.
 
 Typical flow:
 
@@ -29,24 +38,26 @@ Typical flow:
 issue/question
  -> spec/<topic>
  -> review assumptions/open questions
- -> merge/accept spec
+ -> focused independent review when architecture-defining
+ -> accept/proceed
  -> feat/<topic>
  -> tests against acceptance criteria
  -> merge
 ```
 
-For exploratory research, an `exp/...` branch may precede a final spec, but experimental code must not silently become core API without a later contract/ADR.
+For exploratory research, an `exp/...` branch may precede a final contract, but experimental behavior must not silently become core API.
 
 ## Branch scope template
 
-Every branch/PR description should answer:
+Every branch/PR should state:
 
 ```text
 Problem
-What is in scope?
-What is explicitly out of scope?
+In scope
+Explicitly out of scope
 Canonical spec/ADR links
-Files/modules expected to change
+Dependencies / required upstream revisions
+Owned files/modules
 Acceptance tests / exit criteria
 Known risks/open questions
 ```
@@ -59,41 +70,42 @@ Give Codex/Claude Code a narrow instruction such as:
 Implement docs/specs/snapshot-fork-replay-v0.md.
 Scope only Phase A2: snapshot + isolated fork + tests.
 Do not add agent/LLM dependencies.
-Do not redesign public contracts without updating the spec first.
-Run the acceptance tests named in the spec and report any upstream limitation explicitly.
+Do not redesign public contracts without first reporting SPEC_CONFLICT.
+Run the acceptance tests named in the spec and report upstream limitations explicitly.
 ```
 
-This is preferable to pasting the entire program architecture into each session.
+Do not paste the entire program architecture into every implementation session when a canonical spec already exists.
 
-## Spec change during implementation
+## `SPEC_CONFLICT` rule
 
-If implementation reveals the spec is wrong:
+If implementation evidence shows the canonical spec is wrong/ambiguous:
 
-1. stop treating the old requirement as authoritative;
-2. document the observed constraint/evidence;
-3. update the proposal spec or create an ADR;
-4. then align code/tests.
+1. stop treating the conflicting requirement as authoritative;
+2. report `SPEC_CONFLICT` with observed evidence and affected contract;
+3. update/review the proposal spec or ADR;
+4. only then align implementation/tests.
 
-Do not quietly code around the spec while leaving documentation false.
+Do not silently invent replacement architecture in code.
 
 ## PR size policy
 
-Prefer branches that can be understood from one core spec and a small number of modules. Split when a PR mixes two independently testable concerns, for example:
+Prefer branches understandable from one primary spec and a small set of modules. Split work when it mixes independently testable concerns, for example:
 
 - snapshot/fork and DEXPI parsing;
-- generic runtime gates and TEP safety policy;
-- RCA workflow and HAZOP campaign logic.
+- generic runtime gates and TEP policy;
+- RCA benchmark construction and HAZOP workflow;
+- Tool Bridge adapter implementation and benchmark scorer changes.
 
-## Tests by document type
+## Tests by document/branch type
 
-- Spec PR: lint/links/manual consistency; no runtime implementation required.
-- Feature PR: acceptance tests from its canonical spec.
-- Experiment PR: fixture reproducibility + trace/scorer tests.
-- Refactor PR: existing behavior/tests unchanged.
+- Spec PR: links/status/manual consistency; no runtime implementation required.
+- Feature PR: canonical spec acceptance tests + negative/error paths.
+- Experiment PR: fixture reproducibility + leakage + trace/scorer tests.
+- Refactor PR: behavior/tests unchanged.
 
-## Merge order across repos
+## Cross-repository dependency rule
 
-Downstream work pins released/merged upstream revisions.
+Downstream work pins known upstream revisions/contracts.
 
 ```text
 tep-sim contract/feature
@@ -103,11 +115,11 @@ industrial-agent-runtime contract/feature  (independent where possible)
 tep-agent-lab adapter/experiment pins both
 ```
 
-Do not make `tep-sim` depend on a lab branch just to unblock an experiment.
+Never make `tep-sim` depend on lab/runtime just to unblock an experiment.
 
-## Suggested initial branch sequence
+## Current branch sequence
 
-### `tep-sim`
+### `tep-sim` — may start now
 
 ```text
 feat/environment-api-v0
@@ -116,33 +128,68 @@ feat/dexpi-binding-v0
 feat/capability-safety-v0
 ```
 
-### `industrial-agent-runtime`
+### `industrial-agent-runtime` — after focused re-review
 
 ```text
-feat/contracts-executor-v0
+feat/contracts-runtime-v0
 feat/deterministic-gates-v0
 feat/subagents-v0
 feat/provider-adapter-v0
 ```
 
-### `tep-agent-lab`
+Post-execution verification is part of the runtime core/gate integration, not a separate Agent/service branch unless implementation size justifies a small module PR.
+
+Not scheduled in v0:
 
 ```text
-feat/tool-surface-v0
-exp/rca-reactor-v0
-exp/hazop-reactor-v0
-exp/recovery-reactor-v0
+feat/langgraph-adapter-v0
+full Dynamic DAG engine
+MCP runtime dependency
 ```
 
-The exact order inside independent repos can overlap, but `tep-agent-lab` should not outrun the contracts it consumes.
+### `tep-agent-lab` — after focused re-review
+
+```text
+feat/investigation-state-v0
+feat/rule-registry-v0
+feat/hypothesis-experiment-v0
+feat/tool-surface-v0
+feat/tool-bridge-v0
+exp/rca-benchmark-pilot-v0
+exp/rca-reactor-v0
+exp/orchestration-ablation-v0
+```
+
+Later only after RCA contracts/evaluation stabilize:
+
+```text
+exp/hazop-reactor-v0
+exp/recovery-reactor-v0
+exp/autoresearch-recovery-v0
+```
+
+## Parallel coding-agent policy
+
+After a held phase is released, independent branches MAY run in parallel when:
+
+- dependencies are explicit;
+- file/module ownership does not overlap materially;
+- public contracts are already frozen for that work;
+- each agent has its own branch/worktree;
+- acceptance tests are explicit;
+- handoff is compact/structured.
+
+Follow `development-agent-orchestration.md` for coordination/integration.
 
 ## Definition of done for a feature branch
 
 A feature is done when:
 
 - canonical spec acceptance criteria pass;
-- errors/unsupported paths are tested;
-- provenance/traces required by the spec exist;
-- README/roadmap links remain correct;
-- no out-of-scope dependency leaked into the repo;
-- known gaps are captured in `open-questions.md` or an issue rather than left in chat history.
+- failure/unsupported/security paths are tested;
+- required provenance/traces exist;
+- no hidden domain dependency leaked across repo boundaries;
+- README/architecture/roadmap links remain consistent;
+- no stale/superseded contract remains in AGENTS/CLAUDE instructions;
+- known empirical gaps are captured in `open-questions.md`/issue rather than chat history;
+- any implementation-discovered contract change passed the `SPEC_CONFLICT` flow.
