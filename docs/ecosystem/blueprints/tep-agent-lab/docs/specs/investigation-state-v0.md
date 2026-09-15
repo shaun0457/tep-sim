@@ -1,200 +1,263 @@
 # Investigation State v0
 
-Status: accepted direction / v0 contract proposal  
-Owner repo: `tep-agent-lab`
+Status: proposal  
+Owner repo: `tep-agent-lab`  
+Implements: `industrial-agent-runtime` `TaskStateStore`
 
 ## Goal
 
-Externalize investigation state from chat transcripts so the Main Agent, Coordinator, Dynamic DAG, tools, evaluator, and future resume/checkpoint logic operate on one typed source of truth.
+Define the first domain state used by the TEP lab without making the generic runtime understand TEP/RCA fields.
 
-## Core contract
+v0 implements **RCA state first**. HAZOP, Recovery, and AutoResearch may reuse a small generic shell later but receive their own domain-state schemas when implemented.
+
+## Generic/runtime boundary
+
+`industrial-agent-runtime` owns:
 
 ```text
-InvestigationState
+TaskStatus
+StateDelta envelope
+ContextProjection
+TaskStateStore protocol
+```
+
+`tep-agent-lab` owns the RCA-specific fields and validates legal field/path updates.
+
+The runtime Coordinator calls the interface; it never imports `RcaState`.
+
+## `RcaState`
+
+```text
+RcaState
   investigation_id
   case_id?
   goal
-  mode
-  status
-  incident_ref?
+  incident_ref
   current_time_ref?
+
   hypothesis_refs[]
-  evidence_refs[]
+  observation_refs[]
+  evidence_link_refs[]
   open_questions[]
+
   planned_experiment_refs[]
   completed_experiment_refs[]
-  active_plan_ref?
   delegated_task_refs[]
+
   current_best_explanation?
   uncertainty_summary?
   safety_state_ref?
-  budget_state
+
   artifact_refs[]
   conclusion_ref?
+
+  generic_status: TaskStatus
   revision
 ```
 
-## Modes
+Budget authority remains in generic runtime `Budget`/budget accounting. The lab may expose a compact budget summary in the projection but does not maintain a competing authoritative budget counter.
 
-v0 supports:
+## Generic status
 
-```text
-RCA
-HAZOP
-RECOVERY
-AUTORESEARCH
-```
-
-The same orchestration mechanics may be reused while mode-specific schemas/tools/policies remain explicit.
-
-## Status
+Use runtime status only:
 
 ```text
-INITIALIZING
-INVESTIGATING
-WAITING_FOR_WORK
-VERIFYING
-READY_TO_CONCLUDE
-CONCLUDED
-BLOCKED
+RUNNING
+WAITING
+READY
+DONE
 FAILED
-BUDGET_EXHAUSTED
+EXHAUSTED
 CANCELLED
 ```
 
-Transitions are Coordinator-controlled, not authored directly by model prose.
+RCA-specific investigation phase, if useful for reporting, is metadata rather than a second authoritative status machine.
+
+## Observation versus evidence
+
+The state explicitly separates what the system observed from what the Agent uses as evidence.
+
+### `ObservationRecord`
+
+Every successful relevant tool/simulator/analysis result may be registered as an immutable observation/result reference:
+
+```text
+ObservationRecord
+  observation_id
+  producer_request_ref
+  tool_or_service_ref
+  summary
+  artifact_refs[]
+  information_refs[]
+  provenance
+  visibility
+  created_at
+```
+
+An observation is not automatically supporting evidence.
+
+### `HypothesisEvidenceLink`
+
+A model/application may propose an explicit relation from an existing visible observation to a hypothesis/claim:
+
+```text
+hypothesis_ref
+observation_ref
+relation: SUPPORT | CONTRADICT | CONTEXT | NEUTRAL
+strength?
+reason_summary
+producer
+```
+
+The deterministic verifier checks ref existence/visibility/provenance. It does not decide open-ended scientific truth.
+
+This separation enables distinct metrics for irrelevant queries, unused observations, and evidence quality.
 
 ## Hypothesis state
 
-`hypothesis_refs` point to first-class `Hypothesis` objects. State SHOULD provide compact summaries for active hypotheses, but full evidence relationships live in the hypothesis/evidence objects.
+`hypothesis_refs` point to typed `Hypothesis` objects defined in `hypothesis-experiment-v0.md`.
 
-## Evidence state
-
-Evidence is append-only by reference. A model may request that evidence be attached to a hypothesis, but existing evidence artifacts are never rewritten by the model.
-
-Each evidence ref has visibility and provenance.
+State may project compact active summaries but does not duplicate full hypothesis history.
 
 ## Open questions
 
-Open questions are typed investigation gaps, conceptually:
-
 ```text
-question_id
-question
-why_it_matters
-related_hypotheses[]
-resolvable_by: TOOL | EXPERIMENT | SUBTASK | EXTERNAL_KNOWLEDGE | HUMAN
-priority
-status
+OpenQuestion
+  question_id
+  question
+  why_it_matters
+  related_hypotheses[]
+  resolvable_by: TOOL | EXPERIMENT | SUBTASK | EXTERNAL_KNOWLEDGE | HUMAN
+  priority
+  status
 ```
 
-This gives the Main Agent an explicit representation of uncertainty rather than relying on a narrative scratchpad.
+Questions are useful working state, but evaluation must not reward the Agent for creating trivial questions merely to close them.
 
 ## Experiment state
 
-Planned and completed experiments are referenced separately so the Coordinator can prevent duplicate execution and the evaluator can measure planning/selection quality.
+Planned and completed experiments are referenced separately.
+
+Exact duplicate detection is a lab pre-execution policy over canonical experiment keys; it is not a generic runtime Coordinator responsibility.
 
 ## Delegation state
 
-Each delegated task ref records parent relation, purpose, context slice, budget, status, and result ref. Completed subagent transcripts are not inserted into state; only compact structured results/evidence refs are retained.
+Each `delegated_task_ref` points to runtime subtask trace/result metadata. Full subagent transcripts are not copied into RCA state.
 
-## Best explanation
-
-`current_best_explanation` is a structured working conclusion, not the final answer. It may contain:
+## Working explanation
 
 ```text
-leading_hypothesis_ref
-confidence_or_rank
-key_evidence_refs
-key_counterevidence_refs
-remaining_uncertainties
-last_updated_revision
+WorkingExplanation
+  leading_hypothesis_ref?
+  current_rank_or_score_summary?
+  key_evidence_link_refs[]
+  key_counterevidence_link_refs[]
+  remaining_uncertainties[]
+  last_updated_revision
 ```
 
-It is allowed to change as evidence arrives.
+It is working state, not final truth.
 
-## Budget state
+## `TaskStateStore` implementation
 
-State records remaining/used limits for:
-
-- model turns;
-- tool calls;
-- subagents;
-- dynamic plan revisions;
-- simulation rollouts;
-- total simulated horizon;
-- optional token/cost/wall-time limits.
-
-The Coordinator is authoritative for budget accounting.
-
-## Revision semantics
-
-Every accepted state update increments `revision`. Important requests may carry an expected revision to avoid stale updates.
-
-State updates are events/deltas rather than free replacement of the entire object.
-
-Conceptually:
+The lab implements:
 
 ```text
-StateDelta
-  base_revision
-  operation
-  target_ref/field
-  value/ref
-  producer
-  reason_ref?
+revision() -> Revision
+status() -> TaskStatus
+project(policy) -> ContextProjection
+apply(delta, expected_revision) -> NewRevision
 ```
+
+### `apply`
+
+Lab validates:
+
+- target path/field exists and is legal;
+- ref visibility/ownership is allowed;
+- append-only records are not silently rewritten;
+- transition does not expose evaluator-only truth;
+- expected revision matches current revision;
+- domain invariants for RCA state remain valid.
+
+Every accepted update increments revision and is retained as an append-only event/delta.
 
 ## Model-facing projection
 
-The Main Agent does not necessarily receive the entire state. The Context Broker creates a bounded projection containing:
+The lab owns a deterministic/reference-aware projection function:
 
-- goal/mode/status;
+```text
+project_rca_state(state, policy) -> ContextProjection
+```
+
+The projection may include:
+
+- goal/incident summary;
 - active hypotheses;
-- recent/high-value evidence;
-- unresolved questions;
-- active/completed experiment summaries;
-- delegated work summary;
-- budgets;
-- relevant safety/context refs.
+- selected recent/high-value observations/evidence links;
+- unresolved high-priority questions;
+- planned/completed experiment summaries;
+- delegated-work summary;
+- remaining runtime budget summary;
+- relevant process/safety refs.
 
-Older/raw artifacts stay addressable through tools.
+The generic runtime validates projection metadata/visibility/token limits but does not choose what chemical/process evidence is relevant.
 
-## Stop readiness
+Every model turn persists the exact immutable ContextProjection ref.
 
-The state supports semantic stopping checks. `READY_TO_CONCLUDE` may be proposed when:
+## v0 stopping semantics
 
-- a mode-specific minimum result schema can be produced;
-- no critical unresolved verifier failure exists;
-- evidence requirements are satisfied or uncertainty is explicitly declared;
-- remaining budget is low or expected information gain from further allowed work is below configured policy;
-- no required active work remains.
+There is no formal information-gain estimator in v0.
 
-The deterministic verifier checks structural conditions; the Main Agent supplies the substantive judgment that evidence is sufficient.
+Stopping is:
+
+```text
+Main Agent proposes final result / READY
+ -> deterministic structural verification
+ -> DONE or return structured deficiency
+```
+
+Minimum deterministic readiness checks may include:
+
+- output schema can be populated;
+- no failed mandatory work remains active;
+- no critical unresolved verifier error exists;
+- selected cause/conclusion references valid visible evidence/observations;
+- required experiment/result refs exist when the benchmark requires them;
+- uncertainty/remaining questions are represented when conclusion is non-certain.
+
+Whether the evidence is substantively sufficient is part of the Agent capability being evaluated. Formal expected-information-gain stopping is OPEN_RESEARCH and requires an explicit belief/probability model before implementation.
 
 ## Ground-truth isolation
 
-Evaluator-only truth must never appear in `InvestigationState` agent-visible fields. If the evaluation harness stores linked truth, it uses evaluator-only refs outside the agent projection.
+Evaluator truth is stored outside agent-visible RcaState. The lab projection function and runtime visibility checks both fail closed on `EVALUATOR` refs.
 
 ## Persistence
 
-v0 requires durable per-run serialization sufficient to replay/audit the investigation. Cross-incident learned memory remains out of scope.
+v0 requires durable per-run state reconstruction from append-only events plus artifacts.
+
+Cross-incident retrieval/learned memory is out of scope for the first RCA benchmark.
 
 ## Invariants
 
-- Chat transcript is not canonical state.
-- Hidden ground truth is not agent-visible state.
-- Evidence/experiment refs preserve provenance.
-- Coordinator, not model prose, owns status/budget/revision transitions.
-- Subagent full transcripts are not merged into parent state.
-- Every final conclusion is reproducibly linked to the state revision and evidence refs used.
+- Conversation transcript is not canonical state.
+- Runtime never imports RcaState.
+- Generic runtime budget counters remain authoritative.
+- Observation is not automatically Evidence.
+- Hidden truth is not agent-visible state.
+- State updates are revision checked.
+- Subagent transcripts are not merged into parent state.
+- Final report is linked to the exact state revision and evidence/experiment refs used.
 
 ## Acceptance tests
 
-1. Initialize an RCA state from a blind fixture without hidden truth leakage.
-2. Add two hypotheses and evidence through validated deltas.
-3. Spawn/complete a subtask and retain only its structured result refs.
-4. Plan/execute an experiment and move refs from planned to completed.
-5. Reject a stale state delta using revision checking.
-6. Materialize a bounded Main Agent projection without full history/artifacts.
-7. Reconstruct final state from saved deltas/trace deterministically.
+1. Initialize blind RCA state without hidden truth leakage.
+2. Apply validated StateDelta through TaskStateStore without runtime importing RcaState.
+3. Reject stale StateDelta by expected revision.
+4. Register an observation and verify it does not become evidence until a HypothesisEvidenceLink is added.
+5. Add two hypotheses/evidence links and preserve append-only provenance.
+6. Complete a subtask and retain only SubtaskResult/ref metadata.
+7. Plan/execute an experiment and move refs from planned to completed through legal deltas.
+8. Materialize an exact bounded ContextProjection with no EVALUATOR refs.
+9. Reconstruct final RcaState from saved events deterministically.
+10. Reject final readiness when required evidence/artifact refs are missing.
