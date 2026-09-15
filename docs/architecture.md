@@ -2,385 +2,172 @@
 
 ## Decision
 
-`tep-sim` is an **agent-agnostic, forkable process-simulation environment**.
+`tep-sim` is an **agent-agnostic, forkable Tennessee Eastman Process environment**.
 
-Its job is to make the Tennessee Eastman Process available through stable, typed, reproducible contracts that can later be consumed by:
+It owns the executable process world and its machine-readable process semantics. It does not own agent reasoning.
 
-- normal Python experiments;
-- deterministic controllers;
-- HAZOP/RCA integration workflows;
-- RL policies;
-- LLM agents;
-- dashboards and 3D visualizers.
-
-The environment must not depend on any of those consumers.
-
----
+The environment can be consumed by Python experiments, deterministic controllers, `tep-agent-lab`, RL policies, dashboards, or future visualizers without importing any of those consumers.
 
 ## Design goals
 
-1. **Reproducible** — same seed/config/intervention schedule should reproduce the same run within documented numerical tolerance.
-2. **Forkable** — a caller can snapshot a state, create isolated branches, and compare counterfactual rollouts.
-3. **Typed** — interventions and results use explicit schemas rather than raw array mutation.
+1. **Reproducible** — same seed/config/intervention schedule reproduces the same run within documented numerical tolerance.
+2. **Forkable** — callers can snapshot state, create isolated branches, and compare counterfactual rollouts.
+3. **Typed** — public interventions/results use explicit schemas rather than raw array mutation.
 4. **Capability-aware** — callers can discover what the environment can and cannot simulate.
-5. **Auditable** — every run records simulator version, inputs, interventions, termination state, and result artifacts.
-6. **Agent-agnostic** — no prompts, model SDKs, orchestration graph, agent memory, or subagent logic.
-7. **Extensible** — future process/safety physics may be added without breaking the external environment contract.
-
----
+5. **Semantically queryable** — callers can query process topology and bind process entities to XMEAS/XMV/IDV through an explicit registry.
+6. **Auditable** — runs record simulator version, inputs, interventions, termination state, and artifact provenance.
+7. **Agent-agnostic** — no prompts, model SDKs, LangGraph state, memory, or subagent logic.
 
 ## Non-goals
 
-This repository does not attempt to:
-
-- perform autonomous diagnosis;
-- decide HAZOP credibility;
-- generate recovery plans with an LLM;
-- digitize P&ID drawings;
-- infer missing engineering parameters;
-- generate arbitrary plant simulators from diagrams;
-- model all process-safety consequences.
-
-Those are upstream/downstream projects.
-
----
+This repository does not perform autonomous diagnosis, HAZOP reasoning, recovery planning, P&ID OCR, generic P&ID-to-simulation generation, LLM orchestration, or 3D reconstruction.
 
 ## High-level architecture
 
 ```text
-                  External Consumers
-
- Python      HAZOP/RCA       Agent Lab       UI / Replay
- scripts      workflow        / RL
-    |             |             |                |
-    +-------------+-------------+----------------+
-                          |
-                          v
-                 +------------------+
-                 | Public Env API   |
-                 +------------------+
-                   |   |   |   |   |
-             observe  fork |   | capabilities
-                        scenario  safety
-                   |       |       |
-                   v       v       v
-             +--------------------------------+
-             |         tep-sim core           |
-             |                                |
-             | registry   contracts           |
-             | snapshot   scenario compiler   |
-             | telemetry  safety evaluator    |
-             | persistence/replay             |
-             +---------------+----------------+
-                             |
-                             v
-                  +-----------------------+
-                  | upstream TEPSimulator |
-                  +-----------------------+
+                 External Consumers
+ Python scripts   Agent Lab   UI / Replay   RL
+       \             |            |          /
+        +------------+------------+---------+
+                     |
+                     v
+              Public Environment API
+                     |
+      +--------------+----------------+
+      |              |                |
+      v              v                v
+  Simulation      Process         Experiment
+   runtime        semantics        services
+      |              |                |
+      |        DEXPI / compact         |
+      |        ProcessGraph            |
+      |              |                |
+      +------ binding registry --------+
+                     |
+                     v
+              upstream TEPSimulator
 ```
 
----
-
-## Public contracts
+## Core public contracts
 
 ### `EnvironmentConfig`
 
-Contains only information needed to reproduce environment behavior, for example:
-
-```text
-seed
-backend
-control_mode
-dt
-record_interval
-upstream_revision
-```
+At minimum: `seed`, `backend`, `control_mode`, `dt`, `record_interval`, and `upstream_revision`.
 
 ### `Observation`
 
-A point-in-time, immutable view of the environment:
-
-```text
-simulation_time
-xmeas
-xmv
-active_disturbances
-shutdown
-safety_margins
-```
-
-Arrays may exist internally, but the public layer should also make canonical IDs and metadata accessible.
+Immutable point-in-time state containing simulation time, XMEAS, XMV, active disturbances, shutdown state, and deterministic safety margins.
 
 ### `Snapshot`
 
-A serializable or cloneable environment state sufficient for deterministic continuation.
-
-Requirements:
-
-- creating a snapshot must not mutate the live environment;
-- multiple forks from one snapshot must be isolated;
-- snapshot format/version must be explicit;
-- if upstream prevents exact serialization, the limitation must be documented and tested rather than hidden.
+A cloneable/serializable state sufficient for deterministic continuation. Forks from one snapshot must be isolated and retain parent provenance.
 
 ### `Intervention`
 
-A typed request to mutate a supported environment quantity.
+Typed environment mutation such as disturbance activation, MV change, or MV constraint. The environment validates identity, bounds, and simulator capability before applying it.
 
-Examples:
+### `ProcessGraph`
 
-```text
-DisturbanceIntervention(target="IDV(4)", value=1)
-MVIntervention(target="XMV(10)", value=55.0)
-MVConstraint(target="XMV(10)", max_value=60.0)
-```
+A compact runtime representation derived from DEXPI/process data. It exposes units, process steps/equipment, streams, topology, measurements, actuators, and explicit binding metadata.
 
-The environment validates syntax, identity, bounds, and capability before mutation.
+DEXPI is the **static engineering-semantic layer**; `TEPSimulator` remains the dynamic source of truth.
 
 ### `ProcessDeviation`
 
-A higher-level, HAZOP-friendly request:
-
-```text
-ProcessDeviation(
-    node="reactor_cooling_loop",
-    parameter="flow",
-    guide_word="LESS",
-    magnitude=0.20,
-)
-```
-
-This is **not** automatically an intervention. It must pass through a deterministic `ScenarioCompiler` that either:
-
-1. maps it to one or more supported interventions; or
-2. returns `UnsupportedScenario` / `AmbiguousScenario`.
+A higher-level HAZOP-friendly description such as `reactor_cooling_loop + flow + LESS`. It is not directly executable. A deterministic scenario compiler maps it to supported TEP interventions or returns an explicit unsupported/ambiguous result.
 
 ### `RolloutResult`
 
-Contains:
-
-```text
-run_id
-config
-start_snapshot_id
-intervention_schedule
-time
-measurements
-manipulated_variables
-disturbances
-shutdown_state
-events
-provenance
-```
-
-Large arrays should be written to an artifact format rather than repeatedly embedded into JSON/log messages.
+Contains run ID, config, start snapshot, intervention schedule, telemetry artifact references, shutdown state, events, and provenance.
 
 ### `SafetyEvaluation`
 
-Deterministic result derived from a rollout:
+Deterministic evaluation of TEP-supported process limits. It may report threshold crossing and shutdown behavior but must not fabricate unsupported fire/explosion/dispersion consequences.
+
+## DEXPI / TEP semantic binding
+
+For TEP we do **not** build an OCR/P&ID digitization pipeline. We ingest or curate a machine-readable Tennessee Eastman DEXPI/process representation and normalize it into `ProcessGraph`.
+
+The binding layer explicitly maps semantic entities to runtime variables, for example:
 
 ```text
-limit_crossings
-minimum_margins
-shutdown
-shutdown_time
-unsafe_intervals
-unsupported_consequence_domains
+Reactor
+  temperature measurement -> XMEAS(9)
+  cooling-water outlet temp -> XMEAS(21)
+  cooling-water flow actuator -> XMV(10)
+  cooling-water disturbances -> selected IDV entries
 ```
 
-`unsupported_consequence_domains` is important: process excursions are not equivalent to fire/explosion/toxic consequence modeling.
+Bindings are data/code with validation tests, not prompt knowledge.
 
----
+See `docs/dexpi-tep-integration.md` and `docs/specs/dexpi-binding-v0.md`.
 
 ## Capability model
 
-The environment should expose a machine-readable capability registry.
+The environment exposes a machine-readable capability registry covering supported disturbances, manipulated variables, scenario semantics, consequence domains, and unsupported domains.
 
-Conceptually:
-
-```text
-capabilities():
-  disturbances:
-    - IDV(1)..IDV(20)
-  manipulated_variables:
-    - XMV(1)..XMV(12)
-  scenario_semantics:
-    - feed_flow_change
-    - feed_temperature_change
-    - cooling_water_temperature_change
-    - selected_valve_sticking
-    - reaction_kinetics_variation
-  consequence_models:
-    - process_state
-    - shutdown_state
-  unsupported:
-    - pipe_rupture_release
-    - atmospheric_dispersion
-    - fire_radiation
-    - explosion_overpressure
-```
-
-This boundary prevents an external agent from confusing semantic plausibility with actual simulator support.
-
----
-
-## Scenario compiler
-
-The `ScenarioCompiler` is deterministic domain glue between higher-level experiment descriptions and TEP-specific actuators/disturbances.
-
-```text
-ProcessDeviation
-      |
-      v
-canonical node/parameter lookup
-      |
-      v
-supported mapping?
-   /       \
- yes       no/ambiguous
-  |           |
-  v           v
-Intervention  explicit failure
-```
-
-Example:
-
-```text
-reactor_cooling_loop + flow + LESS
-```
-
-may be representable by an XMV(10) constraint, while:
-
-```text
-reactor_pipe + containment + RUPTURE
-```
-
-is not supported by the current TEP physics.
-
-Mappings must be stored as testable code/data, not as prompt instructions.
-
----
+Unsupported requests return an explicit result. Semantic plausibility is never treated as proof that the simulator can model the requested event.
 
 ## Snapshot / fork / counterfactual semantics
 
-Counterfactual branching is the key feature that turns a simulator into an agent playground.
-
 ```text
-                      snapshot S
-                    /     |      \
-                   /      |       \
-             branch A  branch B  branch C
-                |          |         |
-              action A   action B  no action
-                |          |         |
-             rollout     rollout   rollout
-                \          |        /
-                 \         |       /
-                    compare
+                   snapshot S
+                 /     |      \
+             branch A branch B branch C
+                |        |       |
+             action A action B  no action
+                |        |       |
+             rollout  rollout  rollout
+                 \       |      /
+                      compare
 ```
 
-Rules:
-
-- branches cannot share mutable simulator state;
-- all branches retain parent snapshot provenance;
-- comparison is performed outside the simulator core;
-- simulation clocks and random generators must be handled so results are meaningful.
-
----
+Branches must not share mutable simulator state. Random-number handling and snapshot provenance must be explicit so comparisons remain meaningful.
 
 ## Safety boundary
 
-The upstream TEP model includes process shutdown/safety limits. `tep-sim` should expose those cleanly and may derive additional deterministic margins.
+`tep-sim` exposes simulator shutdown logic and deterministic process-safety margins that can be computed from available state. It is not a general consequence-analysis package.
 
-Do not equate these with a full process-safety consequence model.
+## Persistence
 
-For example, a rollout can truthfully report:
+Every run records at least: run ID, `tep-sim` revision, upstream simulator revision, runtime versions, seed, environment config, initial snapshot/config, intervention schedule, termination reason, and artifact checksums/paths.
 
-```text
-reactor temperature exceeded threshold
-reactor pressure approached shutdown
-process shut down at t = ...
-```
+Prefer Parquet/NPZ for dense traces and JSON/JSONL for metadata/events. Add SQLite only when cross-run querying becomes valuable.
 
-It cannot truthfully report, without additional models:
-
-```text
-pipe ruptured
-flammable cloud radius = ...
-blast overpressure = ...
-personnel fatality probability = ...
-```
-
----
-
-## Persistence and reproducibility
-
-Every run should record at least:
-
-```text
-run_id
-created_at
-tep-sim version/commit
-upstream submodule commit
-Python/backend versions
-seed
-EnvironmentConfig
-initial snapshot/config
-intervention schedule
-termination reason
-artifact paths/checksums
-```
-
-Prefer Parquet/NPZ for dense numeric traces plus JSON/JSONL for metadata/events. SQLite may be added if run querying becomes important.
-
----
-
-## Integration boundary with agent systems
-
-Agent systems integrate through the public environment API only.
+## Integration boundary
 
 Correct:
 
 ```text
-agent runtime -> tool adapter -> TEPEnvironment
+industrial-agent-runtime
+        |
+        v
+tep-agent-lab tool/policy adapters
+        |
+        v
+tep-sim public API
 ```
 
 Incorrect:
 
 ```text
-TEPEnvironment imports LangGraph/provider SDK/prompt files
+tep-sim imports LangGraph / provider SDK / prompts
 ```
 
-The agent runtime may decide what experiment to request. The environment decides whether the requested experiment is valid and simulable.
-
----
+The agent side decides what experiment to request. `tep-sim` decides whether that experiment is syntactically valid and physically/simulator-supported.
 
 ## Visualization
 
-Visualization consumes `Observation` and `RolloutResult`.
-
-Initial target:
-
-- process topology view;
-- key XMEAS/XMV trends;
-- active disturbance/intervention markers;
-- safety-margin overlays;
-- branch/experiment comparison.
-
-Blender/Omniverse/DEXPI-derived visuals can be added later, but rendering remains downstream from environment state.
-
----
+Initial visualization is a read-only process topology + telemetry view. 3D is optional and explicitly not a milestone for the agent research program.
 
 ## Repository boundary
 
-See [`ecosystem/README.md`](ecosystem/README.md).
-
-The short version:
+The active program uses three core repositories:
 
 ```text
-tep-sim                  = environment
-industrial-agent-runtime = generic agent harness
-tep-agent-lab            = TEP + agents + HAZOP/RCA experiments
-pid2sim                  = P&ID/engineering-data -> executable model research
+tep-sim                  = environment + process semantics
+industrial-agent-runtime = generic agent mechanics
+tep-agent-lab            = TEP-specific agent tools, workflows, experiments, evals
 ```
 
-Existing `manufacturing-kg-agent` may later provide optional domain evidence, but it is not a dependency of the simulator.
+`manufacturing-kg-agent` may later provide optional evidence. Generic P&ID digitization/model generation is parked research, not a core dependency or milestone.
