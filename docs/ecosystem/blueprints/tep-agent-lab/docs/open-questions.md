@@ -1,133 +1,167 @@
 # Open Questions — `tep-agent-lab`
 
-Only unresolved empirical/benchmark choices remain here. Hybrid orchestration, Information Plane, K0–K4 knowledge levels, Tool Bridge, first-class Hypothesis/Experiment objects, and AutoProcessResearch are accepted directions with v0 specs.
+Only unresolved empirical/later-phase choices belong here. Current v0 contracts use RcaState, Observation/Evidence separation, `origin × validation × authority`, typed Prediction/Experiment, minimal Tool Bridge, strong C0 baseline, and archival Engineering Records.
 
 ## OQ-1 — First RCA scenario set
 
-Use reactor/cooling-water family first, but exact candidate causes, IDVs, magnitudes, timings, seeds, and operating variants must be selected after the identifiability pilot in `benchmark-design-v0.md`.
+Use reactor/cooling-water-related family first, but exact candidate causes, magnitudes, timings, seeds, nuisance/operating variants are selected after `benchmark-design-v0.md` identifiability + C0 pilot.
 
-Avoid both trivial one-signal cases and practically indistinguishable cases unless intentionally labeled as difficulty/uncertainty tests.
+Need at least:
+
+- healthy/no-abnormal case;
+- multiple plausible alternatives;
+- one non-local/nontrivial case before MEDIUM/HARD claims.
 
 ## OQ-2 — Incident trigger source
 
-First benchmark default: fixture-provided investigation start point plus compact abnormal-signal evidence, so detector quality does not confound investigation quality.
+First benchmark default: fixture-provided investigation start point + compact abnormal-signal summary so detector quality does not confound investigation quality.
 
-Later compare with deterministic detector-triggered starts.
+Later compare deterministic detector-triggered starts.
 
-## OQ-3 — Dynamic DAG policy defaults
+## OQ-3 — WorkBatch value / richer Dynamic DAG
 
-Hybrid/Dynamic DAG direction is accepted, but lab defaults for when complexity justifies a DAG remain empirical.
+v0 WorkBatch supports `TOOL | SUBTASK` + `depends_on` only.
 
-Questions:
+Open research:
 
-- should the Main Agent explicitly classify simple/complex work or simply propose a plan when useful?
-- what node/parallel/revision budgets minimize overhead?
-- when does direct ReAct outperform plan construction?
+- when does dependency-aware TOOL batching improve O3 Hybrid?
+- when do bounded subtasks improve O4?
+- is a richer mutable DAG with cancellation/replanning ever measurably better?
 
-Answer through orchestration ablation, not hard-coded intuition.
+Do not implement full DAG semantics before evidence/specification.
 
-## OQ-4 — Subagent trigger policy
+## OQ-4 — Subagent trigger/default limits
 
-Default: Main Agent chooses when to delegate within deterministic limits.
+Default proposal: Main Agent chooses delegation within runtime depth=1/cumulative max=3.
 
-Compare with:
+Measure:
 
-- no subagents;
-- fixed parallel hypothesis workers;
-- dynamic delegation.
+- incremental diagnosis/experiment quality;
+- context reduction;
+- token/tool/simulation overhead;
+- duplicate work;
+- cases where parent-only path suffices.
 
-Evaluate incremental quality versus context/token/tool cost.
+## OQ-5 — Formal semantic stopping
 
-## OQ-5 — Semantic stop thresholds
+v0 = Agent finish proposal + deterministic structural readiness checks.
 
-The state/verifier support semantic stopping, but mode-specific thresholds remain open.
+Open research:
 
-Examples:
+- probability/belief semantics;
+- hypothesis update rule;
+- information-value estimator;
+- marginal-value stop threshold.
 
-- minimum evidence support;
-- hypothesis-rank margin;
-- unresolved critical-question count;
-- marginal experiment value threshold;
-- plateau criteria.
+Do not hard-code formal information-gain stopping until those definitions exist.
 
-These should be frozen per benchmark version.
+## OQ-6 — Rule validation / knowledge promotion
 
-## OQ-6 — Rule promotion thresholds
+Canonical Rule schema is fixed as origin/validation/authority, but full promotion workflow is deferred.
 
-K0–K4 architecture is fixed, but K3 -> K2 validation criteria are relationship-specific.
+When studied, freeze:
 
-Need pilot policies for:
-
-- number/diversity of scenarios;
-- operating-envelope coverage;
-- seed variation;
-- tolerance/effect consistency;
+- deterministic scenario-family sampling;
+- operating/held-out envelope;
+- seed diversity;
+- effect/tolerance policy;
 - contradictory evidence handling;
-- when K2 remains advisory versus warrants stronger reviewed enforcement.
+- authority mapping policy.
 
-## OQ-7 — Initial Tool Bridge dependency set
+The proposing Agent must not choose only favorable validation trials or self-promote authority.
 
-Candidate set is documented, but actual v0 dependencies should stay minimal.
+## OQ-7 — Initial Tool Bridge dependencies
 
-Choose based on first benchmark needs, maintenance/license review, reproducibility, and whether upstream TEP already supplies equivalent functionality.
+First RCA recommendation:
 
-Likely order:
+1. response-feature/trajectory comparison;
+2. SciPy-style lag/cross-correlation;
+3. optional upstream TEP detector baseline.
 
-1. upstream TEP detector/analysis capabilities;
-2. SciPy signal/lag features;
-3. graph utilities;
-4. selected PCA/PLS baseline tools;
-5. sensitivity/optimization tools when AutoResearch begins.
+Open later dependencies:
+
+- PCA/PLS;
+- graph utility package if needed beyond local traversal;
+- SALib;
+- Optuna/search backend;
+- statsmodels/Granger;
+- remote/MCP provider.
+
+Add only from a concrete research contract, license/version review, and reproducibility need.
 
 ## OQ-8 — Simulation experiment granularity
 
-Default: prefer semantic scenario/deviation contracts when deterministic mappings exist; allow bounded low-level XMV/IDV experiment controls through explicit typed tools.
+Default: semantic scenario/deviation contracts where deterministic mappings exist, with bounded low-level controls only through typed tools.
 
-Pilot experience will determine how often semantic compilation is too restrictive for useful research.
+Pilot RCA will show whether semantic compilation is too restrictive.
 
 ## OQ-9 — Recovery authority
 
-First recovery benchmark ranks forked strategies. Reference mutation remains disabled until gates/verification are proven.
+First recovery study ranks forked strategies only.
 
-Open: which benchmark version first enables one real reference-branch action and whether human approval is required in research mode.
+Open later:
+
+- first benchmark enabling reference MUTATE;
+- exact policy limits/action schema;
+- whether research UI/SME authority escalation is useful.
+
+Any enabled MUTATE is expected-state-revision bound.
 
 ## OQ-10 — AutoProcessResearch first campaign
 
-Default candidate: robust reactor cooling-water recovery strategy.
+Candidate direction: robust reactor cooling/recovery strategy after recovery scoring exists.
 
-Still to freeze after recovery benchmark exists:
+Need to freeze:
 
-- exact mutable surface;
-- primary scalar objective/weights;
-- hard safety constraints;
-- research versus hidden-eval scenario split;
-- optimizer method/trial budget;
-- plateau/minimum-improvement thresholds.
+- mutable strategy representation;
+- primary objective/weights;
+- hard constraints;
+- RESEARCH/HIDDEN_EVAL split;
+- optimizer/trial budget;
+- plateau/minimum-improvement policy.
+
+AutoResearch remains separate task-family evaluation.
 
 ## OQ-11 — HAZOP scope
 
-Default: preserve node/parameter/guide-word/deviation/cause/consequence/safeguard semantics while clearly labeling results as simulation-backed research support, not formal HAZOP completion.
+Preserve node/parameter/guide-word/deviation/cause/consequence/safeguard semantics while labeling results simulation-backed research support, not formal plant HAZOP completion.
 
-Open: how much worksheet/report structure is useful versus overhead for the agent-research question.
+Open: how much worksheet/report structure adds research value.
 
 ## OQ-12 — External knowledge timing
 
-Add `manufacturing-kg-agent` only after clean no-KG baselines.
+Add `manufacturing-kg-agent` only after no-KG baseline.
 
-Open: which task family benefits enough to justify retrieval and how K3 extracted rules/evidence are scored.
+Open:
 
-## OQ-13 — Model/provider study design
+- which task benefits;
+- retrieval/evidence scoring;
+- literature candidate validation;
+- interaction with hidden benchmark data.
 
-Architecture remains provider-independent. First real model should be frozen per benchmark run.
+## OQ-13 — Cross-incident Engineering Record retrieval
 
-Open: whether model comparison is a primary study axis or only robustness validation after orchestration/tool architecture stabilizes.
+v0 writes records but does not retrieve them into future context.
 
-## OQ-14 — Cross-incident learned memory
+Later study may compare:
 
-No learned cross-run memory initially. Revisit only after Information Plane/Rule Registry/Experiment Ledger baselines show a remaining repeated-task gap.
+```text
+no history
+raw trace retrieval
+structured Engineering Record retrieval
+approved rule/runbook retrieval
+```
+
+Need strict partition/leakage controls.
+
+## OQ-14 — Model/provider study design
+
+Architecture is provider-independent.
+
+Open: whether model comparison becomes a primary experimental axis or only robustness validation after tool/orchestration design stabilizes.
 
 ## OQ-15 — Visualization
 
-2D topology + telemetry + investigation/DAG/branch timeline is sufficient for v0.
+2D topology + telemetry + experiment/work/branch timeline is sufficient initially.
 
-Only add 3D if a concrete spatial-reasoning question appears.
+3D remains deferred until a spatial-reasoning question exists.
