@@ -2,210 +2,219 @@
 
 Integration and benchmark laboratory for autonomous engineering investigation over the Tennessee Eastman Process.
 
-This repository combines pinned versions of:
+Depends on pinned versions of:
 
 - `tep-sim` — trusted process world + DEXPI/ProcessGraph semantics;
-- `industrial-agent-runtime` — Hybrid Main-Agent runtime with deterministic Coordinator/Executor/Verifier, Dynamic DAGs, gates, and ephemeral subagents.
+- `industrial-agent-runtime` — generic Main-Agent runtime with deterministic gates/state interfaces, dependency-aware WorkBatch, and bounded subagents.
 
-It owns TEP-specific Investigation State, information/rule/evidence/experiment contracts, Tool Bridge adapters, research workflows, scenarios, evaluation, and reports.
+The lab owns TEP-specific state/projection, tools, policy, experiments, engineering records, benchmark/evaluation logic, and later HAZOP/recovery/AutoResearch studies.
 
-## Agent role
+## v0 role
 
-v0 studies an **Autonomous Industrial Process Investigator**.
+Study an **Autonomous Industrial Process Investigator**.
 
 The Main Agent may:
 
 - inspect process state/topology;
-- select evidence/analysis tools;
-- create/update hypotheses;
+- select observations/analysis tools;
+- form/update hypotheses;
+- make typed predictions;
 - design counterfactual experiments;
-- propose bounded Dynamic DAGs;
-- delegate narrow subtasks;
-- integrate evidence;
-- decide when evidence is sufficient;
-- recommend recovery/research actions.
+- propose dependency-aware TOOL work;
+- delegate bounded subtasks in the appropriate orchestration condition;
+- explicitly link observations as evidence;
+- produce structured CausalClaims/reports.
 
 It does not receive unrestricted reference-world mutation authority.
 
 ## Core research questions
 
-1. Can an Agent diagnose abnormal TEP behavior without seeing evaluator-only fault truth?
-2. Can it select useful signals/topology/analysis tools instead of consuming the entire plant state?
-3. Can it design experiments that discriminate competing hypotheses efficiently?
-4. Does Hybrid orchestration outperform pure ReAct/fixed workflows for complex investigation?
-5. When does a Dynamic DAG/subagent improve quality enough to justify overhead?
-6. Can paper/domain knowledge be promoted into validated machine-usable rules without turning LLM extraction into hard authority?
-7. Can simulation-backed HAZOP remain evidence-grounded and honest about unsupported physics?
-8. Can recovery strategies be simulated before gated reference action?
-9. Can an AutoResearch-style loop discover better bounded engineering strategies under a frozen evaluator?
+1. Can an Agent diagnose hidden TEP incidents without evaluator truth/candidate labels?
+2. Can it select useful observations/topology/analysis rather than consume the full plant state?
+3. Can it design experiments whose typed predictions meaningfully discriminate plausible causes?
+4. Does Hybrid orchestration improve investigation quality/efficiency relative to one-shot/ReAct/fixed workflow?
+5. Does dependency-aware WorkBatch/subagent use add value beyond simpler Agent loops?
+6. When is a strong deterministic C0 baseline already sufficient, making an Agent unnecessary?
+7. Later: can validated knowledge, recovery, HAZOP, AutoResearch, and structured historical records improve engineering work without authority leakage?
 
 ## Core architecture
 
 ```text
-Hybrid Agent Runtime / Control Plane
- Main Agent
- deterministic Coordinator / Executor / Verifier
+industrial-agent-runtime
+ CONTROL PLANE
+  Main Agent
+  pre-execution gates
+  Executor
+  post-execution verifier
+  WorkBatch / SubtaskResult
             |
             v
-TEP Agent Lab / Information + Research Plane
- Investigation State
- Hypotheses / Evidence / Experiments
- K2/K3 Rule Registry
- Tool Bridge
- Experiment Ledger
- RCA / HAZOP / Recovery / AutoResearch
+tep-agent-lab
+ DOMAIN / INFORMATION PLANE
+  RcaState implements TaskStateStore
+  ObservationRecord / EvidenceLink
+  Hypothesis / Prediction / Experiment
+  Rule metadata: origin x validation x authority
+  Tool Bridge adapters
+  Engineering Records
+  benchmark / scorer / policy
             |
             v
-TEP-Sim / World Plane
- ProcessGraph + Variable Registry
- K0/K1 truth
- snapshot / fork / rollout / capability / safety
+tep-sim
+ WORLD PLANE
+  ProcessGraph / VariableRegistry
+  simulator truth
+  snapshot / fork / rollout
+  capability / environment safety
 ```
 
-## Knowledge model
+## Information model
 
 ```text
-K0 simulator/runtime truth
-K1 reviewed physical/safety invariant
-K2 simulation-validated engineering relationship
-K3 paper/document heuristic
-K4 Agent working hypothesis
+Trace != Observation != Evidence != EngineeringRecord != Rule/Knowledge != Context
 ```
 
-Only high-authority reviewed rules may block execution. K3/K4 never become hard gates directly.
+v0 may persist one append-only run log plus artifacts rather than separate Evidence/Experiment/Trace database services.
+
+Historical Engineering Records are archive-only in first benchmarks and are not automatically retrieved into later Agent context.
+
+## Rule model
+
+Canonical machine metadata:
+
+```text
+origin × validation × authority
+```
+
+K0–K4 may appear only as human-facing shorthand. Paper/Agent/simulation evidence cannot self-grant HARD_GATE authority.
 
 ## Tool model
 
-Environment tools expose observations/topology/simulation. A separate Tool Bridge wraps allowlisted open-source scientific functions for signal analysis, PCA/PLS baselines, sensitivity analysis, graph operations, and bounded numeric optimization.
-
-The normal runtime does not give the Agent arbitrary Python/shell/import/package-install authority.
-
-## Research families
-
-### RCA
+Tool Bridge adapters live in the lab, but authorization/budget/dispatch remains in generic runtime.
 
 ```text
-incident -> Investigation State
- -> hypotheses
- -> evidence/analysis
- -> discriminating counterfactual experiments
- -> deterministic results
- -> hypothesis updates
- -> evidence-backed diagnosis
+Agent
+ -> runtime ToolSpec/gates/budget
+ -> lab validate_request
+ -> Executor
+ -> Tool Bridge / tep-sim adapter
+ -> result + actual resource usage
+ -> post-execution verification
 ```
+
+Any bridge that internally runs TEP trials is `SIMULATE` and consumes explicit rollout/horizon/trial budget.
+
+First RCA bridge set stays small: response features/trajectory comparison, lag/cross-correlation, and optional TEP detector baseline.
+
+No arbitrary Agent Python/shell/import/package-install authority.
+
+## First research family — RCA
+
+```text
+incident -> RcaState
+ -> observations
+ -> hypotheses + typed predictions
+ -> evidence links
+ -> discriminating analysis/counterfactuals
+ -> deterministic ExperimentResults
+ -> structured CausalClaim
+ -> InvestigationReport
+```
+
+Every first-family report includes a strong deterministic C0 enumerate/simulate/match baseline.
+
+Blind RCA does not expose canonical IDV candidate bindings through tools by default.
+
+## Later research families
 
 ### Simulation-backed HAZOP
 
-```text
-node + parameter + guide word
- -> candidate deviation
- -> rule/capability check
- -> deterministic scenario compilation
- -> fork/rollout
- -> process/safety evidence
- -> structured supported/unsupported finding
-```
+Only after RCA state/tool/evaluation contracts stabilize.
 
 ### Recovery
 
-```text
-abnormal state
- -> candidate strategies
- -> fork each strategy + no-action baseline
- -> deterministic score
- -> recommendation
- -> layered gates / optional approval
- -> bounded reference action + verification (when enabled)
-```
+Rank simulated candidate strategies before enabling any reference MUTATE path. SIMULATE never mutates reference state.
 
 ### AutoProcessResearch
 
-```text
-frozen ResearchSpec/evaluator
- -> baseline
- -> Agent hypothesis/change
- -> bounded simulation/search trial
- -> deterministic score
- -> Experiment Ledger
- -> keep/reject/neutral
- -> repeat until deterministic stop
- -> hidden evaluation
-```
+Later task family with frozen evaluator/search surface, explicit simulation budgets, append-only experiment history, and hidden evaluation. It is not simply another orchestration-ablation row.
 
 ## Benchmark philosophy
 
-TEP is public and well known, so the lab does not score fault-name recall alone. Benchmarks use evidence requirements, varied timing/magnitude/seeds, plausible alternatives, counterfactual experiments, hidden variants, and scientific-behavior metrics.
+TEP is public, so do not score fault-name recall alone.
 
-Scenario families are piloted for identifiability before being frozen.
+Use:
 
-## Suggested repository layout
+- strong deterministic C0;
+- varied seed/timing/magnitude/operating state;
+- healthy/no-abnormal cases;
+- non-local/nontrivial alternatives;
+- evidence/prediction/experiment requirements;
+- hidden variants;
+- data-informed difficulty tiers;
+- scientific-behavior/resource metrics.
+
+## Suggested v0 repository direction
 
 ```text
 src/tep_agent_lab/
   contracts/
-    investigation.py
+    rca_state.py
     hypothesis.py
+    prediction.py
     experiment.py
     evidence.py
+    causal_claim.py
     rules.py
+    records.py
   information/
-    evidence_store.py
-    experiment_ledger.py
-    context_projection.py
+    run_log.py
+    projection.py
   tools/
     environment.py
     topology.py
-    analysis.py
     bridge.py
-    simulation.py
-    optimization.py
-    recovery.py
   policies/
-    experiment.py
-    recovery.py
-    knowledge.py
-  workflows/
-    rca.py
-    hazop.py
-    recovery.py
-    autoresearch.py
+    request_validation.py
+    result_verification.py
+    benchmark.py
   evals/
-    common.py
-    scientific_behavior.py
+    baseline_c0.py
     diagnosis.py
-    hazop.py
-    recovery.py
-    autoresearch.py
+    scientific_behavior.py
+    efficiency.py
 
 scenarios/
   development/
   research/
   hidden_eval/
 
-configs/
+runs/
 reports/
-runs/          # artifact-managed / gitignored
 tests/
 docs/
 AGENTS.md
 ```
 
+Do not pre-create HAZOP/recovery/AutoResearch modules until their phase begins.
+
 ## Ground-truth policy
 
-Scenario truth is evaluator-only in blind experiments. Agent-visible projections, Information Plane refs, tools, rules, and artifact metadata are leakage-audited.
-
-## First benchmark direction
-
-Start with reactor/cooling-water scenario family, but do not permanently hard-code one IDV before identifiability pilot work determines useful competing causes, magnitudes, timings, and difficulty variants.
-
-## Optional knowledge integration
-
-`manufacturing-kg-agent` may later provide read-only evidence from papers/manuals/SOPs. Establish clean no-KG baselines first so its contribution can be measured and paper-derived relations enter as K3 candidates rather than execution truth.
+Scenario truth/candidate sets are evaluator-only in blind experiments. ContextProjection, tools, ProcessGraph bindings, Rule metadata, artifacts, and Engineering Record retrieval are leakage-audited.
 
 ## Documentation
 
-- `docs/architecture.md` — Hybrid/information/world-plane integration
-- `docs/roadmap.md` — research implementation sequence
-- `docs/specs/README.md` — canonical v0 spec index
-- `docs/open-questions.md` — remaining empirical choices
-- `docs/decisions/` — ADRs
+Canonical spec index: `docs/specs/README.md`.
+
+The most important first-RCA specs are:
+
+- `investigation-state-v0.md`
+- `hypothesis-experiment-v0.md`
+- `tool-surface-v0.md`
+- `tool-bridge-v0.md`
+- `engineering-records-v0.md`
+- `benchmark-design-v0.md`
+- `evaluation-v0.md`
+- `rca-v0.md`
+
+Later task specs remain proposals until their implementation phase.
