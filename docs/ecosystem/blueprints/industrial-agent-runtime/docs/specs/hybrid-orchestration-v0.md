@@ -1,6 +1,6 @@
 # Hybrid Orchestration v0
 
-Status: proposal  
+Status: accepted  
 Owner repo: `industrial-agent-runtime`  
 Primary consumer: `tep-agent-lab`
 
@@ -9,7 +9,7 @@ Primary consumer: `tep-agent-lab`
 Define a small hybrid runtime that combines:
 
 - one goal-driven Main Agent for open-ended reasoning;
-- deterministic coordination, authorization, execution, result verification, budgets, and tracing;
+- deterministic coordination, authorization, execution, result verification, budgets, tracing, and state-update application;
 - local ReAct-style iteration for open-ended investigation;
 - dependency-aware bounded work batches when independent/dependent work can be executed in parallel;
 - framework-neutral public contracts.
@@ -28,13 +28,15 @@ Engineering Goal / Task
              |
              v
 +--------------------------+
-| Main Agent               |
+| Main Agent / ModelTurn   |
 | goal-driven reasoning    |
-| local ReAct-style loop   |
 +------+-------------------+
        |
-       | proposes ToolCall / WorkBatch / Finish
-       v
+       +-- state_update? --> validate/apply internal task-state deltas
+       |
+       +-- action ---------> ToolCall / WorkBatch / FinishProposal / None
+                                |
+                                v
 +--------------------------+
 | Pre-execution gates      |
 | G0-G3 + validate_request |
@@ -56,13 +58,14 @@ Engineering Goal / Task
              |
              v
 +--------------------------+
-| TaskStateStore.apply     |
+| deterministic ingestion  |
+| + TaskStateStore.apply   |
 +------------+-------------+
              |
              +----> next Main Agent turn / finish
 ```
 
-Only the Main Agent is assumed to require an LLM. Coordinator, gates, Executor, and post-execution Verifier are deterministic runtime components unless an experiment explicitly adds a model-based critic as an ordinary bounded subtask.
+Only the Main Agent is assumed to require an LLM. Coordinator, gates, Executor, result ingestion, and post-execution Verifier are deterministic runtime/application components unless an experiment explicitly adds a model-based critic as an ordinary bounded subtask.
 
 ## Responsibility boundaries
 
@@ -71,6 +74,7 @@ Only the Main Agent is assumed to require an LLM. Coordinator, gates, Executor, 
 May:
 
 - interpret the current projected task/domain state;
+- propose typed internal task-state updates through `ModelStateUpdateProposal`;
 - choose the next useful action;
 - request typed tools;
 - propose a bounded `WorkBatch`;
@@ -79,28 +83,51 @@ May:
 - propose a final structured result;
 - provide semantic judgment that evidence appears sufficient.
 
-It cannot execute tools directly, change budgets/policies, mutate runtime state directly, or grant itself/children additional authority.
+It cannot execute tools directly, call `TaskStateStore` directly, change budgets/policies/generic task status, mutate reference-world state directly, or grant itself/children additional authority.
 
 ### Coordinator
 
 Generic deterministic control component responsible for:
 
-- routing Main Agent outputs;
+- requesting a model turn over an immutable `ContextProjection`;
+- validating ModelTurn routing shape/base revision;
+- applying validated model-proposed state-update batches through `TaskStateStore`;
+- routing the action part of a ModelTurn;
 - tracking generic `TaskStatus` and budget usage;
 - validating `WorkBatch` structure and dependencies;
 - scheduling ready work items;
 - enforcing cumulative subtask/work-item limits;
 - freezing validated requests before dispatch;
-- requesting consumer projections/state updates only through generic interfaces;
+- serializing result ingestion/state application deterministically;
 - deciding whether hard runtime termination conditions have been reached.
 
 The Coordinator does not understand TEP-specific fields and does not import consumer state types.
+
+### Model state-update path
+
+The state-update path is separate from tool execution authorization.
+
+```text
+ModelTurn.state_update
+ -> generic schema/projection-base-revision checks
+ -> consumer TaskStateStore validates legal operations/refs/visibility
+ -> atomic apply_batch
+ -> trace disposition
+ -> continue to action only if update succeeded
+```
+
+Properties:
+
+- one state-update proposal batch consumes one `max_steps` unit and zero `max_tool_calls`;
+- all deltas in the model proposal are bound to the projection revision the model actually saw;
+- the Agent cannot use this path to change generic budget/policy/task authority or external/reference state;
+- if the state-update batch is denied/stale/illegal, the same turn's action is not dispatched.
 
 ### Pre-execution gates
 
 Defined in `deterministic-gates-v0.md`.
 
-They validate requests before any execution:
+They validate executable requests before any tool/subtask execution:
 
 ```text
 G0 schema/parse
@@ -129,7 +156,7 @@ The Executor does not re-plan or interpret engineering meaning.
 
 ### Post-execution Verifier
 
-A deterministic `verify_result` stage over the returned result and proposed state update.
+A deterministic `verify_result` stage over returned result/provenance and the consumer-proposed deterministic ingestion update.
 
 It may mechanically verify:
 
@@ -144,19 +171,38 @@ It may mechanically verify:
 
 It does not perform open-ended engineering critique. A model-based critic, when studied, is an ordinary `Subtask` whose output is evidence/advice only.
 
+### Deterministic result ingestion
+
+After a successful verified result, the consuming application may deterministically derive one or more task-state deltas, such as registering an observation/result reference.
+
+For result-ingestion deltas:
+
+- the Coordinator binds the **current** state revision at application time;
+- they do not reuse the model projection revision that originally caused the work;
+- parallel WorkBatch results are ingested in a deterministic stable order (default: `work_id` lexical/order-defined sequence after all ready results for that scheduling wave are available);
+- each ingestion batch is applied atomically through `TaskStateStore.apply_batch`;
+- the ordering policy is trace-visible.
+
+This prevents parallel work items originating at revision N from spuriously making all but the first result stale.
+
 ## Reference runtime loop
 
 ```text
 LOAD / PROJECT STATE
  -> MAIN_AGENT_TURN
- -> ROUTE_DECISION
+ -> VALIDATE MODEL TURN
+ -> APPLY MODEL STATE_UPDATE?      # internal task state only
+      -> reject => feedback / no action dispatch
+ -> ROUTE ACTION
+      -> NONE
       -> TOOL_REQUEST
       -> WORK_BATCH
       -> FINISH_PROPOSAL
- -> PRE_EXECUTION_GATES
+ -> PRE_EXECUTION_GATES            # TOOL/WORK only
  -> EXECUTE_READY_WORK
  -> POST_EXECUTION_VERIFY
- -> APPLY_STATE_DELTA
+ -> DETERMINISTIC RESULT INGESTION
+ -> APPLY RESULT STATE_DELTA(S)
  -> HARD_STOP_CHECK
       -> PROJECT / MAIN_AGENT_TURN
       -> FINISH
@@ -172,9 +218,9 @@ A Main Agent may locally iterate:
 ```text
 projected state
  -> reason
+ -> externalize hypothesis/evidence/working-state changes
  -> request one useful tool/work batch
- -> receive verified results
- -> update domain state through the consumer state adapter
+ -> receive verified + ingested results
  -> repeat/finish
 ```
 
@@ -232,6 +278,7 @@ Before scheduling, the Coordinator MUST check:
 - An item depending on a failed required dependency is marked `SKIPPED_DEPENDENCY` and is not executed.
 - No item silently retries. Retry requires a new explicit Main Agent request within remaining budget.
 - Completed/failed/skipped items remain immutable trace history.
+- Verified successful results are ingested deterministically before the next model projection.
 - The Main Agent receives compact structured results/failures and may propose a new WorkBatch on a later turn.
 
 ## Full Dynamic DAG research boundary
@@ -262,11 +309,14 @@ MCP is not an orchestration dependency; if used later, it is only one possible e
 
 ## Invariants
 
-- Model reasoning proposes; deterministic code authorizes and executes.
+- Model reasoning proposes; deterministic code authorizes, applies internal state updates, and executes external work.
+- Model state updates are explicit/revision-bound; they are not hidden transcript side effects.
+- A rejected state update prevents the same turn's execution action from dispatching.
 - Pre-execution validation and post-execution result verification are distinct stages.
 - Runtime core does not import domain-specific state classes.
 - Child authority never exceeds explicit task/parent authority.
 - SUBTASK work counts against cumulative task subagent budgets.
+- Result-ingestion deltas from parallel work bind the current revision in deterministic ingestion order.
 - Important state exists outside conversation transcripts.
 - No work item silently retries or mutates prior history.
 - Simple tasks do not require a WorkBatch.
@@ -274,12 +324,15 @@ MCP is not an orchestration dependency; if used later, it is only one possible e
 ## Acceptance tests
 
 1. Simple task completes through one Main Agent/tool loop without a WorkBatch.
-2. Main Agent proposes three work items with dependencies; Coordinator validates and schedules ready items deterministically.
-3. Cyclic WorkBatch is rejected before execution.
-4. SUBTASK item exceeding task subagent budget is rejected before spawn.
-5. Child cannot propose/spawn another SUBTASK when depth policy forbids it.
-6. Failed work item causes dependent item to become `SKIPPED_DEPENDENCY`, with no silent retry.
-7. Pre-execution consumer `validate_request` denial prevents dispatch.
-8. Post-execution `verify_result` rejects a result/final claim referencing a nonexistent artifact/ref.
-9. Same WorkBatch plus deterministic tool results produces identical scheduling/result-verification trace.
-10. Runtime package operates without LangGraph or MCP installed.
+2. ModelTurn adds a hypothesis through `state_update` and requests a tool referencing it in the same turn; state update is committed before request validation/dispatch.
+3. Stale/illegal model state update is rejected and the same turn's tool/work action does not execute.
+4. Main Agent proposes three work items with dependencies; Coordinator validates and schedules ready items deterministically.
+5. Cyclic WorkBatch is rejected before execution.
+6. SUBTASK item exceeding task subagent budget is rejected before spawn.
+7. Child cannot propose/spawn another SUBTASK when depth policy forbids it.
+8. Failed work item causes dependent item to become `SKIPPED_DEPENDENCY`, with no silent retry.
+9. Two parallel successful TOOL results create deterministic ingestion updates that both apply without stale-revision conflict.
+10. Pre-execution consumer `validate_request` denial prevents dispatch.
+11. Post-execution `verify_result` rejects a result/final claim referencing a nonexistent artifact/ref.
+12. Same ModelTurn/WorkBatch plus deterministic tool results produces identical state-update/scheduling/verification/ingestion trace.
+13. Runtime package operates without LangGraph or MCP installed.
