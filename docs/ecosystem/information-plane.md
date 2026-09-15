@@ -1,10 +1,12 @@
 # Information Plane Architecture
 
-Status: accepted direction / v0 ownership proposal
+Status: proposal
 
 ## Purpose
 
-The program needs a durable information layer between agent reasoning and the simulation world. This layer is not a new repository. It is a set of typed, versioned information services and references owned by the existing three-repository architecture.
+Define the typed information boundary between Agent reasoning and the TEP world without creating a fourth repository or prematurely building multiple storage services.
+
+The Information Plane is a **logical architecture layer**: stable refs, schemas, provenance, visibility, append-only records, and projections. v0 may implement it with one run log plus artifacts.
 
 ```text
                   Agent Runtime
@@ -13,13 +15,12 @@ The program needs a durable information layer between agent reasoning and the si
                        v
               Information Plane
       +--------------------------------+
-      | ProcessGraph / DEXPI           |
-      | Variable Registry              |
-      | Rule Registry                  |
-      | Evidence Store                 |
-      | Experiment Ledger              |
-      | Artifact / Run Store           |
-      | Investigation State refs       |
+      | ProcessGraph / VariableRegistry|
+      | Rule metadata                  |
+      | RunLog typed records/views     |
+      | Artifact refs                  |
+      | Consumer TaskStateStore        |
+      | Engineering records            |
       +----------------+---------------+
                        |
                        v
@@ -27,173 +28,255 @@ The program needs a durable information layer between agent reasoning and the si
                   WORLD PLANE
 ```
 
-## Design principle
+## Core principle
 
-Conversation text is not the authoritative system state. The runtime passes stable references to typed information objects and materializes only the task-relevant subset into model context.
+```text
+Memory != Context
+Trace != Observation
+Observation != Evidence
+Evidence != Engineering Record
+Engineering Record != Knowledge/Rule
+```
 
-## Information objects
+Conversation text is not authoritative system state.
+
+Future context is a bounded projection over approved/visible information, not an ever-growing transcript/history dump.
+
+## v0 physical persistence
+
+Do not implement five independent stores before a scale/multi-consumer requirement exists.
+
+A valid v0 layout may be:
+
+```text
+runs/<run_id>/
+  manifest.json
+  events.jsonl
+  artifacts/
+  investigation-report.json
+```
+
+The append-only event/run log can expose typed views/indexes for:
+
+- observations/results;
+- evidence links;
+- hypotheses/state deltas;
+- experiments;
+- decisions;
+- tool/subtask/gate/verification trace.
+
+`EvidenceStore`, `ExperimentLedger`, and similar names describe logical views/contracts, not mandatory separate databases/services.
+
+## Generic reference ownership
+
+`industrial-agent-runtime` owns the generic `InformationRef` envelope defined in `runtime-v0.md`:
+
+```text
+ref_id
+kind
+owner
+version
+checksum?
+visibility: AGENT | EVALUATOR | INTERNAL
+created_at
+```
+
+The producing repository owns the referenced content/schema.
+
+## Information objects and ownership
 
 ### `ProcessGraph`
 
 Owner: `tep-sim`
 
-Contains machine-readable process structure derived from DEXPI/curated TEP semantics:
-
-- nodes/equipment/process sections;
-- streams/connectivity;
-- control/sensor relationships where represented;
-- canonical IDs;
-- source/version provenance.
+Contains normalized process topology/semantics and source/version provenance.
 
 ### `VariableRegistry`
 
 Owner: `tep-sim`
 
-Contains canonical XMEAS/XMV/IDV identities, units, ranges when authoritative, semantic bindings, and source provenance.
+Contains canonical XMEAS/XMV/IDV identities, units, simulator bindings, and authoritative environment metadata.
 
-### `RuleRegistry`
+### `Rule`
 
-Split ownership:
+Ownership follows rule scope:
 
-- hard simulator/environment rules owned by `tep-sim`;
-- validated/heuristic investigation rules owned by `tep-agent-lab`.
+- simulator/runtime constraints: `tep-sim`;
+- lab policy/advisory/experimental rules: `tep-agent-lab`.
 
-Each rule records knowledge level, source, scope, validation status, enforcement behavior, and version.
+Canonical rule metadata is `origin × validation × authority`, defined in `knowledge-rule-registry-v0.md`.
 
-### `EvidenceStore`
+### `ObservationRecord`
 
-Owner: `tep-agent-lab`
+Owner: producing lab/tool/runtime adapter through the run log.
 
-Stores compact, addressable evidence produced or retrieved during investigations:
-
-```text
-evidence_id
-type
-claim/summary
-source_ref
-artifact_ref?
-producer
-created_at
-scope
-quality/uncertainty metadata
-```
-
-Evidence may point to telemetry windows, topology query results, paper/document excerpts, analysis outputs, or simulation rollouts.
-
-### `ExperimentLedger`
-
-Owner: `tep-agent-lab`
-
-Append-only logical history of proposed and executed experiments:
+An immutable record that a query/tool/simulator/analysis returned something.
 
 ```text
-experiment_id
-research/investigation_id
-hypothesis_refs
-purpose
-configuration/intervention refs
-seed/horizon/budget
-result refs
-score/metrics
-status
-keep/reject/neutral decision?
+observation_id
+producer_request_ref
+summary
+artifact_refs[]
+information_refs[]
 provenance
+visibility
+created_at
 ```
 
-It supports RCA counterfactuals and AutoResearch without forcing the Main Agent to remember prior attempts in conversation history.
+Observation is not automatically evidence.
 
-### `ArtifactStore`
+### `HypothesisEvidenceLink`
 
-Owner: physical artifact ownership follows producing repo; references are consumer-visible.
+Owner: `tep-agent-lab`.
 
-Stores dense traces/plots/tables/model outputs outside LLM context. Agent-visible tools return compact summaries plus artifact refs.
-
-### `InvestigationState`
-
-Owner: `tep-agent-lab`, coordinated through `industrial-agent-runtime`.
-
-Contains current goal, hypotheses, evidence refs, experiment refs, open questions, delegated tasks, budget state, and conclusion status.
-
-## Reference contract
-
-Cross-component state SHOULD use opaque stable references rather than direct Python objects or full blobs.
-
-Conceptually:
+An explicit relation between a visible observation and a hypothesis/claim:
 
 ```text
-InformationRef:
-  ref_id
-  kind
-  owner
-  version
-  checksum?
-  visibility: AGENT | EVALUATOR | INTERNAL
-  created_at
+hypothesis_ref
+observation_ref
+relation
+reason_summary
+producer
 ```
 
-The `visibility` field is critical for ground-truth isolation.
+This allows the evaluator to distinguish queries from actually cited/used evidence.
+
+### Experiment Ledger view
+
+Owner: `tep-agent-lab`.
+
+Logical append-only view of proposed/frozen/executed experiments and outcomes. Canonical experiment contracts are in `hypothesis-experiment-v0.md`.
+
+### `TaskStateStore`
+
+Generic protocol owner: `industrial-agent-runtime`.
+
+Consumer implementation owner: `tep-agent-lab` for RCA.
+
+The runtime calls `revision/status/project/apply`; it never imports RcaState fields.
+
+### Artifact files
+
+Ownership follows producer.
+
+Dense telemetry, rollouts, plots, arrays, context projections, and other large blobs remain outside model context and are referenced by checksum/versioned refs.
+
+## Engineering records
+
+`tep-agent-lab` owns structured archival engineering records defined in `engineering-records-v0.md`.
+
+v0 minimum:
+
+- `InvestigationReport`;
+- `DecisionRecord`;
+- `ExperimentRecord`.
+
+Future types may include:
+
+- `RecoveryRecord` / `MaintenanceRecord`;
+- `LessonLearned`;
+- `RunbookCandidate`;
+- `ManualChangeProposal`.
+
+These future records do not automatically gain rule/authority status.
+
+## Engineering records versus future memory
+
+v0 records are **archive/audit outputs**.
+
+They are not automatically retrieved into later benchmark ContextProjections. This preserves clean no-memory baselines and prevents previous Agent conclusions from contaminating hidden evaluation.
+
+A later cross-incident-memory experiment may explicitly compare:
+
+```text
+no history
+vs raw trace retrieval
+vs structured engineering-record retrieval
+vs approved lesson/rule retrieval
+```
+
+Such retrieval must be versioned/configured as a capability ablation.
+
+## Context projection
+
+There is no generic domain-relevance `ContextBroker` service in v0.
+
+Instead, the consumer provides a domain function such as:
+
+```text
+project_rca_state(state, policy) -> ContextProjection
+```
+
+Consumer responsibilities:
+
+- resolve domain refs;
+- choose relevant state/evidence/topology slices;
+- reject evaluator-only refs;
+- preserve provenance;
+- keep within configured content policy.
+
+Runtime responsibilities:
+
+- validate generic ref integrity/visibility metadata;
+- enforce model-context/token/size limits;
+- persist the exact immutable ContextProjection used for each model turn.
+
+Only introduce a generic ContextBroker after a second domain demonstrates genuinely reusable projection behavior.
 
 ## Read/write authority
 
 ```text
-Object                 Read by Agent?   Write authority
-ProcessGraph            yes              tep-sim build/update path
-VariableRegistry        yes              tep-sim
-Hard Rule Registry      yes              tep-sim / reviewed code-data
-Lab Rule Registry       yes              tep-agent-lab promotion workflow
-EvidenceStore           yes              tool/runtime adapters
-ExperimentLedger        yes              lab experiment service
-Evaluator Ground Truth  no               evaluator only
-InvestigationState      scoped           Coordinator + validated updates
-ArtifactStore           by ref           producing deterministic tool/service
+Object / view              Agent reads?       Write authority
+ProcessGraph                policy-scoped      tep-sim build/update path
+VariableRegistry            policy-scoped      tep-sim
+Simulator rules             policy-scoped      tep-sim
+Lab rules/policies          policy-scoped      lab controlled path
+ObservationRecord           yes by visible ref deterministic producer/run log
+EvidenceLink                yes               validated lab state update
+Experiment records          yes               lab experiment path
+RcaState                    projected          lab TaskStateStore.apply
+Evaluator Ground Truth      no                evaluator only
+Artifacts                   visible by ref     deterministic producer
+Engineering records         archive/read later report builder + verifier
 ```
 
-The model never directly edits persistent stores. It requests typed updates through tools/contracts.
+The model never directly edits persistent records/stores. It proposes typed operations/links/results through registered contracts.
 
-## Context Broker
+## Provenance
 
-The generic runtime SHOULD provide a reference-aware `ContextBroker` interface but must not decide TEP semantics.
-
-Consumer responsibilities:
-
-- resolve information refs;
-- select task-relevant slices;
-- apply visibility policy;
-- enforce size/token budgets;
-- summarize deterministically where possible;
-- preserve provenance.
-
-Example:
-
-```text
-Main Agent requests reactor cooling context
- -> ContextBroker receives process/evidence refs
- -> lab adapter selects local topology + recent signals + relevant rules
- -> compact structured context enters model turn
-```
-
-## Provenance rule
-
-Every derived information object must be traceable to its inputs and transformation.
+Every derived object must point to inputs/transformation/version.
 
 Examples:
 
 ```text
-paper excerpt -> extracted K3 candidate rule
-rollout R17 + analyzer v2 -> lag-analysis evidence E42
-K3 rule + validation campaign V4 -> K2 rule revision
+rollout R17 + feature extractor v2 -> Observation O42
+Observation O42 -> EvidenceLink supporting H3
+Experiment E7 + predictions -> deterministic result ER7
+final RcaState revision 31 + refs -> InvestigationReport IR1
 ```
+
+## Ground-truth isolation
+
+Two controls are required:
+
+1. consumer projection/tool policy must not resolve evaluator-only refs;
+2. generic runtime must fail closed if a ContextProjection includes an `EVALUATOR` ref.
+
+Leakage audit must inspect artifact names/metadata as well as structured fields.
 
 ## Why this is not a new repository
 
-The information plane describes contracts and ownership, not a standalone product. Creating another repo now would add coordination/context overhead without an independent consumer boundary.
+The plane describes ownership/contracts/views, not an independently deployable product.
 
-Revisit only if multiple independent domain labs require the same persistent evidence/experiment services.
+Revisit a shared information service only if multiple independent domain labs require the same persistent evidence/experiment/record infrastructure.
 
 ## Invariants
 
-- Hidden evaluator truth cannot be materialized through agent-visible refs.
-- Large raw artifacts are not automatically copied into model context.
-- Every mutable information object is versioned or append-only.
-- Domain truth remains owned by domain/environment repositories, not generic runtime.
-- Conversation transcripts are supplementary trace data, not canonical investigation state.
+- Conversation transcript is not canonical state.
+- v0 does not require multiple physical databases/stores.
+- `InformationRef` generic envelope belongs to runtime.
+- Domain relevance/projection belongs to the consumer.
+- Observation becomes evidence only through an explicit link.
+- Engineering records do not automatically become Rules or future Context.
+- Hidden evaluator truth never becomes agent-visible information.
+- Mutable state is versioned; run evidence/history is append-only.
