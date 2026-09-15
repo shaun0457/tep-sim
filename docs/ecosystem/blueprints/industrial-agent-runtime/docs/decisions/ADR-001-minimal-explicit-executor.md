@@ -1,38 +1,51 @@
 # ADR-001 — Start with a minimal explicit executor
 
-Status: proposed  
+Status: **superseded by ADR-002 / `hybrid-orchestration-v0.md`**  
 Date: 2026-09-15
 
-## Context
+## Historical context
 
-The runtime needs bounded model/tool/subagent orchestration. Frameworks such as LangGraph can provide durable state and interrupts, but the initial requirements are small enough to represent directly.
+The initial runtime design assumed that bounded model/tool/subagent orchestration could be represented by a small explicit Python state machine, with LangGraph added only if durable resume/interrupt requirements later appeared.
 
-## Decision
+This was useful for establishing several principles that remain valid:
 
-Implement v0 as an explicit Python executor/state machine with typed contracts and deterministic gates. Keep orchestration-framework types out of public contracts.
+- keep framework-native types out of public contracts;
+- keep deterministic gates explicit/testable;
+- do not use CLI coding agents or recursive swarms as the production runtime;
+- preserve a small simple execution path for simple tasks.
 
-LangGraph remains an optional adapter introduced only when a consuming workflow demonstrates a concrete need for durable checkpoint/resume, human interrupts, or persistent multi-step branching.
+## Original decision
 
-## Consequences
+The original proposal was to implement v0 primarily as an explicit Python executor/state machine and treat LangGraph as a later optional adapter.
 
-Positive:
+## Why superseded
 
-- smaller dependency/context surface;
-- clearer unit tests and failure semantics;
-- easier comparison of agent behavior versus orchestration behavior;
-- no framework lock-in in task/tool contracts.
+Subsequent architecture discussion clarified that the target system intentionally needs a **Hybrid orchestration model**:
 
-Negative:
+- goal-driven Main Agent;
+- deterministic Coordinator / Executor / Verifier;
+- local ReAct-style simple path;
+- bounded model-proposed Dynamic DAG for complex investigations;
+- structured Investigation State / Information Plane;
+- graph/checkpoint orchestration useful in `tep-agent-lab`.
 
-- some checkpoint/interrupt features may need later adapter work;
-- executor code must still be disciplined about state transitions and traces.
+Therefore "minimal explicit executor" is no longer the complete runtime architecture.
 
-## Alternatives considered
+## What remains from this ADR
 
-1. LangGraph from day one — rejected for v0 because it adds concepts before requirements justify them.
-2. CLI coding agent as runtime — rejected because repository/shell capabilities and broad context are inappropriate for controlled domain execution.
-3. Fully autonomous recursive agent swarm — rejected because it is difficult to bound, evaluate, and attribute gains to specific mechanisms.
+A small explicit loop/state machine remains valuable as:
 
-## Revisit trigger
+- the simplest reference implementation of the framework-neutral contracts;
+- a deterministic unit-test harness;
+- the fast/simple path that does not need a Dynamic DAG;
+- a comparison baseline against a LangGraph adapter.
 
-Revisit after at least one `tep-agent-lab` workflow requires durable resume/human interrupt or after explicit-executor complexity becomes measurably worse than a graph adapter.
+It must not be interpreted as a prohibition on Hybrid graph orchestration.
+
+## Superseding decision
+
+See:
+
+- `ADR-002-hybrid-orchestration.md`;
+- `../specs/hybrid-orchestration-v0.md`;
+- `../architecture.md`.
