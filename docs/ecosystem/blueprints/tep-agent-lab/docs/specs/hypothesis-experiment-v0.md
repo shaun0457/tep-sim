@@ -1,11 +1,11 @@
 # Hypothesis and Experiment Contracts v0
 
-Status: accepted direction / v0 contract proposal  
+Status: proposal  
 Owner repo: `tep-agent-lab`
 
 ## Goal
 
-Represent hypotheses and experiments as first-class typed objects so RCA, Dynamic DAG planning, AutoResearch, evidence integration, and evaluation do not depend on free-form chat history.
+Represent hypotheses, predictions, experiments, deterministic results, and model interpretation as first-class typed objects so investigation/evaluation does not depend on free-form chat history.
 
 ## `Hypothesis`
 
@@ -18,18 +18,18 @@ Hypothesis
   scope_refs[]
   status
   prior_weight?
-  current_score_or_rank?
-  supporting_evidence_refs[]
-  contradicting_evidence_refs[]
+  current_rank_or_score?
+  supporting_evidence_link_refs[]
+  contradicting_evidence_link_refs[]
   experiment_refs[]
   assumptions[]
-  falsification_conditions[]
+  falsification_prediction_refs[]
   created_by
   created_at
   last_updated_revision
 ```
 
-### Hypothesis status
+### Status
 
 ```text
 PROPOSED
@@ -41,11 +41,7 @@ UNTESTABLE
 UNRESOLVED
 ```
 
-Status transitions are recorded; old state is not silently rewritten.
-
-### Hypothesis types
-
-Initial examples:
+### Types
 
 ```text
 ROOT_CAUSE
@@ -56,23 +52,70 @@ HAZOP_CAUSE
 RESEARCH_IDEA
 ```
 
-Types are semantic metadata, not fixed agent roles.
+Types are semantic metadata, not agent roles.
 
-## Evidence attachment
+## Observation/evidence relationship
 
-An evidence item may support, contradict, or remain neutral to a hypothesis.
+Tool/simulator outputs create immutable observation/result refs as defined in `investigation-state-v0.md`.
+
+Evidence for a hypothesis is an explicit `HypothesisEvidenceLink` from a visible observation to the hypothesis:
 
 ```text
 HypothesisEvidenceLink
   hypothesis_ref
-  evidence_ref
+  observation_ref
   relation: SUPPORT | CONTRADICT | CONTEXT | NEUTRAL
   strength?
   reason_summary
   producer
 ```
 
-The model may propose links; deterministic verification checks that referenced evidence exists and visibility/provenance is valid.
+The model may propose the relation. Deterministic verification checks ref existence/visibility/provenance, not open-ended scientific correctness.
+
+## `Prediction`
+
+Experiments require machine-readable expected outcomes when practical.
+
+```text
+Prediction
+  prediction_id
+  hypothesis_ref
+  variable_ref
+  feature
+  window_or_horizon
+  expected_value_or_range
+  tolerance?
+  preprocessing_ref?
+  metric_ref?
+  conditions[]?
+```
+
+Initial feature vocabulary:
+
+```text
+DIRECTION
+DELTA
+PEAK
+MINIMUM
+LAG
+ONSET_TIME
+SETTLING_TIME
+STEADY_STATE_RANGE
+INTEGRATED_ERROR
+CORRELATION
+TRAJECTORY_DISTANCE
+EVENT_OR_SHUTDOWN
+```
+
+Examples:
+
+```text
+H1 / XMEAS_9 / DIRECTION / next 30 min / INCREASE
+H1 / XMEAS_21 / LAG / next 60 min / [2 min, 8 min]
+H2 / reactor_temperature / PEAK / next 30 min / [124 C, 128 C]
+```
+
+When no supported deterministic feature can represent an expected outcome, the field may be explicitly `QUALITATIVE_UNSCORED`; such a prediction is not used for deterministic discrimination metrics.
 
 ## `ExperimentProposal`
 
@@ -85,19 +128,19 @@ ExperimentProposal
   experiment_type
   rationale
   discriminating_question
-  expected_outcomes[]
+  prediction_refs[]
   scenario_or_intervention
   required_input_refs[]
   requested_tools[]
   seed_policy
   horizon
   metrics[]
-  budget
+  budget_request
   safety_constraints[]
   status
 ```
 
-## Experiment types
+### Experiment types
 
 ```text
 COUNTERFACTUAL_ROLLOUT
@@ -109,25 +152,23 @@ RECOVERY_COMPARISON
 AUTORESEARCH_TRIAL
 ```
 
-## Discriminating experiment principle
+## Discriminating-experiment principle
 
-For RCA, an experiment should state what result would distinguish competing explanations where possible.
+A useful RCA experiment should identify which competing predictions differ and what result would distinguish them.
 
-Example:
+Conceptually:
 
 ```text
-Question:
-Does a reactor cooling-water disturbance reproduce the observed XMEAS(9)/XMEAS(21) trajectory better than a feed-temperature disturbance?
+H1 -> Prediction P1
+H2 -> Prediction P2
 
-Expected outcomes:
-- H1 predicts temperature rise with cooling-water signature A
-- H2 predicts temperature/feed signature B
-
-Metric:
-trajectory similarity + direction/lag checks
+Experiment E
+  measures features supporting P1/P2
+  -> deterministic result features
+  -> compare result against P1/P2 tolerances
 ```
 
-The system should reward useful discrimination rather than raw experiment count.
+A discrimination metric should use typed predictions/feature distances and benchmark-defined plausible competitors rather than free-text LLM grading.
 
 ## Experiment compilation
 
@@ -135,28 +176,51 @@ A proposal is data until validated/compiled:
 
 ```text
 ExperimentProposal
- -> schema/policy/budget gate
- -> capability check
- -> scenario compiler / Tool Bridge resolution
- -> concrete `ExperimentRunSpec`
+ -> runtime G0-G3
+ -> lab validate_request
+ -> capability/scenario/tool resolution
+ -> frozen ExperimentRunSpec
  -> isolated execution
+ -> deterministic ExperimentResult
+ -> post-execution verify_result
 ```
 
-### `ExperimentRunSpec`
+## `ExperimentRunSpec`
 
 ```text
-run_spec_id
-experiment_id
-branch/snapshot_ref
-resolved_tool/config versions
-resolved_interventions
-seeds
-horizon
-metric/scorer versions
-resource limits
+ExperimentRunSpec
+  run_spec_id
+  experiment_id
+  parent_state_content_checksum
+  branch_or_snapshot_ref
+  resolved_tool/config versions
+  resolved_interventions
+  seeds_or_seed_policy
+  horizon
+  metric/scorer versions
+  resource_limits
+  canonical_experiment_key
 ```
 
-The exact run spec is frozen before execution.
+### Canonical experiment identity
+
+Opaque snapshot IDs alone must not define duplication identity.
+
+`canonical_experiment_key` is derived from normalized content such as:
+
+```text
+hash(
+  parent_state_content_checksum,
+  resolved_interventions/scenario,
+  tool/config versions,
+  horizon,
+  seed policy,
+  metric/scorer versions,
+  relevant preprocessing
+)
+```
+
+Lab pre-execution policy owns exact duplicate blocking because generic runtime does not understand experiment semantics.
 
 ## `ExperimentResult`
 
@@ -166,7 +230,8 @@ ExperimentResult
   run_spec_ref
   status
   metric_values
-  evidence_refs[]
+  prediction_evaluations[]
+  observation_refs[]
   rollout/artifact_refs[]
   safety_summary_ref?
   failure_class?
@@ -175,77 +240,87 @@ ExperimentResult
   completed_at
 ```
 
-The model does not author metric values that deterministic tools/scorers can compute.
+`prediction_evaluations` are deterministic where feature extraction/tolerance checking is supported:
 
-## Result interpretation
+```text
+prediction_ref
+observed_feature
+match_status: MATCH | CONTRADICT | INCONCLUSIVE | UNSCORED
+metric_distance?
+```
+
+The model does not author numeric simulator/tool/scorer values that deterministic components can compute.
+
+## Model interpretation
 
 After execution, the Main Agent may propose:
 
 ```text
 ExperimentInterpretation
   experiment_ref
+  proposed_evidence_links[]
   hypothesis_updates[]
   conclusion_summary
   residual_uncertainty
   next_questions[]
 ```
 
-The interpretation is distinct from the deterministic result.
+Interpretation is never substituted for the deterministic ExperimentResult.
 
 ## Duplicate / low-value experiment control
 
-Before execution, the Coordinator/lab policy SHOULD compare a proposal with the Experiment Ledger for:
+Before execution, the **lab pre-execution validator**, not generic Coordinator, may inspect prior run-log/Experiment Ledger views for:
 
-- identical run spec;
-- equivalent hypothesis/question already tested;
-- overlapping parameter search already exhausted;
+- identical canonical experiment key;
+- exhausted parameter region;
+- equivalent question already tested;
 - insufficient expected discrimination;
-- budget disproportionate to expected value.
+- budget disproportionate to configured value policy.
 
-v0 may only block exact duplicates and annotate likely redundancy; stronger semantic duplicate detection is an evaluated feature.
+v0 MUST block exact canonical duplicates. Semantic redundancy detection may initially warn/annotate and is an evaluated feature.
 
 ## Parameter-search boundary
 
-When the research question is numerical optimization rather than mechanism reasoning, the Agent SHOULD specify:
+For numerical optimization, the Agent specifies:
 
 ```text
 search variables
 bounds/constraints
 objective(s)
-why these variables matter
+why the variables matter
 ```
 
-Then a deterministic optimizer/search tool performs the numeric search.
-
-The Agent should not spend repeated model calls guessing individual floating-point values when grid/random/Bayesian/evolutionary search is more appropriate.
+A deterministic/seeded optimizer Tool Bridge selects numeric trials within its reserved budget. Repeated LLM guessing of floating-point values is not the default architecture.
 
 ## Provenance
 
-Every experiment must bind:
+Every experiment binds:
 
-- hypothesis/question motivating it;
-- exact environment snapshot/config;
-- tool/library/scorer versions;
+- motivating hypothesis/question/predictions;
+- parent state/snapshot content checksum;
+- resolved environment/tool/library/scorer versions;
 - seeds;
-- rule versions used in validation;
+- rule/policy versions used for validation;
 - artifacts/results;
-- model/subagent that proposed/interpreted it.
+- proposer/interpreter identity;
+- actual resource usage.
 
 ## Invariants
 
-- Hypotheses are not persistent rules.
-- Proposed experiments do not execute before deterministic validation.
-- Experiment results are separate from model interpretation.
-- Counterfactual experiments do not mutate the reference branch.
-- Numeric metrics come from deterministic/scoped evaluators when available.
-- Failed/negative experiments remain in the ledger.
+- Hypotheses are working claims, not persistent rules.
+- Observation is not automatically evidence.
+- Prediction is typed when used for deterministic discrimination scoring.
+- Proposed experiments never execute before deterministic validation/resource reservation.
+- ExperimentResult is separate from model interpretation.
+- Counterfactual experiments never mutate reference state.
+- Failed/negative experiments remain in run history.
 
 ## Acceptance tests
 
-1. Create two competing root-cause hypotheses and attach evidence.
-2. Propose a discriminating counterfactual experiment referencing both.
-3. Reject an unsupported scenario before rollout.
-4. Freeze and execute a valid run spec in an isolated branch.
-5. Attach deterministic result evidence to both hypotheses with opposite relation labels.
-6. Reject exact duplicate experiment execution from the ledger.
-7. Hand a bounded numeric tuning problem to an optimizer tool rather than repeated model-value guessing.
+1. Create two competing hypotheses and typed predictions on the same measured variable/features.
+2. Propose a discriminating experiment referencing both predictions.
+3. Reject unsupported scenario before execution.
+4. Freeze/execute a valid ExperimentRunSpec in an isolated branch.
+5. Produce deterministic PredictionEvaluation values and then let the Agent propose evidence links separately.
+6. Reject an exact duplicate using canonical experiment key even when a new snapshot ID was created from identical content.
+7. Hand bounded numeric tuning to a SIMULATE optimizer bridge whose trial/rollout budget is pre-reserved.
