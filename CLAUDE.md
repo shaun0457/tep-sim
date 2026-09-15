@@ -1,52 +1,95 @@
 # tep-sim
 
-Tennessee Eastman Process 動態模擬 + event-driven LLM agent 診斷 / 受控介入。
+Tennessee Eastman Process 的 **agent-agnostic simulation sandbox**。
 
-完整設計見 `docs/architecture.md`，實作順序見 `docs/roadmap.md`，跨 coding-agent 規則見 `AGENTS.md`。
+完整設計見 `docs/architecture.md`，實作順序見 `docs/roadmap.md`，跨 coding-agent 規則見 `AGENTS.md`，多 repo 邊界見 `docs/ecosystem/README.md`。
 
-## 定案
+## 這個 repo 負責什麼
 
-- 模擬器：`vendor/tep-sim-upstream`（jkitchin/tennessee-eastman-profbraatz，git submodule）。
-  不重寫模型、不換 Rust；瓶頸在 LLM 決策延遲，不在積分器（純 Python 已 ~1000 steps/s）。
-- 安裝：**不要 `pip install -e vendor/...`**——meson-python 在 Windows 即使 `-Dfortran=disabled`
-  也要 C compiler。改用 `.venv` + 把 `vendor/tep-sim-upstream/src` 寫進 site-packages 的
-  `tep_upstream.pth`。依賴只有 numpy。
-- Agent 控制：必須用 `ControlMode.MANUAL` 或自訂 `BaseController` plugin。
-  `CLOSED_LOOP` 下 `set_mv()` 會在下一個 `step()` 被內建 PI 控制器覆寫。
-- **CLI coding agents 只負責開發 repo，不作為線上 plant-control runtime。**
-- 線上 runtime 採 hybrid：simulation / telemetry / detector / safety / action gate 為 deterministic Python；LLM 只在 incident slow path 做診斷與 recovery proposal。
-- Healthy path 必須做到 **0 model calls**。
-- LLM 不得直接呼叫 `set_mv()`；只輸出 typed proposal，由 deterministic gate 驗證 target、range、delta/rate、cooldown、permission、safety 後才可執行。
-- 先用單一 reasoning agent；只有在可量化證明有幫助時才加入 bounded subagents。不要先建立 Supervisor/DataEngineer/DataScientist 等固定角色鏈。
-- LangGraph 只包 incident reasoning workflow；不要把每秒 simulation step 放進 graph。先以 plain Python FSM 完成 MVP，真的需要 checkpoint/resume、human interrupt、bounded retry 或 stateful branching 再引入 LangGraph。
-- 不要在 prompt 裡手寫/記憶 XMEAS/XMV mapping。runtime source of truth 來自 vendored simulator metadata/constants；目前對照見 `docs/runtime-variable-map.md`。
-- `data/raw/`（3.2 GB Rieth 資料集）不進 git；本機路徑見 .gitignore 註解。
-- `docs/papers/` 是出版社論文 → repo 保持 private。
-- Blender / DEXPI / Omniverse 視覺化是展示層，在模擬器 + incident + gate + recovery verification 迴圈跑通之後才做。
-  公開的 TEP DEXPI 檔不存在，要自己建立 process topology / DEXPI representation。
+- 包裝 `vendor/tep-sim-upstream` 成穩定的 environment API；
+- reproducible reset / step / rollout；
+- canonical XMEAS / XMV / IDV registry；
+- disturbance / intervention；
+- telemetry；
+- snapshot / fork / replay；
+- capability discovery；
+- deterministic safety evaluation；
+- scenario/result persistence；
+- read-only visualization adapter。
 
-## 第一個端到端 milestone
+## 這個 repo 不負責什麼
+
+- LLM provider；
+- LangGraph / agent orchestration；
+- dynamic subagents；
+- prompts / memory；
+- HAZOP/RCA reasoning；
+- P&ID image recognition；
+- generic P&ID -> simulation compiler。
+
+不要因為某個 integration experiment 需要這些功能，就把它們加進 `tep-sim`。
+
+## Simulator 定案
+
+- upstream：`vendor/tep-sim-upstream`（jkitchin/tennessee-eastman-profbraatz，git submodule）。
+- 不重寫 TEP physics；先建立穩定 adapter。
+- Windows 開發環境目前使用 `.venv` + `.pth` 指向 upstream `src`，避免 meson-python compiler 問題。
+- Direct MV intervention 使用 `ControlMode.MANUAL` 或合適的 custom controller；`CLOSED_LOOP` 的 PI controller 可能在下一 step 覆寫手動 XMV。
+- runtime metadata 的 source of truth 必須來自 vendored simulator，而不是 paper appendix 或 prompt。
+
+## Environment API 方向
 
 ```text
-normal run
--> inject one TEP disturbance
--> deterministic detection
--> compact IncidentContext
--> agent diagnosis + ActionProposal
--> deterministic action gate
--> apply/reject bounded XMV action
--> deterministic post-action verification
--> persist complete run trace
+reset(seed, config)
+observe()
+capabilities()
+snapshot()
+fork(snapshot)
+inject(intervention)
+step(n)
+rollout(horizon)
+evaluate_safety(result)
+replay(run_id)
 ```
 
-建議第一個 fault path 使用 reactor cooling-water scenario，因為 vendored simulator 的關係清楚：
+API 要 typed、可測、可重播。
 
-- XMEAS(9) = Reactor Temperature
-- XMEAS(21) = Reactor Cooling Water Outlet Temperature
-- XMV(10) = Reactor Cooling Water Flow
-- IDV(4) = Reactor Cooling Water Inlet Temperature step disturbance
+## HAZOP 支援的正確邊界
 
-做 blind diagnosis eval 時，不要把 ground-truth IDV 直接給 agent。
+`tep-sim` 可以提供 HAZOP workflow 所需的 simulation primitive，但不執行 HAZOP reasoning。
+
+例如 integration layer 可以提出：
+
+```text
+node = reactor_cooling_loop
+parameter = flow
+guide_word = LESS
+magnitude = 20%
+```
+
+本 repo 的 scenario compiler 只回答：
+
+1. 這個 deviation 是否能由目前 TEP physics 表示？
+2. 若可以，對應哪一個 deterministic intervention？
+3. rollout 後 process/safety state 發生什麼？
+
+若要求的是 pipe rupture、toxic dispersion、fire、explosion 等目前模型沒有的 physics，必須明確回 unsupported，不可讓 agent 或程式自行腦補。
+
+## 第一個 milestone
+
+```text
+reset
+-> baseline rollout
+-> snapshot
+-> fork
+-> inject IDV(4)
+-> rollout
+-> collect XMEAS/XMV/safety trace
+-> replay same seed/config
+-> verify reproducibility
+```
+
+接著再建立 generalized scenario contract 和 HAZOP-friendly deviation compiler。
 
 ## 驗證
 
@@ -54,10 +97,11 @@ normal run
 .venv/Scripts/activate && python -c "from tep import TEPSimulator; s=TEPSimulator(); s.initialize(); print(s.step())"
 ```
 
-後續至少要有 automated tests 驗證：
+至少需要 automated tests 驗證：
 
-1. healthy run = 0 LLM calls；
-2. XMV registry 與 upstream 一致；
-3. invalid proposal 永遠碰不到 `set_mv()`；
-4. failed recovery 有 bounded retry，最後進 safe hold；
-5. 每個 applied action 都可追溯到 incident、proposal、gate decision 與 verification outcome。
+1. same seed/config 可重現；
+2. snapshot/fork 不互相污染；
+3. XMV registry 與 upstream 一致；
+4. invalid intervention 被 schema/bounds 擋下；
+5. unsupported hazard 明確失敗；
+6. 每個 run 有完整 provenance。
