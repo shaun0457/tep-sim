@@ -1,65 +1,133 @@
 # Open Questions — `tep-agent-lab`
 
-## OQ-1 — First RCA ground-truth disturbance
+Only unresolved empirical/benchmark choices remain here. Hybrid orchestration, Information Plane, K0–K4 knowledge levels, Tool Bridge, first-class Hypothesis/Experiment objects, and AutoProcessResearch are accepted directions with v0 specs.
 
-Use reactor cooling-water family for the first benchmark, but exact IDV/magnitude/timing should be chosen only after baseline trajectories and distinguishability are measured.
+## OQ-1 — First RCA scenario set
 
-Avoid a case that is either trivially identifiable from one signal or impossible to discriminate under available TEP physics.
+Use reactor/cooling-water family first, but exact candidate causes, IDVs, magnitudes, timings, seeds, and operating variants must be selected after the identifiability pilot in `benchmark-design-v0.md`.
+
+Avoid both trivial one-signal cases and practically indistinguishable cases unless intentionally labeled as difficulty/uncertainty tests.
 
 ## OQ-2 — Incident trigger source
 
-Should RCA begin from a deterministic detector-generated incident, or from a fixture-provided investigation start time?
+First benchmark default: fixture-provided investigation start point plus compact abnormal-signal evidence, so detector quality does not confound investigation quality.
 
-Default for first benchmark: fixture-provided start point plus compact abnormal-signal summary, so detector quality does not confound agent investigation quality. Add detector-trigger experiments later.
+Later compare with deterministic detector-triggered starts.
 
-## OQ-3 — Main-agent planning style
+## OQ-3 — Dynamic DAG policy defaults
 
-Do we require an explicit plan before tool use or allow free ReAct-style iteration?
+Hybrid/Dynamic DAG direction is accepted, but lab defaults for when complexity justifies a DAG remain empirical.
 
-Default: do not require verbose plans. Tool calls and subtask reasons already provide traceable intent. Test an explicit short-plan condition later as an ablation.
+Questions:
+
+- should the Main Agent explicitly classify simple/complex work or simply propose a plan when useful?
+- what node/parallel/revision budgets minimize overhead?
+- when does direct ReAct outperform plan construction?
+
+Answer through orchestration ablation, not hard-coded intuition.
 
 ## OQ-4 — Subagent trigger policy
 
-Should main agent freely decide when to spawn within budget, or should the host expose recommended triggers?
+Default: Main Agent chooses when to delegate within deterministic limits.
 
-Default: agent chooses within deterministic limits. Compare against no-subagent and fixed-parallel-hypothesis baselines.
+Compare with:
 
-## OQ-5 — Simulation experiment API granularity
+- no subagents;
+- fixed parallel hypothesis workers;
+- dynamic delegation.
 
-Should an agent specify raw TEP interventions or higher-level semantic scenarios?
+Evaluate incremental quality versus context/token/tool cost.
 
-Default: prefer semantic deviation/scenario contracts when deterministic mappings exist; allow bounded low-level XMV/IDV controls only through explicit experiment tools.
+## OQ-5 — Semantic stop thresholds
 
-## OQ-6 — Recovery authority
+The state/verifier support semantic stopping, but mode-specific thresholds remain open.
 
-Should the first recovery benchmark actually apply an agent-selected action to the reference branch, or only rank forked strategies?
+Examples:
 
-Default: first prove candidate-generation/evaluation in forks; enable reference application only after domain gates and verification tests pass.
+- minimum evidence support;
+- hypothesis-rank margin;
+- unresolved critical-question count;
+- marginal experiment value threshold;
+- plateau criteria.
 
-## OQ-7 — Deterministic domain-policy limits
+These should be frozen per benchmark version.
 
-Exact values for max XMV delta, cooldowns, allowed actuators, and verification windows must be derived per experiment from simulator behavior, not invented globally.
+## OQ-6 — Rule promotion thresholds
 
-## OQ-8 — HAZOP scope and terminology
+K0–K4 architecture is fixed, but K3 -> K2 validation criteria are relationship-specific.
 
-How closely should v0 mimic formal IEC HAZOP worksheets versus focus on simulation-backed deviation experiments?
+Need pilot policies for:
 
-Default: preserve node/parameter/guide-word/deviation/cause/consequence/safeguard structure, but clearly label the system as research support rather than formal HAZOP completion.
+- number/diversity of scenarios;
+- operating-envelope coverage;
+- seed variation;
+- tolerance/effect consistency;
+- contradictory evidence handling;
+- when K2 remains advisory versus warrants stronger reviewed enforcement.
 
-## OQ-9 — Knowledge service timing
+## OQ-7 — Initial Tool Bridge dependency set
 
-When should `manufacturing-kg-agent` enter the benchmark?
+Candidate set is documented, but actual v0 dependencies should stay minimal.
 
-Default: after a clean no-KG baseline exists, so the contribution of document/knowledge retrieval can be measured as an ablation.
+Choose based on first benchmark needs, maintenance/license review, reproducibility, and whether upstream TEP already supplies equivalent functionality.
 
-## OQ-10 — Model choice
+Likely order:
 
-Model/provider is an experiment dimension, not an architecture dependency. First implementation should support one reliable model through the generic runtime, then freeze model/version per benchmark run.
+1. upstream TEP detector/analysis capabilities;
+2. SciPy signal/lag features;
+3. graph utilities;
+4. selected PCA/PLS baseline tools;
+5. sensitivity/optimization tools when AutoResearch begins.
 
-## OQ-11 — Long-term agent memory
+## OQ-8 — Simulation experiment granularity
 
-No cross-incident learned memory in initial benchmarks. Add only as a separately evaluated capability after single-run behavior is understood.
+Default: prefer semantic scenario/deviation contracts when deterministic mappings exist; allow bounded low-level XMV/IDV experiment controls through explicit typed tools.
 
-## OQ-12 — Visualization
+Pilot experience will determine how often semantic compilation is too restrictive for useful research.
 
-A 2D process graph + telemetry + branch timeline is sufficient for v0. Do not introduce Blender/Omniverse/3D until it supports a concrete research question such as spatial reasoning.
+## OQ-9 — Recovery authority
+
+First recovery benchmark ranks forked strategies. Reference mutation remains disabled until gates/verification are proven.
+
+Open: which benchmark version first enables one real reference-branch action and whether human approval is required in research mode.
+
+## OQ-10 — AutoProcessResearch first campaign
+
+Default candidate: robust reactor cooling-water recovery strategy.
+
+Still to freeze after recovery benchmark exists:
+
+- exact mutable surface;
+- primary scalar objective/weights;
+- hard safety constraints;
+- research versus hidden-eval scenario split;
+- optimizer method/trial budget;
+- plateau/minimum-improvement thresholds.
+
+## OQ-11 — HAZOP scope
+
+Default: preserve node/parameter/guide-word/deviation/cause/consequence/safeguard semantics while clearly labeling results as simulation-backed research support, not formal HAZOP completion.
+
+Open: how much worksheet/report structure is useful versus overhead for the agent-research question.
+
+## OQ-12 — External knowledge timing
+
+Add `manufacturing-kg-agent` only after clean no-KG baselines.
+
+Open: which task family benefits enough to justify retrieval and how K3 extracted rules/evidence are scored.
+
+## OQ-13 — Model/provider study design
+
+Architecture remains provider-independent. First real model should be frozen per benchmark run.
+
+Open: whether model comparison is a primary study axis or only robustness validation after orchestration/tool architecture stabilizes.
+
+## OQ-14 — Cross-incident learned memory
+
+No learned cross-run memory initially. Revisit only after Information Plane/Rule Registry/Experiment Ledger baselines show a remaining repeated-task gap.
+
+## OQ-15 — Visualization
+
+2D topology + telemetry + investigation/DAG/branch timeline is sufficient for v0.
+
+Only add 3D if a concrete spatial-reasoning question appears.
