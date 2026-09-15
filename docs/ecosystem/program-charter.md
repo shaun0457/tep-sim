@@ -46,6 +46,7 @@ Owns domain-independent control-plane contracts:
 
 - Main Agent model/provider interface;
 - deterministic Coordinator/control loop;
+- explicit ModelTurn/ModelStateUpdateProposal routing;
 - pre-execution gates;
 - deterministic Executor/dispatcher;
 - post-execution result verifier;
@@ -129,18 +130,22 @@ The active program does not include:
 ```text
 consumer state projection
         |
-Main Agent
-  local goal-driven/ReAct reasoning
+Main Agent / ModelTurn
         |
-ToolCall / dependency-aware WorkBatch / FinishProposal
+        +-- optional ModelStateUpdateProposal
+        |      -> atomic TaskStateStore.apply_batch
         |
-pre-execution deterministic gates
-        |
-Executor
-        |
-post-execution deterministic verifier
-        |
-consumer TaskStateStore.apply
+        +-- one action: NONE | ToolCall | WorkBatch | FinishProposal
+                  |
+            pre-execution deterministic gates
+                  |
+               Executor
+                  |
+         post-execution deterministic verifier
+                  |
+         deterministic result ingestion
+                  |
+         consumer TaskStateStore.apply_batch
 ```
 
 A WorkBatch contains only `TOOL | SUBTASK` items with explicit `depends_on` in v0.
@@ -175,7 +180,7 @@ Paper/Agent/simulation evidence cannot self-promote execution authority. Authori
 Trace != Observation != Evidence != EngineeringRecord != Knowledge != Context
 ```
 
-- Tool/simulator output creates an immutable observation/result.
+- Every successful agent-visible ToolResult is registered as an immutable observation/result.
 - Evidence is an explicit link from an observation to a hypothesis/claim.
 - Engineering Records summarize/audit completed work.
 - Rules/knowledge have separate governance/authority.
@@ -224,18 +229,19 @@ MCP may later be one external provider protocol, not a core safety/runtime depen
 
 1. Environment truth is deterministic code/data, not prompt memory.
 2. Ground truth/candidate answer sets used by scorers are separated from Agent-visible context/refs.
-3. Model output proposes; deterministic code authorizes/executes.
-4. Pre-execution validation and post-execution verification are distinct.
-5. SIMULATE never mutates reference state.
-6. Subagents are ephemeral bounded tasks, not permanent organizational identities.
-7. Conversation transcripts are not canonical task/investigation state.
-8. Observation becomes evidence only through an explicit evidence link.
-9. Rule origin/validation/authority are independent; model/paper evidence cannot self-grant HARD_GATE authority.
-10. Compound tools cannot hide nested simulator/search resource usage.
-11. Every model turn uses/persists an exact ContextProjection ref.
-12. Unsupported physics must be explicit rather than hallucinated.
-13. Strong deterministic baselines are not weakened to make Agent results look better.
-14. Numeric optimization should use deterministic/seeded search tools where appropriate rather than repeated LLM floating-point guessing.
+3. Model output proposes; deterministic code authorizes/executes/applies validated state updates.
+4. Model-proposed internal state changes are explicit and revision-bound; rejected changes do not silently affect execution.
+5. Pre-execution validation and post-execution verification are distinct.
+6. SIMULATE never mutates reference state.
+7. Subagents are ephemeral bounded tasks, not permanent organizational identities.
+8. Conversation transcripts are not canonical task/investigation state.
+9. Observation becomes evidence only through an explicit evidence link.
+10. Rule origin/validation/authority are independent; model/paper evidence cannot self-grant HARD_GATE authority.
+11. Compound tools cannot hide nested simulator/search resource usage.
+12. Every model turn uses/persists an exact ContextProjection ref.
+13. Unsupported physics must be explicit rather than hallucinated.
+14. Strong deterministic baselines are not weakened to make Agent results look better.
+15. Numeric optimization should use deterministic/seeded search tools where appropriate rather than repeated LLM floating-point guessing.
 
 ## Success criteria for first meaningful v1 research slice
 
@@ -245,6 +251,7 @@ The first v1 slice is RCA-centric. A reproducible TEP incident can be:
 created -> observed
 -> represented in RcaState
 -> investigated by the Main Agent
+-> externalized through explicit typed state updates
 -> analyzed with bounded read/analysis/simulation tools
 -> tested by typed discriminating counterfactuals when useful
 -> concluded as a structured CausalClaim with evidence links
@@ -266,11 +273,18 @@ HAZOP, Recovery, and AutoProcessResearch are later research slices and do not bl
 
 ## Development policy
 
-`tep-sim` A1–A4 may begin independently.
+**Phase 0 Design Freeze is complete.** See `design-freeze-record.md`.
 
-Runtime/lab feature implementation waits until the post-review canonical-document cleanup passes a focused independent re-review with no remaining BLOCKER or implementation-defining MAJOR contradiction.
+Implementation may proceed according to `implementation-plan.md`:
 
-After freeze, coding agents may work in parallel only through spec-scoped branches/worktrees and explicit dependency contracts in `development-agent-orchestration.md`.
+- `tep-sim` A1–A4: GO;
+- runtime B1–B5: GO in dependency order;
+- lab C1–C5: GO in dependency order;
+- benchmark D0 begins once its upstream contracts/features exist.
+
+Coding agents may work in parallel only through spec-scoped branches/worktrees and explicit dependency contracts in `development-agent-orchestration.md`.
+
+If implementation finds a missing/contradictory public contract, emit `SPEC_CONFLICT` and reopen the owning spec rather than inventing architecture locally.
 
 ## Parked research
 
