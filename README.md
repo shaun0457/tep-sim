@@ -6,7 +6,7 @@ Agent-agnostic Tennessee Eastman Process (TEP) simulation sandbox for reproducib
 
 `tep-sim` owns the **environment**, not the agent.
 
-It should provide a stable programmatic world that can be used by humans, scripts, RL policies, LLM agents, HAZOP tooling, and future integration labs without knowing which reasoning system is driving it.
+It should provide a stable programmatic world that can be used by humans, scripts, RL policies, LLM agents, HAZOP tooling, and integration labs without knowing which reasoning system is driving it.
 
 Core responsibilities:
 
@@ -15,9 +15,10 @@ Core responsibilities:
 - disturbance and intervention APIs;
 - observation and telemetry APIs;
 - snapshot / fork / replay for counterfactual experiments;
-- explicit capability discovery so callers know what the environment can actually simulate;
+- explicit capability discovery;
 - deterministic safety-limit evaluation and run termination;
 - traceable run metadata and results;
+- machine-readable process topology/semantics for TEP;
 - later, read-only visualization consumers.
 
 Out of scope:
@@ -25,12 +26,12 @@ Out of scope:
 - LLM provider integration;
 - LangGraph or other agent orchestration;
 - prompts, agent memory, dynamic subagent spawning;
-- HAZOP reasoning logic;
-- RCA reasoning logic;
-- P&ID image digitization;
-- generic P&ID-to-simulation model generation.
+- HAZOP/RCA reasoning logic;
+- P&ID image digitization/OCR;
+- generic P&ID-to-simulation generation;
+- photorealistic 3D plant reconstruction.
 
-Those live in separate repositories described in [`docs/ecosystem/README.md`](docs/ecosystem/README.md).
+Those boundaries are described in [`docs/ecosystem/README.md`](docs/ecosystem/README.md).
 
 ## Simulator
 
@@ -39,13 +40,33 @@ The process model is vendored as a git submodule at `vendor/tep-sim-upstream` an
 Important facts:
 
 - `TEPSimulator.step()` advances the process one simulation step.
-- `ControlMode.CLOSED_LOOP` uses the built-in PI controllers and can overwrite manual MV changes.
+- `ControlMode.CLOSED_LOOP` uses built-in PI controllers and can overwrite manual MV changes.
 - Direct intervention experiments therefore use `ControlMode.MANUAL` or a suitable custom controller/plugin.
-- Upstream already exposes measurements, manipulated variables, disturbances, streaming history, detector hooks, and custom-controller interfaces.
+- Upstream exposes measurements, manipulated variables, disturbances, streaming history, detector hooks, and custom-controller interfaces.
+
+## Static semantics + dynamic simulation
+
+For the Tennessee Eastman benchmark, do not build a P&ID OCR pipeline. Use DEXPI Process / a curated machine-readable TEP process representation as the **static engineering-semantic layer**, and bind it to the existing TEP simulator as the **dynamic layer**.
+
+```text
+DEXPI / process graph
+  equipment / process steps / streams / variables / connectivity
+                    |
+                    v
+             TEP binding layer
+                    |
+          entity <-> XMEAS/XMV/IDV
+                    |
+                    v
+              TEP simulator
+        dynamics / disturbances / control
+```
+
+This gives agents a queryable process world without making drawing digitization part of the research problem.
+
+See [`docs/dexpi-tep-integration.md`](docs/dexpi-tep-integration.md).
 
 ## Target environment API
-
-The long-term public API should feel like this:
 
 ```python
 env = TEPEnvironment(seed=42)
@@ -66,7 +87,7 @@ result = branch.rollout(horizon_seconds=1800)
 report = branch.evaluate_safety(result)
 ```
 
-The exact API can evolve, but three properties are non-negotiable:
+Non-negotiable properties:
 
 1. reproducibility;
 2. typed interventions;
@@ -76,15 +97,15 @@ The exact API can evolve, but three properties are non-negotiable:
 
 A caller must be able to ask what the sandbox supports before requesting an experiment.
 
-For example, TEP can model process disturbances such as feed changes, cooling-water disturbances, valve sticking, reaction-kinetics variation, manipulated-variable changes, and resulting process/shutdown behavior.
+TEP can model feed changes, cooling-water disturbances, valve sticking, reaction-kinetics variation, manipulated-variable changes, and resulting process/shutdown behavior.
 
-It must **not pretend** to model hazards that are absent from its physics, such as a pipe rupture, toxic-cloud dispersion, ignition, fire radiation, or blast overpressure. Unsupported scenarios should return an explicit capability error rather than a fabricated result.
+It must **not pretend** to model hazards absent from its physics, such as pipe rupture, toxic-cloud dispersion, ignition, fire radiation, or blast overpressure. Unsupported scenarios return an explicit capability error.
 
 ## Variable mapping
 
 Runtime code must derive variable metadata from the vendored simulator, not from an LLM prompt or duplicated literature table. A temporary human-readable mapping is kept in [`docs/runtime-variable-map.md`](docs/runtime-variable-map.md).
 
-In particular, the vendored simulator maps:
+In particular:
 
 - XMV(6): Purge Valve
 - XMV(7): Separator Pot Liquid Flow
@@ -94,8 +115,6 @@ In particular, the vendored simulator maps:
 - XMV(11): Condenser Cooling Water Flow
 
 ## Near-term milestone
-
-The first environment milestone is a headless reproducible experiment:
 
 ```text
 reset
@@ -109,14 +128,15 @@ reset
 -> obtain identical result within numerical tolerance
 ```
 
-After that, add scenario compilation, HAZOP-friendly deviation contracts, and visualization adapters.
+Then add the DEXPI/topology binding and expose it as read-only/queryable environment context for the agent lab.
 
 ## Documentation
 
 - [`docs/architecture.md`](docs/architecture.md) — sandbox architecture and contracts
 - [`docs/roadmap.md`](docs/roadmap.md) — implementation sequence
-- [`docs/runtime-variable-map.md`](docs/runtime-variable-map.md) — current runtime mapping reference
-- [`docs/ecosystem/README.md`](docs/ecosystem/README.md) — multi-repository ecosystem
-- [`docs/ecosystem/pid-to-sim-automation.md`](docs/ecosystem/pid-to-sim-automation.md) — boundary between P&ID digitization and executable simulation
+- [`docs/runtime-variable-map.md`](docs/runtime-variable-map.md) — runtime mapping reference
+- [`docs/dexpi-tep-integration.md`](docs/dexpi-tep-integration.md) — DEXPI/process-graph integration for TEP
+- [`docs/ecosystem/README.md`](docs/ecosystem/README.md) — focused three-repository ecosystem
+- [`docs/ecosystem/pid-to-sim-automation.md`](docs/ecosystem/pid-to-sim-automation.md) — parked research note, not current scope
 - [`AGENTS.md`](AGENTS.md) — repository rules for coding agents
 - [`CLAUDE.md`](CLAUDE.md) — concise Claude Code context
