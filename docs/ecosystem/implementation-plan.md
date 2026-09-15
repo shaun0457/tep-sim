@@ -1,20 +1,25 @@
 # Cross-Repository Implementation Plan
 
-This plan follows the independent design review and `design-review-adjudication.md`.
+This plan follows the independent design review, `design-review-adjudication.md`, focused re-review, and `design-freeze-record.md`.
 
-It is not authorization for broad implementation until the remaining runtime/lab proposal specs pass focused re-review. `tep-sim` A1–A4 are explicitly independent and may proceed now.
+**Phase 0 Design Freeze is complete.** `tep-sim`, `industrial-agent-runtime`, and `tep-agent-lab` implementation may proceed according to the dependency graph below.
 
-## Phase 0 — Design Review Closure
+Implementation evidence may still reopen a contract through `SPEC_CONFLICT`; coding agents must not silently invent product architecture.
 
-### Already resolved in canonical specs
+## Phase 0 — Design Review Closure — COMPLETE
+
+### Closed architecture/spec issues
 
 - pre-execution request validation vs post-execution result verification;
 - generic runtime `InformationRef`, `ContextProjection`, `TaskStateStore`;
+- explicit `ModelTurn` + `ModelStateUpdateProposal` path for internal investigation-state updates;
+- atomic revision-bound model state updates plus deterministic result-ingestion updates;
+- automatic ObservationRecord registration for successful agent-visible ToolResults;
 - dependency-aware `WorkBatch` replacing full Dynamic DAG as v0 infrastructure;
 - extensible Budget dimensions and compound Tool resource accounting;
 - `SubtaskResult` instead of runtime `EvidenceBundle`;
 - Observation versus Evidence lifecycle;
-- typed Prediction/ExperimentResult separation;
+- typed Prediction/ExperimentResult/Interpretation separation;
 - Rule `origin × validation × authority` model;
 - blind RCA candidate-binding restrictions;
 - mandatory strong deterministic C0 baseline;
@@ -22,21 +27,18 @@ It is not authorization for broad implementation until the remaining runtime/lab
 - canonical/deconfounded evaluation matrices;
 - LangGraph/MCP removed from v0 critical path.
 
-### Freeze exit criteria
+### Review evidence
 
-Before runtime/lab feature implementation begins:
+- full review: `reviews/2026-09-15-independent-spec-review.md`;
+- adjudication: `design-review-adjudication.md`;
+- focused re-review: `reviews/2026-09-15-focused-re-review.md`;
+- final closure: `design-freeze-record.md`.
 
-1. canonical README/architecture/AGENTS/roadmap/ADR documents reference the updated specs rather than old Dynamic DAG/K0–K4/EvidenceBundle semantics;
-2. every spec uses allowed status vocabulary;
-3. no BLOCKER/implementation-defining MAJOR contradiction remains in focused independent re-review;
-4. coding agents can implement runtime B1 and lab C1 without inventing product architecture;
-5. deferred items are explicitly marked DEFER/OPEN_RESEARCH rather than implicit dependencies.
+The focused re-review closed all original BLOCKERs and all but one implementation-defining MAJOR. The remaining R1 state-update path has now been specified in the owning runtime/lab contracts, satisfying the reviewer's stated condition for READY FOR DESIGN FREEZE.
 
 ---
 
 # Phase A — `tep-sim`: trusted world — GO
-
-Independent review found A1–A4 sufficiently self-contained/testable. They may begin before runtime/lab Design Freeze.
 
 ## A1 — Environment adapter
 
@@ -89,7 +91,7 @@ Deliver:
 
 ---
 
-# Phase B — `industrial-agent-runtime`: generic control plane — HOLD until focused re-review passes
+# Phase B — `industrial-agent-runtime`: generic control plane — GO
 
 ## B1 — Core contracts / reference loop
 
@@ -106,18 +108,34 @@ Deliver:
 - Task;
 - Budget with extra dimensions;
 - ToolSpec/ToolCallRequest/ToolResult;
-- TaskStatus/StateDelta/ContextProjection/TaskStateStore protocol;
+- TaskStatus/StateDelta/ModelStateUpdateProposal/ModelTurn;
+- ContextProjection/TaskStateStore `apply_batch` protocol;
 - WorkBatch/WorkItem;
 - RuntimeResult/TraceEvent;
 - deterministic fake provider;
 - reference runtime loop/dispatcher;
-- exact model-turn projection tracing.
+- exact model-turn projection/state-update tracing.
+
+Required semantics:
+
+```text
+ContextProjection
+ -> ModelTurn
+      -> optional ModelStateUpdateProposal
+           -> atomic TaskStateStore.apply_batch
+      -> one action: NONE | TOOL_REQUEST | WORK_BATCH | FINISH_PROPOSAL
+```
+
+A rejected/stale model state update prevents same-turn execution dispatch.
 
 Exit:
 
 - fake-provider tasks run without domain imports;
+- fake provider emits every action variant and state-update proposal;
 - consumer fake TaskStateStore works without runtime knowing its state class;
+- multi-delta state updates are atomic/revision checked;
 - dependency-aware TOOL WorkBatch executes deterministically;
+- parallel result-ingestion updates bind current revision and do not false-fail stale;
 - no LangGraph/MCP dependency required.
 
 ## B2 — Deterministic pre-execution gates
@@ -135,7 +153,9 @@ Deliver:
 - revision-bound MUTATE validation contract;
 - GateDecision tracing.
 
-## B3 — Post-execution verification
+Internal ModelStateUpdateProposal processing remains a separate TaskStateStore path and consumes no tool-call budget.
+
+## B3 — Post-execution verification / deterministic ingestion
 
 May be implemented in B1/B2 modules or a small dedicated module; do not invent another agent/service.
 
@@ -144,6 +164,7 @@ Deliver deterministic:
 - result/ref/provenance checks;
 - actual-budget reconciliation;
 - consumer `verify_result` hook;
+- deterministic result-ingestion delta hook/order;
 - final-output structural readiness checks.
 
 ## B4 — Ephemeral subagents
@@ -177,7 +198,7 @@ These require concrete later evidence/requirements.
 
 ---
 
-# Phase C — `tep-agent-lab`: first RCA information/investigation plane — HOLD until focused re-review passes
+# Phase C — `tep-agent-lab`: first RCA information/investigation plane — GO
 
 ## C1 — RCA state / run log / projection
 
@@ -192,8 +213,12 @@ Specs:
 Deliver:
 
 - RcaState implementing runtime TaskStateStore;
+- allowlisted RCA StateDelta operations;
+- atomic `apply_batch` with revision/visibility/domain validation;
 - append-only per-run events/log/artifacts;
-- ObservationRecord / HypothesisEvidenceLink lifecycle;
+- automatic ObservationRecord registration for every successful agent-visible ToolResult;
+- explicit HypothesisEvidenceLink lifecycle;
+- deterministic result-ingestion ordering for parallel WorkBatch results;
 - deterministic `project_rca_state` ContextProjection;
 - InvestigationReport / DecisionRecord / ExperimentRecord;
 - ground-truth visibility tests.
@@ -229,8 +254,9 @@ Deliver:
 
 - Hypothesis;
 - typed Prediction;
-- evidence links;
+- explicit evidence links as StateDelta operations;
 - ExperimentProposal/RunSpec/Result/Interpretation;
+- Interpretation -> StateDelta mapping;
 - canonical experiment dedup key;
 - deterministic prediction feature evaluation where supported.
 
@@ -380,9 +406,9 @@ On spec conflict it reports `SPEC_CONFLICT`; it does not silently redesign archi
 ## Dependency graph
 
 ```text
-tep-sim A1 -> A2 -> A3/A4                     [may start now]
+tep-sim A1 -> A2 -> A3/A4
 
-runtime B1 -> B2/B3 -> B4 -> B5 provider       [after re-review]
+runtime B1 -> B2/B3 -> B4 -> B5 provider
 
 lab C1 + C2 + C3
        \   |   /
@@ -400,3 +426,5 @@ lab C1 + C2 + C3
           |
       F knowledge/memory studies
 ```
+
+Independent branches may run in parallel when their upstream frozen contracts are available and file/module ownership does not overlap. Completion race does not change integration order.
