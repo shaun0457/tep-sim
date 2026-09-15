@@ -1,72 +1,73 @@
 # Roadmap — Industrial Agent Runtime
 
-Runtime implementation begins only after focused Design Freeze re-review closes the current proposal contracts. Build the smallest testable domain-independent runtime first.
+Phase 0 Design Freeze is complete. Implementation may proceed according to `docs/ecosystem/implementation-plan.md` and the frozen runtime specs.
 
 Canonical specs live in `docs/specs/`.
 
-## Phase 0 — Core contracts / reference loop
+## Phase 0 — Base contracts
 
-Branch: `feat/contracts-runtime-v0`
-
-Specs:
-
-- `runtime-v0.md`
-- `hybrid-orchestration-v0.md`
+Branch: `feat/contracts-runtime-v0`  
+Specs: `runtime-v0.md`, `hybrid-orchestration-v0.md`
 
 Implement:
 
-- InformationRef;
-- Task;
-- Budget + `extra_dimensions`;
-- ToolSpec/request/result + budget-draw metadata;
-- TaskStatus / StateDelta / ContextProjection / TaskStateStore protocol;
-- WorkBatch / WorkItem;
-- RuntimeResult / TraceEvent;
-- fake model provider;
-- simple reference control loop/dispatcher;
-- exact ContextProjection tracing per model turn.
+- `InformationRef`;
+- `Task`;
+- `Budget` + extra dimensions;
+- `ToolSpec` / request/result;
+- `TaskStatus` / `StateDelta`;
+- `ModelStateUpdateProposal` / `ModelTurn`;
+- `ContextProjection` / `TaskStateStore.apply_batch`;
+- `WorkBatch` / `WorkItem`;
+- `RuntimeResult` / `TraceEvent`;
+- model-provider interface;
+- deterministic fake provider;
+- simple reference execution path.
+
+Exit: fake-provider tests cover typed no-tool/read-tool tasks, model state updates, state-update rejection, and deterministic WorkBatch/result-ingestion behavior.
+
+## Phase 1 — Deterministic reference loop / coordination
+
+Branch: `feat/hybrid-orchestration-v0`  
+Spec: `hybrid-orchestration-v0.md`
+
+Implement:
+
+- deterministic Coordinator loop;
+- ModelTurn routing;
+- atomic model state-update application;
+- direct/local Main-Agent routing;
+- WorkBatch validation/scheduling;
+- deterministic result-ingestion ordering;
+- hard stop/termination states.
 
 Exit:
 
-- fake-provider no-tool/read-tool task passes;
-- fake consumer TaskStateStore works without runtime importing consumer class;
-- valid dependency-aware TOOL WorkBatch runs deterministically;
-- cyclic/over-budget work is denied;
-- no LangGraph/MCP dependency is required.
+- valid model state update applies before same-turn tool action;
+- stale/illegal state update blocks same-turn dispatch;
+- simple task avoids WorkBatch overhead;
+- valid dependency-aware WorkBatch executes;
+- cycle/authority/budget violations fail before execution;
+- parallel result ingestion avoids false stale conflicts.
 
-## Phase 1 — Pre-execution deterministic gates
+## Phase 2 — Generic deterministic gates
 
 Branch: `feat/deterministic-gates-v0`  
 Spec: `deterministic-gates-v0.md`
 
-Implement:
+Implement schema/parse, tool allowlist, budget/resource reservation, side-effect, consumer-validator, and approval-state contracts for executable work.
 
-- G0 schema/parse;
-- G1 allowlist/authority;
-- G2 standard + extra-dimensional reservation/recursion;
-- G3 side-effect policy;
-- consumer `validate_request` hook;
-- frozen-request state revision binding for MUTATE;
-- GateDecision tracing.
+Internal ModelStateUpdateProposal processing remains a separate TaskStateStore path.
 
-Exit: denied operations do not dispatch and compound resource requests cannot bypass budgets.
+Exit: denied operations provably do not execute and all gate decisions are traceable.
 
-## Phase 2 — Post-execution verification
+## Phase 3 — Post-execution verification
 
-Implement as a small deterministic runtime module/hook, not another Agent/service.
+Implement deterministic result/ref/provenance verification, actual-budget reconciliation, consumer `verify_result`, final-output structural readiness, and deterministic result-ingestion hook integration.
 
-Checks:
+Do not create another agent/service for this responsibility.
 
-- output/ref/artifact existence;
-- actual-vs-reserved budget reconciliation;
-- required provenance/version metadata;
-- WorkBatch dependency completion;
-- consumer `verify_result` invariants;
-- final structural readiness.
-
-Exit: invalid/missing refs or resource/provenance inconsistencies are rejected/recorded after dispatch before state application.
-
-## Phase 3 — Ephemeral subagents
+## Phase 4 — Ephemeral subagents
 
 Branch: `feat/subagents-v0`  
 Spec: `subagents-v0.md`
@@ -74,68 +75,58 @@ Spec: `subagents-v0.md`
 Implement:
 
 - scoped child task/context/tools;
-- cumulative per-task child budget;
 - `SubtaskResult`;
 - parent/child trace;
-- no child MUTATE;
-- no nested SUBTASK bypass at depth limit;
-- ready-child parallelism behind same WorkBatch semantics.
+- configurable depth/count limits;
+- no implicit child mutation authority;
+- optional independent-item parallel scheduling behind the same WorkBatch contract.
 
-Exit: parent runs bounded children and receives compact SubtaskResults only.
+Exit: parent runs bounded child analyses and consumes only structured results/refs.
 
-## Phase 4 — First real model provider
+## Phase 5 — First real model provider
 
 Branch: `feat/provider-adapter-v0`
 
-Choose one provider only after fake-provider/core contract tests pass. SDK objects stay internal.
+Choose one provider after fake-provider/core contracts are stable. Keep SDK objects behind the model interface.
 
-Exit: same smoke task runs under fake and real provider with identical public contract shape/tracing requirements.
+Exit: the same smoke task runs under fake and real provider with identical public contract shape/tracing semantics.
 
-## Phase 5 — First domain integration
+## Phase 6 — First domain integration
 
-Consume runtime from `tep-agent-lab`; do not import TEP into runtime.
+Consume runtime from `tep-agent-lab`; never import TEP into core.
 
-Proof:
+Required proof:
 
-- lab implements TaskStateStore with RcaState;
-- TEP/Tool Bridge adapters register through ToolSpec;
-- lab request/result validators plug into generic hooks;
-- compound SIMULATE resource use is visible to runtime;
-- subtask results remain domain-agnostic envelopes;
+- RcaState is supplied through consumer TaskStateStore;
+- model state updates use generic StateDelta envelope but lab-owned operation semantics;
+- TEP tools register through generic ToolSpec;
+- lab validators plug into consumer hooks;
+- Tool Bridge results look like ordinary typed tools to runtime;
+- result ingestion is deterministic/revision-safe;
 - core remains domain-free.
 
-## Phase 6 — Correctness-first concurrency hardening
+## Phase 7 — Performance/concurrency hardening
 
-Only after semantic correctness:
+Only after correctness:
 
-- choose asyncio/thread/process/job execution strategy if needed;
-- enforce `max_parallel_width`/backpressure;
-- timeouts/cancellation of local dispatch;
+- choose asyncio/thread/process/job execution strategy where needed;
+- parallel ready-item scheduling;
+- backpressure/timeout handling;
+- trace/checkpoint storage backend if needed;
 - provider rate-limit handling;
-- persistence backend optimizations.
+- benchmark runtime overhead.
 
-Concurrency must not alter public WorkBatch/budget/state semantics.
+Do not let concurrency implementation alter public semantic contracts.
 
-## Deferred / not scheduled for runtime v0
+## Not in v0 runtime roadmap
 
-### Full Dynamic DAG engine
-
-No mutable graph-revision/cancellation/MERGE-node engine until an orchestration study justifies/specifies it.
-
-### LangGraph adapter
-
-Not scheduled until a concrete checkpoint/resume/interrupt/persistent-graph requirement exists.
-
-### MCP
-
-Not a runtime dependency. May later be one Tool Provider protocol behind registered adapters.
-
-### Other non-goals
-
-- global learned memory;
-- autonomous organization/hiring;
+- LangGraph adapter unless concrete later need;
+- MCP runtime dependency;
+- full mutable Dynamic DAG engine;
+- global persistent learned memory;
+- autonomous hiring/retiring organizations;
 - unlimited recursive agents;
 - peer-to-peer chat network;
-- domain safety/rules/RAG/KG;
-- scientific Tool Bridge implementations;
-- arbitrary shell/code execution as default tool.
+- TEP/process safety rules;
+- domain RAG/KG logic;
+- arbitrary shell/code execution as default Tool Bridge.
