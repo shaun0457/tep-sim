@@ -1,69 +1,76 @@
 # AGENTS.md
 
-Rules for coding agents working on the TEP agent integration lab.
+Rules for coding agents working on `tep-agent-lab`.
 
 ## Product boundary
 
-This repository owns TEP-specific agent experiments and evaluation. It does not own the simulator implementation or generic agent-runtime internals.
+This repository owns TEP-specific agent tools, policies, experiments, and evaluation. It does not own TEP physics or generic agent-runtime internals.
+
+## Canonical specs
+
+Read the owning spec before implementation:
+
+- `docs/specs/tool-surface-v0.md`
+- `docs/specs/rca-v0.md`
+- `docs/specs/hazop-v0.md`
+- `docs/specs/recovery-v0.md`
+- `docs/specs/evaluation-v0.md`
+- `docs/open-questions.md`
+- `docs/decisions/ADR-001-simulate-before-reference-mutation.md`
 
 ## Dependency rules
 
-- import/pin `tep-sim`; do not copy its physics or variable registry;
-- import/pin `industrial-agent-runtime`; do not fork its orchestration into local variants unless an experiment explicitly studies that difference;
-- optional knowledge services stay behind tool adapters.
+- pin/import `tep-sim`; do not copy its physics, variable registry, snapshot semantics, or capability truth;
+- pin/import `industrial-agent-runtime`; do not fork its executor/subagent mechanics into local variants unless the experiment explicitly studies a runtime variant;
+- optional knowledge services stay behind read-only evidence adapters;
+- evaluator-only ground truth never becomes a registered agent tool.
 
 ## Hard experimental rules
 
-1. Preserve hidden ground truth. Fault IDs used for scoring must not leak into blind agent context.
-2. Every experiment must record simulator revision, agent-runtime revision, model/provider config, seed, scenario config, tool policy, and run ID.
-3. Agent environment mutations use typed proposals and deterministic gates; no direct arbitrary simulator mutation from model text/code.
-4. Counterfactual experiments use isolated forks, never the live/reference branch.
-5. HAZOP findings must distinguish simulated evidence from inferred/non-simulable consequences.
-6. Unsupported environment physics must be reported as unsupported, not filled in by the model.
-7. Store large telemetry as artifacts; provide compact task-specific features to agents.
-8. Cap model calls, subagents, rollout branches, horizon, and retries.
-9. Evaluate deterministic baselines before claiming agent benefit.
-10. Keep evaluation code independent of agent self-report/confidence.
+1. Preserve hidden truth in blind experiments.
+2. Record environment/runtime/lab revision, model config, fixture version, seed, tool/subagent policy, budgets, and run ID.
+3. Large telemetry/rollouts use artifact refs and compact summaries; do not dump full traces into model context.
+4. Counterfactual experiments use isolated forks; diagnosis does not mutate the reference branch.
+5. Recovery defaults to simulate-before-reference-mutation.
+6. Reference mutation requires generic runtime gates + lab policy + `tep-sim` capability/control-mode validation + optional approval if configured.
+7. Unsupported physics are reported as unsupported, never hallucinated as simulator evidence.
+8. HAZOP findings distinguish simulated evidence from engineering inference.
+9. Model/tool/subagent/simulation/retry budgets are deterministic and enforced outside prompts.
+10. Evaluate baselines/ablations before claiming agent or subagent benefit.
+11. Evaluation/scoring code does not trust agent self-reported correctness/confidence.
+12. Failed runs remain visible in reports/datasets.
 
-## Dynamic subagent policy
-
-Subagents are allowed for bounded, independently useful work. Each must receive:
-
-```text
-goal
-input evidence/context slice
-allowed tools
-budget
-output schema
-```
-
-Examples:
-
-- compare two hypotheses;
-- analyze a selected signal window;
-- inspect retrieved process evidence;
-- review a candidate HAZOP finding;
-- summarize one counterfactual branch.
-
-Do not send the complete experiment transcript to every subagent.
-
-## HAZOP safety boundary
-
-Simulation-backed HAZOP in this lab is research/decision support. Do not describe it as replacing formal plant HAZOP or engineering safety review.
-
-A finding must state:
+## v0 experiment order
 
 ```text
-deviation
-simulability
-implemented intervention
-observed process consequence
-safety-limit outcome
-inferred consequences (if any, clearly labelled)
-unsupported consequence domains
-provenance
+Tool Surface
+ -> RCA single-agent baseline
+ -> + topology
+ -> + counterfactual simulation
+ -> bounded subagent ablation
+ -> HAZOP
+ -> Recovery
+ -> optional KG evidence
 ```
+
+Do not enable dynamic subagents in the first RCA baseline; their value must be measured on the same cases.
+
+## Dynamic subagents
+
+Inherit runtime v0 defaults unless an experiment explicitly overrides them:
+
+- depth 1;
+- at most 3 children per parent;
+- child reference-world mutation disabled;
+- children receive scoped context/tool subsets;
+- parent receives structured `EvidenceBundle`, not complete child transcript.
+
+## HAZOP boundary
+
+Simulation-backed HAZOP is research/decision support, not a claim of completing formal plant HAZOP review. A structured finding must preserve scenario support status and evidence provenance.
 
 ## Reporting
 
-Every benchmark report should include both successful and failed runs, token/latency cost, environment rollout count, and deterministic baseline comparison.
+Every benchmark report should include task quality, behavior/resource metrics, simulation use, gate denials/policy violations, safety/environment outcomes where relevant, and deterministic baseline comparison.
+
+Keep this file concise. Detailed workflow semantics belong in `docs/specs`; unresolved research choices belong in `docs/open-questions.md`.
