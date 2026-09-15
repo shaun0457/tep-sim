@@ -9,10 +9,13 @@
 ```text
 industrial-agent-runtime
   generic control plane
-  Main Agent
+  ContextProjection
+  Main Agent / ModelTurn
+  ModelStateUpdateProposal + routed action
   pre-execution gates
   Executor
   post-execution verifier
+  deterministic result ingestion
   WorkBatch / SubtaskResult
           |
           v
@@ -49,17 +52,31 @@ Runtime knows:
 TaskStateStore
 ContextProjection
 StateDelta
+ModelStateUpdateProposal
+ModelTurn
 TaskStatus
 ```
 
-Lab implements these with `RcaState` and a deterministic/domain-aware `project_rca_state` function.
+Lab implements these with `RcaState`, an allowlisted RCA StateDelta operation set, deterministic result-ingestion mapping, and a domain-aware `project_rca_state` function.
 
 Runtime never imports RcaState fields.
 
-### Request path
+### Model-proposed state path
 
 ```text
-Main Agent request
+ContextProjection
+ -> Main Agent / ModelTurn.state_update?
+ -> lab validates RCA operation/ref/visibility
+ -> atomic TaskStateStore.apply_batch
+ -> same-turn executable action may continue only on success
+```
+
+Model-proposed updates are bound to the exact projection revision seen by the model and cannot change generic runtime budget/policy/status/authority or reference-world state.
+
+### Executable request path
+
+```text
+ModelTurn.action
  -> runtime G0-G3
  -> lab validate_request
       + benchmark/experiment policy
@@ -67,10 +84,35 @@ Main Agent request
  -> Executor
  -> lab/tep-sim/Tool Bridge adapter
  -> post-execution verify_result
- -> lab TaskStateStore.apply
+ -> deterministic result-ingestion StateDelta(s)
+ -> lab TaskStateStore.apply_batch
 ```
 
 Pre-execution request validation and post-execution result verification are different hooks.
+
+## Deterministic result ingestion
+
+Every successful agent-visible ToolResult is automatically registered as an immutable `ObservationRecord`.
+
+```text
+ToolResult
+ -> REGISTER_OBSERVATION
+ -> optional artifact refs
+```
+
+ExperimentResult additionally registers experiment completion/result refs. SubtaskResult registers delegated-task completion/ref metadata.
+
+Observation registration is automatic; evidence creation is explicit.
+
+For parallel WorkBatch results:
+
+- verify each result;
+- order successful ingestion batches deterministically by the runtime WorkBatch policy;
+- bind the then-current RcaState revision immediately before each apply;
+- apply each batch atomically;
+- trace the exact order/revisions.
+
+Thus parallel work started from one old projection does not create false stale conflicts during deterministic ingestion.
 
 ## Work planning
 
@@ -126,11 +168,11 @@ Do not create separate Evidence/Experiment/Trace databases without a demonstrate
 ## Observation / evidence semantics
 
 ```text
-ToolResult / simulator result
+successful ToolResult / simulator result
  -> ObservationRecord
 
 ObservationRecord
- + explicit relation to Hypothesis
+ + explicit ADD_EVIDENCE_LINK state update
  -> HypothesisEvidenceLink
 ```
 
@@ -142,6 +184,22 @@ This supports separate measurement of:
 - unused observations;
 - valid/invalid evidence links;
 - evidence quality.
+
+## Hypothesis / experiment interpretation semantics
+
+Hypotheses and planned experiments are explicit model-proposed state objects.
+
+After deterministic ExperimentResult creation, the Main Agent may return an `ExperimentInterpretation`; the lab maps its contents to explicit StateDelta operations such as:
+
+```text
+ADD_EVIDENCE_LINK
+UPDATE_HYPOTHESIS
+ADD_OPEN_QUESTION
+UPDATE_WORKING_EXPLANATION
+ADD_EXPERIMENT_INTERPRETATION
+```
+
+No interpretation mutates state merely because it appeared in model prose.
 
 ## Rule / knowledge semantics
 
@@ -218,7 +276,9 @@ incident
  -> discriminating analysis/counterfactual ExperimentProposal
  -> frozen ExperimentRunSpec
  -> deterministic ExperimentResult / PredictionEvaluation
- -> Main Agent interpretation/update
+ -> deterministic result ingestion
+ -> Main Agent ExperimentInterpretation
+ -> explicit interpretation StateDelta batch
  -> structured CausalClaim
  -> InvestigationReport
 ```
@@ -291,8 +351,11 @@ run log / state / observations / experiments / report
 
 - evaluator truth/candidate set never enters blind Agent-visible refs/tools;
 - runtime/lab state boundary is TaskStateStore, not imports;
+- model-proposed task-state changes are explicit and revision-bound;
+- successful ToolResult registration as Observation is automatic;
 - Observation != Evidence;
 - deterministic ExperimentResult != Agent interpretation;
+- interpretation updates state only through explicit typed deltas;
 - Tool Bridge != authorization layer;
 - SIMULATE != MUTATE;
 - compound simulator tools expose nested budget usage;
