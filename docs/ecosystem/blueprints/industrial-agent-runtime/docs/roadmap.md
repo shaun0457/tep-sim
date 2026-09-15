@@ -1,84 +1,111 @@
-# Roadmap
+# Roadmap — Industrial Agent Runtime
 
-## Phase 0 — Contracts before models
+The runtime roadmap builds generic mechanics in the smallest testable order. It does not wait for TEP integration to validate core behavior.
 
-Implement Pydantic/dataclass contracts for:
+Canonical specs live in `docs/specs/`.
+
+## Phase 0 — Contracts first
+
+Branch: `feat/contracts-executor-v0`  
+Spec: `docs/specs/runtime-v0.md`
+
+Implement:
 
 - `Task`;
 - `Budget`;
 - `ToolSpec`;
+- `ToolCallRequest`;
 - `ToolResult`;
-- `Subtask`;
 - `RuntimeResult`;
-- `TraceEvent`.
+- `TraceEvent`;
+- deterministic fake model provider;
+- minimal explicit executor/state machine.
 
-Use fake models only.
+Exit: fake-provider tests complete typed no-tool and read-tool tasks deterministically.
 
-## Phase 1 — Single main agent
+## Phase 1 — Generic deterministic gates
+
+Branch: `feat/deterministic-gates-v0`  
+Spec: `docs/specs/deterministic-gates-v0.md`
 
 Implement:
 
-- provider abstraction;
-- one main-agent executor;
-- structured output parsing;
-- read-only tool registry;
-- trace recording;
-- budget enforcement.
-
-Exit criterion: one deterministic fake-model test and one real-provider smoke test complete the same typed task.
-
-## Phase 2 — Side-effect gates
-
-Add:
-
-- tool side-effect classes;
-- proposal/execute separation;
-- schema/permission gate;
-- rejection events;
+- schema/parse gate;
+- tool allowlist gate;
+- budget/recursion gate;
+- side-effect class gate;
+- consumer/domain-validator hook;
+- structured denial/approval decisions;
 - fail-closed behavior.
 
-## Phase 3 — Ephemeral subagents
+Exit: denied operations provably do not execute and all gate decisions are traceable.
 
-Add:
+## Phase 2 — Ephemeral subagents
 
-- subtask creation;
-- bounded spawn count/depth;
-- isolated context slices;
-- structured child result;
-- parallel independent subtasks where safe;
-- parent-child trace links.
+Branch: `feat/subagents-v0`  
+Spec: `docs/specs/subagents-v0.md`
 
-Exit criterion: parent can request two independent analyses and combine only their compact results.
+Implement proposed v0 policy:
 
-## Phase 4 — Context discipline
+- depth 1 by default;
+- max 3 children per parent by default;
+- no child reference-world mutation authority;
+- scoped context/tool subset;
+- `EvidenceBundle` result;
+- parent-child trace links;
+- deterministic depth/count enforcement.
 
-Add:
+Exit: parent runs two independent child analyses and consumes only compact structured evidence.
+
+## Phase 3 — Context discipline and observability
+
+Harden:
 
 - context-reference abstraction;
-- result compaction;
-- configurable context budgets;
-- caching of static tool/schema metadata;
-- token/cost/latency metrics.
+- artifact references instead of transcript/data dumping;
+- token/model/tool/subagent accounting;
+- static tool-schema caching where useful;
+- deterministic trace export;
+- duplicate/redundant subtask diagnostics.
 
-## Phase 5 — Optional LangGraph adapter
+Exit: one run can explain every model/tool/subagent/gate step and its resource usage without requiring provider-specific internal objects.
 
-Only after a consuming workflow needs persistence/interrupt/recovery, implement:
+## Phase 4 — First real model provider
 
-- state mapping;
-- checkpoint adapter;
-- human interrupt hook;
-- resumable bounded retry;
-- graph trace correlation.
+Branch: `feat/provider-adapter-v0`
 
-Core runtime remains usable without LangGraph.
+Choose one provider only after core contracts are stable. Keep provider SDK objects behind the model interface.
 
-## Phase 6 — First domain integration
+Exit: one integration smoke task can run under both fake and real provider with the same public `Task`/result contracts.
 
-Integrate from `tep-agent-lab`, not in this repository.
+## Phase 5 — First domain integration
+
+Consume the runtime from `tep-agent-lab`; do not import TEP into this repository.
 
 Required proof:
 
-- runtime can use environment tools without importing TEP code;
-- environment mutation still passes external deterministic gates;
-- subagent context contains only task-relevant process evidence;
-- traces report model calls, subagents, tool calls, cost, latency, and outcome.
+- TEP tools register through generic `ToolSpec`;
+- lab domain validators plug into the consumer-validator hook;
+- simulation tools remain isolated;
+- subagent context is TEP-specific only because the lab supplies it;
+- core runtime remains domain-free.
+
+## Phase 6 — Optional LangGraph / approval adapter
+
+Only implement after a real consumer requires at least one of:
+
+- durable checkpoint/resume;
+- human approval interrupts;
+- long-running resumable tasks;
+- persistent graph state across process restarts.
+
+The explicit executor remains the semantic reference implementation. Public contracts must not become LangGraph-specific.
+
+## Not in v0 roadmap
+
+- global persistent memory;
+- autonomous hiring/retiring organization;
+- unlimited recursive agents;
+- peer-to-peer agent chat network;
+- TEP/process safety rules;
+- domain-specific RAG/KG logic.
