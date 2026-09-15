@@ -1,91 +1,103 @@
 # Knowledge and Rule Registry v0
 
-Status: accepted direction / v0 contract proposal  
-Owner repo: `tep-agent-lab` with hard environment truth owned by `tep-sim`
+Status: proposal  
+Owner repo: `tep-agent-lab` with environment truth owned by `tep-sim`
 
 ## Goal
 
-Convert engineering knowledge into explicit, provenance-preserving machine-usable artifacts without promoting paper text or LLM claims directly into hard execution authority.
+Represent engineering knowledge with explicit provenance, validation maturity, scope, and execution authority without allowing paper text, Agent claims, or simulation evidence to silently become hard gates.
 
-The registry separates simulator truth, physical invariants, validated engineering relationships, literature heuristics, and agent hypotheses.
-
-## Knowledge levels
+The canonical machine schema uses **three independent axes**:
 
 ```text
-K0 — Simulator/runtime ground truth
-K1 — Formal physical/safety invariant with reviewed implementation
-K2 — Empirically/simulation-validated engineering relationship
-K3 — Literature/document-derived heuristic or candidate relationship
-K4 — Agent-generated hypothesis / unvalidated working claim
+origin
+validation
+authority
 ```
 
-### K0 — simulator truth
+The earlier K0–K4 labels may remain as documentation shorthand/presets, but they are not the authoritative persisted data model.
 
-Examples:
+## Axis 1 — `origin`
 
-- canonical XMEAS/XMV/IDV identity;
-- simulator-supported bounds/capabilities;
-- control-mode behavior;
-- shutdown state defined by the vendored implementation.
+```text
+SIMULATOR
+FORMAL_DERIVATION
+POLICY
+LITERATURE
+EXPERIMENT
+AGENT
+```
 
-Owner: `tep-sim`.
+Meaning:
 
-Eligible for deterministic BLOCK/ALLOW behavior when the underlying contract is authoritative.
+- `SIMULATOR` — runtime/environment contract or implementation truth;
+- `FORMAL_DERIVATION` — mathematically/physically derived invariant with explicit assumptions;
+- `POLICY` — experiment/operational policy chosen by the host/research design;
+- `LITERATURE` — paper/manual/SOP/document statement;
+- `EXPERIMENT` — relation inferred from controlled observed/simulated evidence;
+- `AGENT` — model-generated working/candidate claim.
 
-### K1 — formal invariant
+Origin is provenance, not a confidence score.
 
-Examples:
+## Axis 2 — `validation`
 
-- explicit unit/range constraints;
-- mathematically defined conservation/physical constraints where the model exposes sufficient quantities;
-- reviewed safety limits with authoritative source/implementation.
+```text
+NONE
+CORROBORATED
+SIMULATION_VALIDATED
+ROBUST_VALIDATED
+REVIEWED
+```
 
-Owner depends on scope; environment invariants belong in `tep-sim`.
+Conceptually:
 
-Hard enforcement requires explicit source, scope, test coverage, and review.
+- `NONE` — candidate only;
+- `CORROBORATED` — supported by multiple independent sources/observations but not validated by a controlled campaign;
+- `SIMULATION_VALIDATED` — controlled validation over an explicit scenario/operating envelope;
+- `ROBUST_VALIDATED` — validated across a broader held-out scenario/seed/operating envelope with documented failure cases;
+- `REVIEWED` — accepted through an explicit formal/policy review process appropriate to the source/authority.
 
-### K2 — validated relationship
+Validation is always scoped. It never implies universal scientific truth.
 
-A relationship supported by controlled simulation/experimental evidence over an explicit scope.
+## Axis 3 — `authority`
 
-Examples:
+```text
+REFERENCE
+ADVISORY
+PLANNING
+OPERATIONAL_PROPOSAL
+HARD_GATE
+```
 
-- response-direction relation validated across selected operating conditions;
-- signal lag range validated in a scenario family;
-- an actuator-to-measurement sensitivity relation within a tested region.
+Meaning:
 
-K2 is not automatically a hard gate. Default enforcement is advisory/scoring unless a separate review promotes it to a formal constraint.
+- `REFERENCE` — retrievable/context only;
+- `ADVISORY` — may annotate/warn/score/prioritize reasoning;
+- `PLANNING` — may shape experiment/action planning but cannot execute reference-world mutation;
+- `OPERATIONAL_PROPOSAL` — may support a bounded action proposal that must still pass gates/validation;
+- `HARD_GATE` — may deterministically allow/block execution within declared scope.
 
-### K3 — literature/document heuristic
+Authority is never self-assigned by an Agent and does not automatically increase when validation maturity increases.
 
-Extracted from papers, manuals, SOPs, or expert documents.
-
-K3 may guide retrieval, hypothesis priors, experiment selection, and warnings. It MUST NOT become a hard safety/execution constraint solely because an LLM extracted it.
-
-### K4 — agent hypothesis
-
-Created during an investigation/research session.
-
-K4 is working state only. It can be tested, supported, rejected, or eventually contribute to a K2 promotion campaign.
-
-## Rule contract
+## `Rule`
 
 ```text
 Rule
   rule_id
   version
   title
-  knowledge_level
+  origin
+  validation
+  authority
   scope
   predicate_or_relation
   inputs[]
   expected_effect_or_constraint?
-  enforcement
   source_refs[]
   validation_refs[]
   operating_envelope?
   units?
-  confidence_or_support?
+  support_summary?
   status
   created_by
   reviewed_by?
@@ -93,44 +105,125 @@ Rule
   updated_at
 ```
 
-## Enforcement classes
+### Optional runtime behavior metadata
+
+A rule may additionally declare how an allowed authority is used:
 
 ```text
-BLOCK     reject an operation
-ALLOW     explicitly permit under stated scope
-WARN      deterministic warning, does not block
-SCORE     contribute to ranking/scoring
-ANNOTATE  add contextual information/evidence
-PRIOR     influence hypothesis prior/attention only
+behavior: PRIOR | ANNOTATE | SCORE | WARN | ALLOW | BLOCK
 ```
 
-Hard execution authority (`BLOCK`/high-authority `ALLOW`) is limited to K0/K1 unless an explicit ADR/review says otherwise.
+`behavior` must be compatible with `authority`:
 
-K2 defaults to WARN/SCORE/ANNOTATE. K3 defaults to ANNOTATE/PRIOR. K4 is not a registry enforcement rule.
+- REFERENCE: PRIOR/ANNOTATE only;
+- ADVISORY: PRIOR/ANNOTATE/SCORE/WARN;
+- PLANNING: advisory behaviors + planning filters/ranking;
+- OPERATIONAL_PROPOSAL: may validate/shape proposals but not directly mutate;
+- HARD_GATE: ALLOW/BLOCK may be used within explicit scope.
 
-## Promotion pipeline
+## Hard-gate policy
 
-Paper/document text is never directly promoted to a hard rule.
+`HARD_GATE` is intentionally rare.
+
+Examples eligible in the TEP sandbox:
+
+- authoritative simulator capability/bounds/control-mode constraints (`origin=SIMULATOR`);
+- explicit reviewed lab/runtime policy (`origin=POLICY`, `validation=REVIEWED`);
+- reviewed formal invariant with test coverage and explicit scope.
+
+A literature/Agent/experiment relation does not become a HARD_GATE merely because many simulations supported it.
+
+## K0–K4 shorthand mapping
+
+K-labels remain useful conversational shorthand only:
+
+| Shorthand | Typical canonical representation |
+|---|---|
+| K0 simulator/runtime truth | `origin=SIMULATOR`, validation appropriate to runtime contract, authority may reach HARD_GATE |
+| K1 reviewed invariant/policy | `origin=FORMAL_DERIVATION or POLICY`, `validation=REVIEWED`, authority depends on scope |
+| K2 validated engineering relationship | usually `origin=EXPERIMENT/LITERATURE/AGENT`, `validation=SIMULATION_VALIDATED or ROBUST_VALIDATED`, authority typically ADVISORY/PLANNING |
+| K3 literature/document heuristic | `origin=LITERATURE`, `validation=NONE/CORROBORATED`, authority REFERENCE/ADVISORY |
+| K4 Agent hypothesis | `origin=AGENT`, `validation=NONE`, authority REFERENCE working state only |
+
+Do not persist only a K-number without the three canonical axes.
+
+## Ownership
+
+### `tep-sim`
+
+Owns environment truth needed to execute the simulator correctly, including simulator/runtime constraints and canonical bindings.
+
+### `tep-agent-lab`
+
+Owns:
+
+- benchmark/experiment policy rules;
+- advisory/planning relationships;
+- literature/experiment candidates;
+- validation metadata/campaign results;
+- authority mapping policy for lab use.
+
+A reviewed lab policy such as allowed actuators/max delta/cooldown is represented explicitly as `origin=POLICY`, not an unnamed layer outside the registry model.
+
+## Knowledge-promotion principle
+
+Promotion and authority escalation are separate operations.
 
 ```text
-source document
-  -> candidate extraction
-  -> K3 candidate with provenance
-  -> semantic/unit/scope review
-  -> design validation campaign
-  -> run controlled TEP experiments
-  -> collect evidence + failures
-  -> validation result
-      -> remain K3
-      -> reject/deprecate
-      -> promote to K2 within explicit operating envelope
+candidate claim
+ -> evidence collection
+ -> controlled validation
+ -> validation maturity may increase
 ```
 
-Promotion to K1 requires stronger formal justification/review than simulation support alone.
+Then an independent deterministic policy decides the maximum authority allowed for `(origin, validation, scope)`.
 
-## Extraction workflow
+Example:
 
-LLMs may assist with extracting candidate rules from literature, but extraction output must include:
+```text
+LITERATURE + NONE + REFERENCE
+  -> controlled TEP validation
+LITERATURE + SIMULATION_VALIDATED + PLANNING
+```
+
+The Agent may propose validation work but cannot directly change `validation` or `authority` metadata.
+
+## Validation campaign governance
+
+A candidate may later be validated through a campaign such as:
+
+```text
+ValidationPlan
+  candidate_rule_ref
+  scenario_family_ref
+  deterministic_sampling_policy
+  operating_envelope
+  held_out_envelope
+  seed_policy
+  metrics
+  pass/fail/tolerance policy
+```
+
+Important anti-self-validation rule:
+
+- the proposing Agent may suggest what relation/envelope should be tested;
+- exact scenario/seed sampling for promotion is generated/frozen by evaluator/lab policy;
+- held-out conditions are required for robust promotion studies;
+- the proposing Agent cannot cherry-pick only favorable trials.
+
+Full KnowledgePromotion workflow implementation is deferred until a real K3/K4 promotion study exists; v0 Rule metadata must nevertheless support it.
+
+## Literature extraction
+
+LLM-assisted extraction may create only a candidate with provenance:
+
+```text
+origin = LITERATURE
+validation = NONE
+authority = REFERENCE
+```
+
+Required extraction metadata:
 
 ```text
 source_ref
@@ -141,98 +234,75 @@ conditions/assumptions
 units
 relationship type
 uncertainties
-candidate knowledge level = K3
 ```
 
-The extractor has no authority to assign K0/K1/K2.
-
-## Validation campaign
-
-A K3 candidate may define:
-
-```text
-ValidationCampaign
-  campaign_id
-  candidate_rule_ref
-  scenarios[]
-  operating_points[]
-  seeds[]
-  expected_relation
-  metrics
-  pass/fail/tolerance policy
-  result_refs[]
-```
-
-The campaign evaluator is deterministic where possible.
+Extraction cannot directly assign execution authority.
 
 ## Conflict handling
 
-Conflicting rules are preserved, not silently merged.
+Conflicting rules are preserved rather than silently merged.
 
-Conflict records SHOULD identify:
+Conflict records should identify:
 
 - overlapping scope;
-- conflicting expected relation/constraint;
-- source/validation strength;
+- differing relation/constraint;
+- origin/validation/authority of each rule;
 - operating-envelope differences;
 - resolution status.
 
-Precedence for execution truth:
+For current TEP execution truth, simulator/runtime constraints win over advisory literature/experiment claims inside the simulator's declared scope.
+
+## Versioning / demotion
+
+Rules are versioned.
+
+Simulator changes or contradictory evidence may:
+
+- narrow scope/envelope;
+- create a superseding version;
+- deprecate a rule;
+- reduce validation maturity pending revalidation;
+- reduce authority through policy.
+
+Past runs keep exact rule-version refs.
+
+## Agent-facing access
+
+Suggested tools:
 
 ```text
-K0 simulator contract
-> applicable K1 formal invariant
-> reviewed policy
-> K2 advisory evidence
-> K3 heuristic
-> K4 hypothesis
-```
-
-A higher level does not imply general scientific truth outside its declared scope.
-
-## Versioning and demotion
-
-Rules are versioned. New simulator versions or contradictory validation may:
-
-- narrow operating envelope;
-- supersede a rule;
-- deprecate it;
-- demote K2 back to K3 pending revalidation.
-
-Past experiments keep the exact rule-version refs used.
-
-## Agent access
-
-Suggested typed tools:
-
-```text
-query_rules(scope, variables?, level?, enforcement?)
+query_rules(scope, variables?, origin?, validation?, authority?)
 get_rule(rule_id, version?)
 get_rule_provenance(rule_ref)
 get_rule_validation(rule_ref)
 find_rule_conflicts(rule_ref)
+submit_rule_candidate(...)
+submit_validation_proposal(...)
 ```
 
-Agents cannot directly edit rule level/enforcement. They may submit `RuleCandidate` or `ValidationProposal` objects.
+Agents cannot directly edit validation/authority fields.
 
-## Relationship to deterministic gates
+## Relationship to runtime gates
 
-The domain validator may consume K0/K1 hard rules. K2/K3 rules may inform scoring/warnings/context but must not silently become blocking gates.
+Consumer `validate_request` may use only rules/policies whose configured authority permits that use.
+
+Advisory/planning rules may inform context/scoring/planning but do not silently become blocking gates.
 
 ## Invariants
 
+- Origin, validation maturity, and authority are independent fields.
 - LLM extraction never directly creates a hard gate.
-- Every K2/K3 rule has source provenance.
-- Every K2 promotion has validation evidence and operating scope.
-- Rule behavior is versioned and reproducible per experiment.
-- Simulator/document disagreements remain visible and simulator runtime truth governs current TEP execution behavior.
-- K4 agent hypotheses live in investigation state, not as persistent rules by default.
+- Promotion evidence may raise validation but does not automatically raise authority.
+- Authority is assigned by deterministic/reviewed policy, not Agent prose.
+- All non-simulator rules preserve provenance/scope.
+- Agent working hypotheses remain investigation state unless explicitly promoted through a later workflow.
 
 ## Acceptance tests
 
-1. Import a paper-derived relation as K3 with exact source/provenance metadata.
-2. Reject an attempt to mark the K3 relation as BLOCK without promotion/review.
-3. Run a deterministic validation campaign and promote a passing scoped relation to K2.
-4. Record a conflicting candidate without overwriting existing rule history.
-5. Domain gate consumes a K0 hard constraint and ignores a K3 heuristic for blocking authority.
-6. Re-score an old run using its pinned rule versions.
+1. Store a literature rule as `LITERATURE/NONE/REFERENCE` with exact provenance.
+2. Reject an Agent request to change its authority to HARD_GATE.
+3. Store a reviewed lab intervention limit as `POLICY/REVIEWED/HARD_GATE` with explicit scope.
+4. Record a simulation-validated engineering relation without automatically granting HARD_GATE.
+5. Preserve two conflicting scoped rules without overwrite.
+6. Consumer gate uses an authoritative simulator/policy rule while ignoring a literature reference for blocking authority.
+7. Re-score an old run with pinned rule versions/three-axis metadata.
