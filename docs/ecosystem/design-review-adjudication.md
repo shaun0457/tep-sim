@@ -16,13 +16,30 @@ This document records the program owner's adjudication. It is not a replacement 
 
 ## Current closure status
 
-The accepted findings below have now been propagated into the canonical program/runtime/lab specs and entry documents on `architecture/hybrid-agent-runtime`.
+The accepted findings have been propagated into canonical program/runtime/lab specs and entry documents.
 
-Current release policy:
+A focused independent re-review was then performed at:
 
-- `tep-sim` A1–A4: **GO** independently;
-- runtime/lab implementation: **HOLD pending focused independent re-review**;
-- the re-review should check blocker/major closure and contradictions, not redesign the full program from scratch.
+`docs/ecosystem/reviews/2026-09-15-focused-re-review.md`
+
+That review returned **READY WITH CONDITIONS**:
+
+- all original BLOCKERs closed;
+- nine of ten original implementation-defining MAJOR findings closed;
+- no new cross-document contradiction found;
+- one remaining MAJOR-R1: the Main Agent state-proposal -> `StateDelta` path was unspecified.
+
+The reviewer explicitly stated that closing R1 is sufficient for **READY FOR DESIGN FREEZE**.
+
+R1 is now closed in the owning specs. Final release status:
+
+- `tep-sim` A1–A4: **GO**;
+- runtime B1–B5: **GO in dependency order**;
+- lab C1–C5: **GO in dependency order**;
+- D0 benchmark pilot: **GO once upstream dependencies exist**;
+- later HAZOP/Recovery/AutoResearch remain ordered by their prerequisite milestones/specs.
+
+See `design-freeze-record.md` for the final Phase 0 release record.
 
 ## Adjudication policy
 
@@ -52,7 +69,7 @@ Current release policy:
 | Contract | Decision | Current v0 action |
 |---|---|---|
 | `TaskStateStore` | ACCEPT | Defined in runtime-v0; RcaState implements it. |
-| Observation/evidence lifecycle | ACCEPT | Tool/simulator result -> immutable ObservationRecord; explicit HypothesisEvidenceLink makes evidence. |
+| Observation/evidence lifecycle | ACCEPT | Successful agent-visible ToolResult -> immutable ObservationRecord; explicit HypothesisEvidenceLink makes evidence. |
 | `Prediction` | ACCEPT | Defined in hypothesis/experiment contract. |
 | Root-cause vocabulary | ACCEPT WITH MODIFICATION | Structured `CausalClaim`; evaluator truth uses same fields; full candidate list is not Agent-visible; `NO_ABNORMAL_CAUSE` explicit. |
 | Consumer budget dimensions | ACCEPT | `Budget.extra_dimensions`; ToolSpec declared/max draw; actual usage reconciled. |
@@ -186,31 +203,91 @@ Minimum records:
 
 Historical records are not automatically injected into later benchmark contexts. Lesson Learned/Runbook/manual promotion is deferred to an explicit cross-incident knowledge study.
 
+## Focused re-review MAJOR-R1 — CLOSED
+
+### Gap identified by reviewer
+
+The focused re-review found that hypothesis creation, evidence linking, ExperimentInterpretation, and WorkingExplanation updates were model-proposed state changes with no defined route into `StateDelta`/`TaskStateStore`.
+
+It also identified two linked ambiguities:
+
+- whether successful ToolResults are automatically registered as observations;
+- how parallel WorkBatch result deltas avoid stale `base_revision` conflicts.
+
+### Final contract
+
+```text
+ModelTurn
+  context_projection_ref
+  base_revision
+  state_update?: ModelStateUpdateProposal
+  action: NONE | TOOL_REQUEST | WORK_BATCH | FINISH_PROPOSAL
+```
+
+#### Model-proposed state update
+
+```text
+ModelStateUpdateProposal
+ -> generic schema/projection revision validation
+ -> consumer TaskStateStore validates legal operation/ref/visibility
+ -> atomic apply_batch
+ -> trace disposition
+ -> action dispatch only if update succeeded
+```
+
+Rules:
+
+- bound to the exact `ContextProjection.base_revision` seen by the model;
+- all deltas in one proposal apply atomically or none apply;
+- consumes one `max_steps` and zero `max_tool_calls`;
+- cannot mutate runtime budget/policy/generic status/authority or external/reference state;
+- stale/illegal proposal prevents same-turn ToolCall/WorkBatch dispatch.
+
+#### Result ingestion
+
+Every successful agent-visible ToolResult is automatically registered as an `ObservationRecord` by the lab deterministic ingestion path.
+
+Observation registration does not create evidence. The Agent later proposes explicit:
+
+```text
+StateDelta(operation=ADD_EVIDENCE_LINK, ...)
+```
+
+`ExperimentInterpretation` fields map to explicit StateDelta operations (`ADD_EVIDENCE_LINK`, `UPDATE_HYPOTHESIS`, `ADD_OPEN_QUESTION`, `UPDATE_WORKING_EXPLANATION`, etc.).
+
+For parallel WorkBatch results, deterministic ingestion batches are applied in a stable work-item order and each batch is bound to the **then-current** state revision immediately before application. Model-proposed deltas remain bound to the projection revision the model actually saw.
+
+Owning specs:
+
+- `blueprints/industrial-agent-runtime/docs/specs/runtime-v0.md`;
+- `blueprints/industrial-agent-runtime/docs/specs/hybrid-orchestration-v0.md`;
+- `blueprints/industrial-agent-runtime/docs/specs/deterministic-gates-v0.md`;
+- `blueprints/tep-agent-lab/docs/specs/investigation-state-v0.md`;
+- `blueprints/tep-agent-lab/docs/specs/hypothesis-experiment-v0.md`.
+
+Decision Register: D-032.
+
 ## Implementation release decision
 
-### GO now
+### GO
 
-`tep-sim` A1–A4:
+- `tep-sim` A1–A4;
+- runtime B1–B5 in dependency order;
+- lab C1–C5 in dependency order;
+- D0 benchmark pilot once upstream dependencies exist.
 
-- environment API;
-- snapshot/fork/replay;
-- DEXPI/process binding;
-- capability/safety.
+### Deferred / OPEN_RESEARCH (non-blocking)
 
-### HOLD pending focused re-review
+- full Dynamic DAG replanning/cancellation;
+- LangGraph adapter;
+- MCP provider;
+- information-gain stopping;
+- cross-incident learned memory;
+- knowledge-promotion workflow;
+- Lesson Learned/Runbook/manual promotion;
+- exact subagent limits and benchmark scenario parameters;
+- later HAZOP/Recovery/AutoResearch implementation beyond prerequisite milestones.
 
-- runtime implementation;
-- lab implementation.
+## Spec-conflict rule after freeze
 
-The canonical alignment work itself is complete enough to request the focused re-review; the hold is removed only if that review finds no remaining BLOCKER or unresolved implementation-defining MAJOR contradiction.
-
-## Focused re-review contract
-
-The independent reviewer should verify only:
-
-1. each original BLOCKER is closed or explicitly downgraded with defensible rationale;
-2. each accepted implementation-defining MAJOR finding appears in the owning canonical spec;
-3. no new cross-document/cross-repo contradiction was introduced;
-4. runtime B1 and lab C1 could be implemented without inventing product architecture;
-5. deferred/open-research items are clearly non-blocking;
-6. old terms (`EvidenceBundle`, full-DAG v0 requirement, K0–K4 as canonical schema, scheduled LangGraph adapter, SIMULATE reference mutation) do not remain authoritative in current entry/canonical docs.
+If implementation reveals a contradiction or missing public contract, coding agents must emit `SPEC_CONFLICT`, preserve evidence, and reopen the owning spec/ADR rather than silently inventing architecture in code.
