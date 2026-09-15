@@ -1,6 +1,6 @@
 # industrial-agent-runtime
 
-Domain-independent control plane for one goal-driven Main Agent using typed tools, deterministic authority gates, consumer-owned state adapters, dependency-aware work, and bounded ephemeral subagents.
+Domain-independent control plane for one goal-driven Main Agent using typed tools, explicit typed state updates, deterministic authority gates, consumer-owned state adapters, dependency-aware work, and bounded ephemeral subagents.
 
 ## Purpose
 
@@ -9,24 +9,32 @@ Provide reusable Agent runtime mechanics without embedding TEP, process safety, 
 ## Core shape
 
 ```text
-consumer TaskStateStore.project
+consumer TaskStateStore.project()
         |
         v
-Main Agent
-        |
- ToolCall / WorkBatch / FinishProposal
+ContextProjection
         |
         v
-G0-G3 + consumer.validate_request
+Main Agent / ModelTurn
         |
-        v
-Executor
+        +-- state_update? --> TaskStateStore.apply_batch
         |
-        v
-post-execution verify_result
-        |
-        v
-TaskStateStore.apply
+        +-- action --------> NONE | ToolCall | WorkBatch | FinishProposal
+                                  |
+                                  v
+                        G0-G3 + consumer.validate_request
+                                  |
+                                  v
+                               Executor
+                                  |
+                                  v
+                        post-execution verify_result
+                                  |
+                                  v
+                     deterministic result ingestion
+                                  |
+                                  v
+                         TaskStateStore.apply_batch
 ```
 
 Only the Main Agent is assumed to require an LLM.
@@ -36,11 +44,13 @@ Only the Main Agent is assumed to require an LLM.
 - `InformationRef`;
 - `Task` / `Budget` including extra resource dimensions;
 - `ToolSpec` / request/result contracts;
-- generic `TaskStatus` / `StateDelta` / `ContextProjection` / `TaskStateStore` protocol;
+- generic `TaskStatus` / `StateDelta` / `ModelStateUpdateProposal` / `ModelTurn`;
+- `ContextProjection` / `TaskStateStore.apply_batch` protocol;
 - dependency-aware `WorkBatch` (`TOOL | SUBTASK` + `depends_on`);
 - deterministic pre-execution gates;
 - deterministic Executor/dispatcher;
 - deterministic post-execution result verification;
+- deterministic result-ingestion ordering;
 - ephemeral `Subtask` / `SubtaskResult`;
 - provider abstraction + fake provider;
 - exact model-turn tracing/resource accounting.
@@ -58,12 +68,16 @@ Only the Main Agent is assumed to require an LLM.
 
 ## Critical invariants
 
-- model proposes; deterministic code authorizes and executes;
+- model proposes; deterministic code authorizes, applies validated internal state updates, and executes external work;
+- model state updates are bound to the exact projection revision the model saw;
+- rejected/stale state updates block same-turn execution dispatch;
+- model state updates consume `max_steps`, not `max_tool_calls`;
 - pre-execution validation != post-execution verification;
 - runtime never imports domain state types;
 - child authority never exceeds task/parent authority;
 - SIMULATE never mutates reference state;
 - compound tools cannot hide nested budget consumption;
+- parallel result-ingestion updates bind current revision in deterministic stable order;
 - model turns reference exact immutable ContextProjection artifacts;
 - conversation history is not canonical application state;
 - no arbitrary Agent Python/shell as the normal tool model.
@@ -90,44 +104,9 @@ Public contracts are serializable/framework-neutral.
 - LangGraph: not a v0 dependency; consider only after a concrete checkpoint/resume/interrupt need.
 - MCP: not a runtime dependency; may later be one external Tool Provider protocol behind ordinary ToolSpec/gates.
 
-## Suggested package direction
-
-```text
-src/industrial_agent_runtime/
-  contracts/
-    refs.py
-    task.py
-    state.py
-    tool.py
-    budget.py
-    work.py
-    trace.py
-  runtime/
-    coordinator.py
-    executor.py
-    verifier.py
-  gates/
-    schema.py
-    permission.py
-    budget.py
-    side_effect.py
-  models/
-    base.py
-    fake.py
-    providers/
-  tracing/
-    recorder.py
-
-tests/
-docs/
-AGENTS.md
-```
-
-Component names are implementation organization, not separate services/agents.
-
 ## First consumer
 
-`tep-agent-lab` implements TaskStateStore for RcaState, registers TEP/Tool Bridge adapters, and supplies consumer `validate_request` / `verify_result` domain logic.
+`tep-agent-lab` implements TaskStateStore for RcaState, registers TEP/Tool Bridge adapters, supplies consumer request/result validation, and deterministically maps successful results to domain observation/state deltas.
 
 ## Documentation
 
