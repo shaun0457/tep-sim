@@ -1,226 +1,208 @@
-# Roadmap
+# Roadmap: TEP Process Sandbox
 
-This roadmap prioritizes a reproducible control/agent loop before visualization or multi-agent complexity.
+This roadmap deliberately stops at the environment boundary. Agent orchestration, HAZOP reasoning, and P&ID digitization live in separate repositories.
 
-## Phase 0 — Lock the simulator contract
+## Phase 0 — Lock the upstream simulator contract
 
-**Goal:** know exactly what the vendored simulator does.
+**Goal:** establish a trustworthy baseline.
 
 Deliverables:
 
-- pin/record upstream submodule commit in run metadata;
-- verify pure-Python backend on the target Windows environment;
-- confirm `step()`, measurement access, XMV access, disturbance injection, and shutdown behavior;
-- add an automated variable-registry consistency test;
-- correct local documentation so XMV IDs match the vendored simulator.
+- pin and record the upstream submodule commit;
+- verify the pure-Python backend on the target Windows environment;
+- document `step()`, XMEAS/XMV access, disturbance injection, controller modes, and shutdown behavior;
+- generate canonical runtime variable metadata from upstream;
+- add a registry consistency test;
+- correct/deprecate literature-derived tables that disagree with runtime mapping.
 
 Exit criteria:
 
 ```text
-initialize -> step N times -> read XMEAS/XMV -> inject a disturbance -> reproduce run with same seed
+initialize -> step -> observe -> inject IDV -> reproduce with same seed
 ```
 
-No LLM is involved.
+## Phase 1 — Stable environment adapter
 
-## Phase 1 — Deterministic runtime shell
-
-**Goal:** create the plant loop and logging without an agent.
+**Goal:** external callers no longer depend directly on upstream internals.
 
 Implement:
 
-- simulator adapter;
-- `ObservationSnapshot`;
-- run ID + experiment config;
-- rolling telemetry window;
-- event log;
-- deterministic runtime state machine;
-- JSONL/SQLite/Parquet persistence (choose one simple path first).
+- `TEPEnvironment` facade;
+- `EnvironmentConfig`;
+- immutable `Observation`;
+- typed `DisturbanceIntervention` and `MVIntervention`;
+- explicit reset/step/rollout lifecycle;
+- run ID and provenance metadata;
+- explicit exception hierarchy.
 
 Exit criteria:
 
-- 1-hour simulated run is replayable;
-- run metadata and events are persisted;
-- no-event path is fast and deterministic.
+- normal scripts use only the public adapter;
+- invalid variable IDs/values fail before upstream mutation;
+- a one-hour run can be stored and replayed from config.
 
-## Phase 2 — Detector cascade
+## Phase 2 — Snapshot / fork / replay
 
-**Goal:** only escalate meaningful incidents.
-
-Implement in order:
-
-1. hard safety/shutdown detector;
-2. sustained deviation/rate-of-change detector;
-3. action-no-response detector;
-4. optional PCA/statistical/upstream detector plugin.
-
-Exit criteria:
-
-- selected IDV disturbance produces a deterministic `IncidentEvent`;
-- healthy baseline does not constantly open incidents;
-- detector evidence is numeric and compact.
-
-## Phase 3 — Action gate and deterministic controller
-
-**Goal:** make the intervention path safe before adding an LLM.
+**Goal:** make counterfactual experiments first-class.
 
 Implement:
 
-- canonical variable registry;
-- action proposal schema;
-- bounds gate;
-- max-delta/rate gate;
-- actuator cooldown;
-- experiment-specific allowlist;
-- safe rejection behavior;
-- action executor;
-- deterministic nominal/recovery policy for at least one fault scenario.
+- `Snapshot` contract;
+- environment cloning/forking;
+- RNG/state handling;
+- parent/child provenance;
+- branch isolation tests;
+- replay from stored run metadata when exact binary snapshotting is not available.
 
 Exit criteria:
 
-- invalid actions never reach `set_mv()`;
-- a deterministic recovery policy can use the same gate/executor path;
-- `CLOSED_LOOP` and `MANUAL/custom-controller` behavior is covered by tests.
+```text
+snapshot S
+-> fork A + fork B
+-> different interventions
+-> isolated rollouts
+-> reproducible comparison
+```
 
-## Phase 4 — Single reasoning agent
+## Phase 3 — Capability registry
 
-**Goal:** add reasoning only where deterministic logic stops.
+**Goal:** make simulation limits machine-readable.
 
 Implement:
 
-- `Agent` interface independent of model provider;
-- compact `IncidentContext` builder;
-- structured diagnosis/action output;
-- fake agent for tests;
-- one real model adapter;
-- model call/token/latency metrics.
-
-Default agent flow:
-
-```text
-incident -> diagnose -> propose -> deterministic gate -> apply/reject -> verify
-```
+- supported disturbances;
+- supported manipulated variables;
+- supported high-level scenario semantics;
+- unsupported consequence domains;
+- versioned capability schema.
 
 Exit criteria:
 
-- healthy runs make zero model calls;
-- agent receives only incident-relevant context;
-- malformed model output causes no action;
-- all proposals and gate decisions are traceable.
+- a caller can query support before running an experiment;
+- unsupported hazard requests fail explicitly;
+- no generic fallback silently substitutes missing physics.
 
-## Phase 5 — Closed recovery loop
+## Phase 4 — Scenario compiler
 
-**Goal:** evaluate whether an intervention actually helped.
+**Goal:** translate higher-level process scenarios into TEP interventions without an LLM.
 
 Implement:
 
-- verification horizon;
-- expected direction/recovery criterion;
-- action outcome classification;
-- bounded retry/re-diagnosis;
-- safe-hold transition when retry budget is exhausted.
+- canonical process-node registry;
+- parameter/deviation vocabulary;
+- `ProcessDeviation` schema;
+- mapping rules from supported deviation -> intervention(s);
+- ambiguity handling;
+- scenario provenance.
 
-Suggested first scenario:
+Initial examples:
 
 ```text
-IDV(4) reactor cooling-water inlet temperature disturbance
--> reactor temperature/related signals deviate
--> incident opens
--> agent identifies cooling-water path
--> proposes bounded XMV(10) intervention
--> gate validates
--> runtime applies action
--> verification checks temperature/safety trend
+reactor cooling loop + flow + LESS
+reactor cooling-water inlet temperature + MORE
+feed flow + NO/LESS
+selected valve + STUCK
+reaction kinetics + DRIFT
 ```
-
-Do not expose the ground-truth disturbance ID to the agent when measuring diagnosis quality.
 
 Exit criteria:
 
-- full incident trace can be inspected end-to-end;
-- outcome is judged by deterministic metrics, not by model self-evaluation.
+- at least five representative deviation classes compile deterministically;
+- mappings have tests;
+- impossible mappings return an explicit error.
 
-## Phase 6 — Introduce LangGraph only if needed
+## Phase 5 — Deterministic safety evaluator
 
-**Goal:** add orchestration features, not complexity for its own sake.
+**Goal:** expose process safety state as structured data.
 
-Adopt LangGraph when one or more of these are required:
+Implement:
 
-- durable checkpoint/resume;
-- human approval before high-risk action;
-- explicit multi-step retry graph;
-- parallel bounded reasoning branches;
-- persistent incident workflow across UI/API requests.
+- current shutdown/limit state;
+- safety margins;
+- limit-crossing events;
+- unsafe interval summaries;
+- rollout-level `SafetyEvaluation`;
+- clear declaration of unsupported consequence models.
 
-Keep the simulation loop outside the graph.
+Exit criteria:
 
-Suggested graph boundary:
+- a scenario run produces a machine-readable safety summary;
+- the result distinguishes `process unsafe/shutdown` from unmodeled leak/fire/explosion consequences.
 
-```text
-IncidentContext
-   -> diagnosis
-   -> proposal
-   -> [deterministic gate outside/at boundary]
-   -> verification decision
-   -> retry / close / human review
-```
+## Phase 6 — HAZOP-friendly experiment primitives
 
-## Phase 7 — Dashboard and process visualization
+**Goal:** make the environment convenient for external HAZOP agents without putting HAZOP reasoning here.
 
-**Goal:** make the experiment understandable to a human.
+Implement:
 
-Start with a 2D dashboard before Blender/DEXPI.
+- guide-word normalization;
+- node/parameter enumeration;
+- compile-only mode;
+- batch scenario runner;
+- branch comparison result;
+- experiment budget controls (max branches/horizon) as environment safeguards.
 
-Views:
+Exit criteria:
 
-- process overview;
-- selected XMEAS time series;
-- XMV positions;
-- active disturbance for experiment/debug mode;
-- detector events;
-- agent diagnosis/proposal;
-- gate decision;
-- recovery status;
-- token/latency counters.
-
-Then add a process-flow topology where abnormal equipment/streams are highlighted.
-
-Only after the state/event model is stable should DEXPI/Blender be considered.
-
-## Phase 8 — Evaluation matrix
-
-Compare at least:
+An external caller can do:
 
 ```text
-A. built-in closed-loop control
-B. manual mode + deterministic recovery policy
-C. manual/custom control + event-driven LLM agent
-D. optional LangGraph version of C
+list process nodes
+-> list parameters
+-> submit deviation
+-> check simulability
+-> fork
+-> rollout
+-> evaluate safety
 ```
 
-Metrics:
+without touching simulator internals.
 
-- recovery success rate;
-- time to detect;
-- time to recover;
-- safety-limit violations / shutdown rate;
-- number and magnitude of control actions;
-- false incident rate;
-- LLM calls per simulated hour;
-- input/output tokens per incident;
-- model latency per incident;
-- malformed/rejected proposal rate;
-- reproducibility across seeds.
+## Phase 7 — Visualization adapters
 
-## What not to build yet
+**Goal:** observe the playground without changing it.
 
-Defer these until Phase 5 works:
+Implement in increasing complexity:
 
-- continuous multi-agent chatter;
-- Supervisor/DataEngineer/DataScientist role hierarchy;
-- full knowledge graph;
-- DEXPI authoring pipeline;
-- Blender/Omniverse digital twin rendering;
-- agent-generated controller code during a live run;
-- broad shell/filesystem access from the online agent.
+1. simple process topology + live telemetry dashboard;
+2. branch/rollout comparison view;
+3. intervention/safety event timeline;
+4. optional DEXPI/SVG process representation;
+5. optional Blender/Omniverse view if it adds value.
 
-The first success criterion is a small, explainable, replayable closed experiment—not a large agent platform.
+UI remains read-only until a separately reviewed control interface is intentionally designed.
+
+## Phase 8 — Benchmark and performance suite
+
+**Goal:** make this environment useful as a research benchmark.
+
+Create scenario packs for:
+
+- healthy baseline;
+- IDV disturbances;
+- selected XMV interventions;
+- HAZOP-compatible deviations;
+- recovery/counterfactual comparisons.
+
+Track:
+
+- reproducibility;
+- simulation speed;
+- branch creation cost;
+- storage cost;
+- shutdown/safety outcomes;
+- environment API compatibility.
+
+## Not in this roadmap
+
+The following are intentionally separate projects:
+
+- agent runtime and dynamic subagents;
+- agent token/context budgeting;
+- HAZOP reasoning/evaluation methodology;
+- RCA agent workflows;
+- P&ID image/vector digitization;
+- DEXPI graph generation from arbitrary drawings;
+- generation of high-fidelity dynamic models from plant engineering data.
+
+See [`ecosystem/README.md`](ecosystem/README.md) for ownership.
