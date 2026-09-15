@@ -1,68 +1,69 @@
 # industrial-agent-runtime
 
-Domain-independent runtime for a main reasoning agent that can dynamically spawn bounded ephemeral subagents, use typed tools, and interact with external environments through deterministic side-effect gates.
+Domain-independent runtime for one main reasoning agent that can use typed tools and dynamically create bounded ephemeral subagents while deterministic gates retain execution authority.
 
-## Why this repository exists
+## Purpose
 
-Industrial agent experiments should not embed orchestration into each simulator/domain project. This runtime provides reusable agent mechanics while remaining ignorant of TEP, P&IDs, manufacturing equipment, or any specific plant.
+Industrial agent experiments should not embed orchestration inside each simulator/domain repository. This runtime provides reusable agent mechanics while remaining ignorant of TEP, XMEAS/XMV/IDV, HAZOP mappings, or process-safety truth.
 
 ## Core principles
 
 - one main agent by default;
-- subagents are created for tasks, not permanent job titles;
-- subagents have explicit task, context, tools, budget, deadline/step limit, and output schema;
-- deterministic code handles validation, budgets, permissions, retries, and side-effect gates;
-- model outputs are structured proposals, not direct environment mutations;
-- context is assembled per task rather than accumulated indefinitely;
-- every model/tool call is traceable and measurable;
-- LangGraph is optional orchestration, not a requirement for every workflow.
+- subagents are temporary tasks, not permanent job titles;
+- child context/tool/budget/output contracts are explicit;
+- v0 defaults to depth 1, max 3 children, no child mutation authority;
+- deterministic code handles schema validation, permissions, budgets, recursion limits, and side-effect gates;
+- model outputs are requests/proposals, not execution authority;
+- context is assembled per task and large artifacts are referenced rather than copied blindly;
+- every model/tool/subagent/gate transition is traceable;
+- tests use a deterministic fake model provider;
+- LangGraph is optional and added only when durable state/interrupt requirements justify it.
 
 ## Conceptual runtime
 
 ```text
-User / Lab Task
-      |
-      v
+Task
+ |
+ v
+Context Builder
+ |
+ v
 Main Agent
-      |
-      +-- needs independent work? --> spawn Subtask(s)
-      |                                |
-      |                         ephemeral subagents
-      |                                |
-      +<---------- structured results--+
-      |
-      v
-Tool / Environment Proposal
-      |
-      v
-Deterministic permission + schema + budget gate
-      |
-      v
-External tool/environment
+ |\
+ | +--> bounded Subtask(s)
+ |             |
+ |<-- EvidenceBundle(s)
+ |
+ v
+Tool request / structured result
+ |
+ v
+schema -> allowlist -> budget -> side-effect gate
+ |
+ v
+consumer validator / external tool
 ```
 
 ## Repository owns
 
-- model-provider interface;
+- model-provider abstraction;
 - main-agent executor;
-- dynamic subagent executor;
-- tool registry and permissions;
-- task contracts;
-- context builder;
-- structured result contracts;
-- budgets (tokens, calls, wall/step limits where applicable);
-- tracing and observability;
-- deterministic side-effect gates;
-- optional graph/checkpoint adapter.
+- ephemeral-subagent executor;
+- task/tool/budget/result contracts;
+- context references and context budgets;
+- tool registry/permissions;
+- deterministic generic gates;
+- traces/observability;
+- optional approval/checkpoint adapters.
 
 ## Repository does not own
 
-- TEP variables/equations;
-- HAZOP guide-word mappings for a specific plant;
-- P&ID extraction;
-- process-safety truth;
+- TEP variables/equations/topology;
+- application-specific safety limits;
+- HAZOP/RCA/recovery workflows;
+- P&ID/DEXPI parsing;
 - domain knowledge bases;
-- experiment-specific evaluation datasets.
+- experiment ground truth/evaluators.
 
 ## Suggested package layout
 
@@ -73,28 +74,26 @@ src/industrial_agent_runtime/
     result.py
     tool.py
     budget.py
+    trace.py
   runtime/
-    main_agent.py
-    subagent.py
     executor.py
     context.py
+    subtask.py
+  gates/
+    schema.py
+    permission.py
+    budget.py
+    side_effect.py
   tools/
     registry.py
-    permissions.py
-  gates/
-    side_effect.py
-    schema.py
-    budget.py
   models/
     base.py
     fake.py
     providers/
-  orchestration/
-    simple.py
-    langgraph_adapter.py
   tracing/
-    events.py
     recorder.py
+  orchestration/
+    langgraph_adapter.py   # optional/later
 
 tests/
 docs/
@@ -109,22 +108,33 @@ runtime = AgentRuntime(model=model, tools=tools, policy=policy)
 result = runtime.run(
     Task(
         goal="Investigate the incident and return ranked hypotheses",
-        context=context,
+        context_refs=[...],
         allowed_tools=[...],
-        budget=Budget(max_model_calls=8, max_subagents=3),
+        budget=Budget(
+            max_model_calls=8,
+            max_tool_calls=20,
+            max_subagents=3,
+            max_subagent_depth=1,
+            max_steps=30,
+        ),
         output_schema=DiagnosisResult,
     )
 )
 ```
 
-The runtime must not know what a reactor, XMEAS, CNC machine, or pump is.
+The runtime must not know what a reactor, pump, CNC machine, or TEP fault is.
 
 ## First consumer
 
-`tep-agent-lab` should be the first serious consumer. That lab will provide TEP-specific tools such as `observe`, `fork_environment`, and `run_rollout`.
+`tep-agent-lab` is the first serious consumer and supplies TEP-specific tool adapters, policies, and output schemas.
 
-## Documents
+## Documentation
 
-- `AGENTS.md` — coding-agent constraints
-- `docs/architecture.md` — runtime contracts and boundaries
+- `AGENTS.md` — minimal coding-agent constraints
+- `docs/architecture.md` — runtime boundary
 - `docs/roadmap.md` — implementation order
+- `docs/specs/runtime-v0.md` — execution contract
+- `docs/specs/subagents-v0.md` — ephemeral-subagent contract
+- `docs/specs/deterministic-gates-v0.md` — generic gate model
+- `docs/open-questions.md` — unresolved design choices
+- `docs/decisions/` — ADRs
