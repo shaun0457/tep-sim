@@ -1,519 +1,386 @@
-# Architecture: Hybrid TEP Simulation + Agent Runtime
+# Architecture: TEP Process Sandbox
 
 ## Decision
 
-Use a **hybrid runtime**:
+`tep-sim` is an **agent-agnostic, forkable process-simulation environment**.
 
-- the Tennessee Eastman Process simulator, sampling, safety checks, detectors, action gates, and state transitions are deterministic Python;
-- the LLM is invoked only on event-driven slow paths that require diagnosis, explanation, or recovery planning;
-- LangGraph may orchestrate that slow path when persistence, retries, human approval, or multi-step reasoning become useful;
-- CLI coding agents such as Codex CLI / Claude Code are development harnesses, not online controllers.
+Its job is to make the Tennessee Eastman Process available through stable, typed, reproducible contracts that can later be consumed by:
 
-This design minimizes token use, latency, and agent failure surface while keeping the LLM focused on the part that actually benefits from reasoning.
+- normal Python experiments;
+- deterministic controllers;
+- HAZOP/RCA integration workflows;
+- RL policies;
+- LLM agents;
+- dashboards and 3D visualizers.
 
----
-
-## Why not use a CLI coding agent as the runtime?
-
-A coding agent is optimized for repository work: inspect files, run commands, edit code, test, and iterate. It generally carries broader context and a much more capable tool surface than a plant controller needs.
-
-Using it directly in the TEP loop would create several problems:
-
-- excessive context and token use;
-- unpredictable latency relative to the simulation clock;
-- unnecessary filesystem/shell permissions;
-- poor separation between reasoning and control authority;
-- difficult reproducibility;
-- hard-to-test hidden agent loops.
-
-Use coding agents to **build and maintain** this repository. Keep the runtime narrow and explicit.
+The environment must not depend on any of those consumers.
 
 ---
 
-## Why not put the whole runtime in LangGraph?
+## Design goals
 
-LangGraph is useful for stateful, long-running workflows, but the TEP plant loop is fundamentally a deterministic numerical process. A graph node per simulation tick would add orchestration overhead without adding intelligence.
+1. **Reproducible** — same seed/config/intervention schedule should reproduce the same run within documented numerical tolerance.
+2. **Forkable** — a caller can snapshot a state, create isolated branches, and compare counterfactual rollouts.
+3. **Typed** — interventions and results use explicit schemas rather than raw array mutation.
+4. **Capability-aware** — callers can discover what the environment can and cannot simulate.
+5. **Auditable** — every run records simulator version, inputs, interventions, termination state, and result artifacts.
+6. **Agent-agnostic** — no prompts, model SDKs, orchestration graph, agent memory, or subagent logic.
+7. **Extensible** — future process/safety physics may be added without breaking the external environment contract.
 
-The recommended boundary is:
+---
+
+## Non-goals
+
+This repository does not attempt to:
+
+- perform autonomous diagnosis;
+- decide HAZOP credibility;
+- generate recovery plans with an LLM;
+- digitize P&ID drawings;
+- infer missing engineering parameters;
+- generate arbitrary plant simulators from diagrams;
+- model all process-safety consequences.
+
+Those are upstream/downstream projects.
+
+---
+
+## High-level architecture
 
 ```text
-FAST PATH (no LLM)
+                  External Consumers
 
-TEPSimulator.step()
-      |
-      v
-ObservationSnapshot
-      |
-      v
-rolling features / detector bank / safety rules
-      |
-      +---- healthy ----> record + next step
-      |
-      v
-IncidentEvent
-
-SLOW PATH (LLM optional)
-
-IncidentEvent
-      |
-      v
-context builder
-      |
-      v
-[LangGraph or simple FSM]
- diagnose -> propose -> validate -> apply -> verify
-                 |          |
-                 |          +---- deterministic gate
-                 |
-                 +--------------- structured LLM output
+ Python      HAZOP/RCA       Agent Lab       UI / Replay
+ scripts      workflow        / RL
+    |             |             |                |
+    +-------------+-------------+----------------+
+                          |
+                          v
+                 +------------------+
+                 | Public Env API   |
+                 +------------------+
+                   |   |   |   |   |
+             observe  fork |   | capabilities
+                        scenario  safety
+                   |       |       |
+                   v       v       v
+             +--------------------------------+
+             |         tep-sim core           |
+             |                                |
+             | registry   contracts           |
+             | snapshot   scenario compiler   |
+             | telemetry  safety evaluator    |
+             | persistence/replay             |
+             +---------------+----------------+
+                             |
+                             v
+                  +-----------------------+
+                  | upstream TEPSimulator |
+                  +-----------------------+
 ```
-
-A plain Python finite-state machine should be enough for the first milestone. Introduce LangGraph when at least one of these becomes necessary:
-
-- durable checkpoint/resume;
-- human approval interrupts;
-- multi-step diagnosis/recovery with explicit retries;
-- multiple reasoning branches that need stateful coordination;
-- production tracing around agent state transitions.
-
-Do not introduce it merely to have an "agent framework".
 
 ---
 
-## Core runtime states
+## Public contracts
 
-Keep the control runtime small and observable.
+### `EnvironmentConfig`
+
+Contains only information needed to reproduce environment behavior, for example:
 
 ```text
-NORMAL
-  |
-  | detector/alarm
-  v
-INCIDENT_OPEN
-  |
-  | context ready
-  v
-DIAGNOSING
-  |
-  | structured proposal
-  v
-VALIDATING
-  |\
-  | \ rejected
-  |  v
-  | SAFE_HOLD / HUMAN_REVIEW
-  |
-  | approved
-  v
-ACTING
-  |
-  v
-VERIFYING
-  |\
-  | \ recovered -> NORMAL
-  |
-  +---- failed -> DIAGNOSING (bounded retry)
-             \
-              -> SAFE_HOLD when retry budget exhausted
+seed
+backend
+control_mode
+dt
+record_interval
+upstream_revision
 ```
 
-The transition function should be deterministic. The model supplies information used by transitions; it does not decide arbitrary next nodes.
+### `Observation`
 
----
-
-## Data contracts
-
-### ObservationSnapshot
-
-One simulator sample. Keep raw numerical state available to deterministic code, but do not automatically send it to the LLM.
-
-Suggested fields:
-
-```python
-@dataclass(frozen=True)
-class ObservationSnapshot:
-    run_id: str
-    step: int
-    sim_time_s: float
-    xmeas: tuple[float, ...]   # 41 values
-    xmv: tuple[float, ...]     # 12 values
-    shutdown: bool
-```
-
-### IncidentEvent
-
-Produced by deterministic detectors.
-
-```python
-@dataclass(frozen=True)
-class IncidentEvent:
-    incident_id: str
-    run_id: str
-    opened_at_step: int
-    severity: str
-    detector_ids: tuple[str, ...]
-    abnormal_variables: tuple[str, ...]
-    evidence: dict
-```
-
-`evidence` should contain compact numeric facts such as z-score, slope, duration, safety margin, or residual; not generated prose.
-
-### IncidentContext
-
-The only object sent to the reasoning agent.
-
-It should contain:
-
-- the incident metadata;
-- selected abnormal XMEAS values;
-- only the XMV variables related to those measurements/subsystems;
-- short-window features such as current, mean, slope, min/max, delta;
-- deterministic detector outputs;
-- safety margins;
-- recent actions/outcomes;
-- allowed control targets and constraints;
-- retrieved domain facts for relevant variables/equipment.
-
-Do not include the complete process history by default.
-
-### ActionProposal
-
-The model may propose, but cannot execute.
-
-```python
-@dataclass(frozen=True)
-class ActionProposal:
-    target: str          # canonical id, e.g. "XMV(10)"
-    mode: str            # "delta" or "absolute"
-    value: float
-    rationale: str
-    expected_effect: str
-    verify_after_s: int
-    confidence: float
-```
-
-### GateDecision
-
-Pure deterministic output.
-
-```python
-@dataclass(frozen=True)
-class GateDecision:
-    approved: bool
-    normalized_target: str | None
-    normalized_value: float | None
-    reasons: tuple[str, ...]
-```
-
----
-
-## Deterministic gates
-
-The LLM must never bypass these.
-
-### 1. Variable identity gate
-
-Resolve IDs from a canonical registry sourced from the vendored simulator. Do not trust prompt text to define what XMV(10) means.
-
-### 2. Range gate
-
-Reject non-finite values and values outside the actuator range.
-
-For direct valve positions, start with the simulator-valid 0-100% envelope, then tighten per actuator if domain limits are added.
-
-### 3. Delta/rate gate
-
-Limit how much an actuator can move per intervention. This is essential even if the final physical limit is 0-100%.
-
-Example policy shape:
+A point-in-time, immutable view of the environment:
 
 ```text
-max_abs_delta_per_action[XMV] = configurable value
-minimum_seconds_between_actions[XMV] = configurable cooldown
+simulation_time
+xmeas
+xmv
+active_disturbances
+shutdown
+safety_margins
 ```
 
-Do not encode these values in the prompt; store them in configuration.
+Arrays may exist internally, but the public layer should also make canonical IDs and metadata accessible.
 
-### 4. Safety gate
+### `Snapshot`
 
-The model must not intentionally cross configured shutdown/safety margins. If the process is already near shutdown, switch to a separately tested safe policy or human review instead of asking the LLM to improvise.
+A serializable or cloneable environment state sufficient for deterministic continuation.
 
-### 5. Permission gate
+Requirements:
 
-Each experiment declares which XMV variables are controllable. All others are read-only.
+- creating a snapshot must not mutate the live environment;
+- multiple forks from one snapshot must be isolated;
+- snapshot format/version must be explicit;
+- if upstream prevents exact serialization, the limitation must be documented and tested rather than hidden.
 
-### 6. Duplicate/cooldown gate
+### `Intervention`
 
-Reject repeated proposals that merely oscillate the same variable before the previous action has been evaluated.
-
-### 7. Output/schema gate
-
-Malformed or incomplete model output means `approved=False`. Never infer a missing target or value.
-
----
-
-## Detector hierarchy
-
-Prefer a cascade so the expensive reasoning layer sees very few events.
-
-### Layer A: hard process/safety rules
+A typed request to mutate a supported environment quantity.
 
 Examples:
 
-- simulator shutdown flag;
-- pressure/temperature/level safety margins;
-- NaN/Inf and sensor validity checks.
-
-### Layer B: cheap temporal rules
-
-Examples:
-
-- sustained deviation from baseline;
-- derivative/rate-of-change threshold;
-- actuator saturation;
-- measurement-actuator inconsistency;
-- no-response after an action.
-
-### Layer C: statistical/ML detector
-
-Optional PCA/residual/anomaly detector or the upstream detector plugin interface.
-
-### Layer D: LLM diagnosis
-
-Only run when Layers A-C produce an incident that cannot be handled by a known deterministic policy.
-
-This makes "zero model calls during healthy operation" a testable requirement.
-
----
-
-## Agent design
-
-Start with **one reasoning agent**, not role-based multi-agent orchestration.
-
-The agent has two responsibilities:
-
-1. diagnose the likely process/control cause using the compact incident context;
-2. return one or a small number of ranked `ActionProposal`s.
-
-Avoid permanent roles such as Supervisor, Data Engineer, Data Scientist, and Machine Expert inside this runtime. Those roles are useful for research on agent collaboration, but here they create handoffs, duplicated context, and token overhead.
-
-If later needed, spawn temporary subagents only for clearly independent tasks, for example:
-
-- one agent checks process-document evidence;
-- one agent evaluates alternative recovery hypotheses;
-- a final node compares already-structured outputs.
-
-Do not let subagents converse freely. Parent passes bounded inputs and receives bounded outputs.
-
----
-
-## Context minimization
-
-The context builder is more important than the prompt.
-
-### Bad
-
 ```text
-Send all 41 XMEAS + 12 XMV for the last 60 minutes + papers + previous chat history.
+DisturbanceIntervention(target="IDV(4)", value=1)
+MVIntervention(target="XMV(10)", value=55.0)
+MVConstraint(target="XMV(10)", max_value=60.0)
 ```
 
-### Better
+The environment validates syntax, identity, bounds, and capability before mutation.
+
+### `ProcessDeviation`
+
+A higher-level, HAZOP-friendly request:
 
 ```text
-Incident: reactor temperature rising for 90 s
-XMEAS(9): current / baseline / slope / z-score
-XMEAS(7): pressure current / slope
-XMEAS(21): reactor CW outlet current / slope
-XMV(10): current position / last action
-IDV metadata: hidden during blind diagnosis
-Relevant process relation: XMV(10) is reactor cooling-water flow
-Safety margins: reactor temperature / pressure
-Allowed action: XMV(10), max delta configured by gate
+ProcessDeviation(
+    node="reactor_cooling_loop",
+    parameter="flow",
+    guide_word="LESS",
+    magnitude=0.20,
+)
 ```
 
-The reduction from raw history to features should be deterministic.
+This is **not** automatically an intervention. It must pass through a deterministic `ScenarioCompiler` that either:
 
----
+1. maps it to one or more supported interventions; or
+2. returns `UnsupportedScenario` / `AmbiguousScenario`.
 
-## Canonical variable registry
+### `RolloutResult`
 
-A registry should be constructed from the vendored simulator's metadata/constants and exposed to the rest of the application.
-
-It should provide at least:
-
-```text
-canonical ID
-index
-name
-kind (XMEAS/XMV/IDV)
-unit
-process area / equipment tag
-control relationship(s), when curated
-```
-
-Important: the current vendored simulator defines the manipulated-variable sequence as:
-
-```text
-XMV(1)  D Feed Flow
-XMV(2)  E Feed Flow
-XMV(3)  A Feed Flow
-XMV(4)  A and C Feed Flow
-XMV(5)  Compressor Recycle Valve
-XMV(6)  Purge Valve
-XMV(7)  Separator Pot Liquid Flow
-XMV(8)  Stripper Liquid Product Flow
-XMV(9)  Stripper Steam Valve
-XMV(10) Reactor Cooling Water Flow
-XMV(11) Condenser Cooling Water Flow
-XMV(12) Agitator Speed
-```
-
-Do not allow duplicated handwritten mappings to diverge from this source.
-
----
-
-## Control strategy for experiments
-
-### Baseline A: built-in closed loop
-
-Run `ControlMode.CLOSED_LOOP` with no agent. This is the conventional baseline.
-
-### Baseline B: manual mode + deterministic controller
-
-Use `ControlMode.MANUAL` and reproduce selected control behavior through explicit controller code. This validates the wrapper and action-gate path without any LLM.
-
-### Agent experiment
-
-Use manual/custom control with:
-
-```text
-deterministic nominal controller
-       +
-agent intervention channel for incident recovery
-```
-
-This is preferable to asking an LLM to continuously replace every PI loop. The agent should initially supervise or intervene, not become a millisecond/second-level process controller.
-
----
-
-## Verification before/after action
-
-An action is not successful merely because the LLM produced a plausible explanation.
-
-For each approved action, record a verification contract:
-
-```text
-target variable(s)
-expected direction
-verification horizon
-tolerance / recovery criterion
-```
-
-After the horizon:
-
-- if the expected trend occurs and safety margins improve, close or continue monitoring;
-- if not, mark the proposal ineffective;
-- only then allow a bounded retry/re-diagnosis;
-- after the retry budget, enter safe hold/human review.
-
-This gives the agent a feedback loop without free-form self-reflection.
-
----
-
-## Run trace
-
-Every experiment should save enough information to replay what happened:
+Contains:
 
 ```text
 run_id
-seed
-upstream simulator commit
-control mode
-fault/disturbance schedule
-sampling configuration
-detector configuration
-agent model + prompt/config version
-incident contexts (or hashes + persisted artifacts)
-raw model structured outputs
-gate decisions
-applied actions
-verification outcomes
-shutdown/final status
-token usage and model latency
+config
+start_snapshot_id
+intervention_schedule
+time
+measurements
+manipulated_variables
+disturbances
+shutdown_state
+events
+provenance
 ```
 
-Token count and model latency are first-class experiment metrics.
+Large arrays should be written to an artifact format rather than repeatedly embedded into JSON/log messages.
 
----
+### `SafetyEvaluation`
 
-## Visualization boundary
-
-Visualization consumes the same state/event stream as logging.
-
-Suggested stages:
-
-1. simple process dashboard with time-series plots, alarms, active incidents, and actuator positions;
-2. 2D pipeline/process topology with equipment nodes and stream edges;
-3. optional DEXPI/Blender/3D presentation layer.
-
-The dashboard must not talk directly to the simulator's mutation methods. UI control, if later added, should go through the same action gate.
-
----
-
-## Suggested package layout
+Deterministic result derived from a rollout:
 
 ```text
-src/tep_sim/
-  simulation/
-    adapter.py
-  registry/
-    variables.py
-  telemetry/
-    snapshots.py
-    features.py
-  detectors/
-    safety.py
-    temporal.py
-  runtime/
-    state.py
-    engine.py
-  agents/
-    interface.py
-    context_builder.py
-    schemas.py
-    langgraph_runtime.py      # optional, add when justified
-  gates/
-    action_gate.py
-  control/
-    executor.py
-    nominal_controller.py
-  persistence/
-    run_log.py
-  ui/
-    ...
+limit_crossings
+minimum_margins
+shutdown
+shutdown_time
+unsafe_intervals
+unsupported_consequence_domains
 ```
 
-Keep framework-specific code inside `agents/`; the rest of the project should not depend on LangGraph or a particular model provider.
+`unsupported_consequence_domains` is important: process excursions are not equivalent to fire/explosion/toxic consequence modeling.
 
 ---
 
-## Key tests
+## Capability model
 
-At minimum:
+The environment should expose a machine-readable capability registry.
 
-1. **healthy-run test:** N simulation steps -> zero LLM calls;
-2. **registry test:** XMV IDs/names exactly match upstream metadata;
-3. **gate test:** malformed/out-of-range/excess-delta proposal cannot reach `set_mv()`;
-4. **closed-loop overwrite test:** document/test that direct MV intervention is not used in `CLOSED_LOOP`;
-5. **incident-context test:** only allowlisted/relevant variables enter agent context;
-6. **recovery-loop test:** failed action has bounded retries then safe hold;
-7. **reproducibility test:** same seed/config produces the same pre-agent simulation trace;
-8. **trace completeness test:** every applied action has source incident, proposal, gate decision, and outcome.
+Conceptually:
+
+```text
+capabilities():
+  disturbances:
+    - IDV(1)..IDV(20)
+  manipulated_variables:
+    - XMV(1)..XMV(12)
+  scenario_semantics:
+    - feed_flow_change
+    - feed_temperature_change
+    - cooling_water_temperature_change
+    - selected_valve_sticking
+    - reaction_kinetics_variation
+  consequence_models:
+    - process_state
+    - shutdown_state
+  unsupported:
+    - pipe_rupture_release
+    - atmospheric_dispersion
+    - fire_radiation
+    - explosion_overpressure
+```
+
+This boundary prevents an external agent from confusing semantic plausibility with actual simulator support.
 
 ---
 
-## Rule of thumb
+## Scenario compiler
 
-If a decision can be written as a stable `if`, formula, schema, finite-state transition, lookup, threshold, or bounded optimizer, keep it out of the LLM.
+The `ScenarioCompiler` is deterministic domain glue between higher-level experiment descriptions and TEP-specific actuators/disturbances.
 
-Use the LLM for ambiguous diagnosis, hypothesis ranking, explanation, and choosing among constrained recovery options.
+```text
+ProcessDeviation
+      |
+      v
+canonical node/parameter lookup
+      |
+      v
+supported mapping?
+   /       \
+ yes       no/ambiguous
+  |           |
+  v           v
+Intervention  explicit failure
+```
+
+Example:
+
+```text
+reactor_cooling_loop + flow + LESS
+```
+
+may be representable by an XMV(10) constraint, while:
+
+```text
+reactor_pipe + containment + RUPTURE
+```
+
+is not supported by the current TEP physics.
+
+Mappings must be stored as testable code/data, not as prompt instructions.
+
+---
+
+## Snapshot / fork / counterfactual semantics
+
+Counterfactual branching is the key feature that turns a simulator into an agent playground.
+
+```text
+                      snapshot S
+                    /     |      \
+                   /      |       \
+             branch A  branch B  branch C
+                |          |         |
+              action A   action B  no action
+                |          |         |
+             rollout     rollout   rollout
+                \          |        /
+                 \         |       /
+                    compare
+```
+
+Rules:
+
+- branches cannot share mutable simulator state;
+- all branches retain parent snapshot provenance;
+- comparison is performed outside the simulator core;
+- simulation clocks and random generators must be handled so results are meaningful.
+
+---
+
+## Safety boundary
+
+The upstream TEP model includes process shutdown/safety limits. `tep-sim` should expose those cleanly and may derive additional deterministic margins.
+
+Do not equate these with a full process-safety consequence model.
+
+For example, a rollout can truthfully report:
+
+```text
+reactor temperature exceeded threshold
+reactor pressure approached shutdown
+process shut down at t = ...
+```
+
+It cannot truthfully report, without additional models:
+
+```text
+pipe ruptured
+flammable cloud radius = ...
+blast overpressure = ...
+personnel fatality probability = ...
+```
+
+---
+
+## Persistence and reproducibility
+
+Every run should record at least:
+
+```text
+run_id
+created_at
+tep-sim version/commit
+upstream submodule commit
+Python/backend versions
+seed
+EnvironmentConfig
+initial snapshot/config
+intervention schedule
+termination reason
+artifact paths/checksums
+```
+
+Prefer Parquet/NPZ for dense numeric traces plus JSON/JSONL for metadata/events. SQLite may be added if run querying becomes important.
+
+---
+
+## Integration boundary with agent systems
+
+Agent systems integrate through the public environment API only.
+
+Correct:
+
+```text
+agent runtime -> tool adapter -> TEPEnvironment
+```
+
+Incorrect:
+
+```text
+TEPEnvironment imports LangGraph/provider SDK/prompt files
+```
+
+The agent runtime may decide what experiment to request. The environment decides whether the requested experiment is valid and simulable.
+
+---
+
+## Visualization
+
+Visualization consumes `Observation` and `RolloutResult`.
+
+Initial target:
+
+- process topology view;
+- key XMEAS/XMV trends;
+- active disturbance/intervention markers;
+- safety-margin overlays;
+- branch/experiment comparison.
+
+Blender/Omniverse/DEXPI-derived visuals can be added later, but rendering remains downstream from environment state.
+
+---
+
+## Repository boundary
+
+See [`ecosystem/README.md`](ecosystem/README.md).
+
+The short version:
+
+```text
+tep-sim                  = environment
+industrial-agent-runtime = generic agent harness
+tep-agent-lab            = TEP + agents + HAZOP/RCA experiments
+pid2sim                  = P&ID/engineering-data -> executable model research
+```
+
+Existing `manufacturing-kg-agent` may later provide optional domain evidence, but it is not a dependency of the simulator.
