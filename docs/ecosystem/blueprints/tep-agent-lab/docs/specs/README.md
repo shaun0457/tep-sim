@@ -1,28 +1,28 @@
 # TEP Agent Lab Specifications
 
-These v0 specs define TEP-specific integration, investigation, research, and evaluation on top of `tep-sim` and `industrial-agent-runtime`.
+These proposal specs define TEP-specific investigation, tooling, records, benchmark design, and later research workflows on top of `tep-sim` and `industrial-agent-runtime`.
 
-## State / knowledge / experiment contracts
+## First-RCA contracts
 
-- [`investigation-state-v0.md`](investigation-state-v0.md) — canonical typed investigation state, revisions, open questions, budgets, and stopping readiness.
-- [`knowledge-rule-registry-v0.md`](knowledge-rule-registry-v0.md) — K0–K4 knowledge levels, provenance, enforcement classes, and promotion workflow.
-- [`hypothesis-experiment-v0.md`](hypothesis-experiment-v0.md) — first-class hypotheses, evidence links, experiment proposals/run specs/results.
+- [`investigation-state-v0.md`](investigation-state-v0.md) — RcaState implementation of generic TaskStateStore, Observation/Evidence separation, ContextProjection, stopping.
+- [`hypothesis-experiment-v0.md`](hypothesis-experiment-v0.md) — Hypothesis, typed Prediction, evidence links, ExperimentProposal/RunSpec/Result/Interpretation, dedup identity.
+- [`tool-surface-v0.md`](tool-surface-v0.md) — blind Agent-visible TEP tools, SIMULATE/MUTATE boundary, consumer request/result validation.
+- [`tool-bridge-v0.md`](tool-bridge-v0.md) — allowlisted scientific-library adapters with runtime gating and nested resource accounting.
+- [`engineering-records-v0.md`](engineering-records-v0.md) — InvestigationReport, DecisionRecord, ExperimentRecord archive contracts.
+- [`rca-v0.md`](rca-v0.md) — structured CausalClaim, evidence-backed blind RCA, mandatory strong C0 baseline.
+- [`benchmark-design-v0.md`](benchmark-design-v0.md) — scenario-family identifiability, C0-relative difficulty, leakage/memorization controls.
+- [`evaluation-v0.md`](evaluation-v0.md) — sole canonical capability/orchestration matrices and outcome/process/resource/safety metrics.
 
-## Tools
+## Rule / policy metadata
 
-- [`tool-surface-v0.md`](tool-surface-v0.md) — agent-visible TEP environment tools and authority classes.
-- [`tool-bridge-v0.md`](tool-bridge-v0.md) — allowlisted adapters to mature open-source analysis/optimization/graph tools.
+- [`knowledge-rule-registry-v0.md`](knowledge-rule-registry-v0.md) — canonical `origin × validation × authority` Rule model. K0–K4 is shorthand only; full promotion workflow is later research.
 
-## Research workflows
+## Later task-family proposals
 
-- [`rca-v0.md`](rca-v0.md) — blind root-cause investigation contract.
-- [`hazop-v0.md`](hazop-v0.md) — simulation-backed HAZOP contract.
-- [`recovery-v0.md`](recovery-v0.md) — counterfactual recovery-planning contract.
-- [`autoresearch-v0.md`](autoresearch-v0.md) — frozen-evaluator autonomous engineering experiment loop.
+- [`hazop-v0.md`](hazop-v0.md) — simulation-backed HAZOP direction.
+- [`recovery-v0.md`](recovery-v0.md) — counterfactual recovery-planning direction.
+- [`autoresearch-v0.md`](autoresearch-v0.md) — later frozen-evaluator autonomous engineering research loop.
 
-## Benchmark / evaluation
+Later specs do not authorize implementing those task families before the RCA substrate/evaluation is stable.
 
-- [`benchmark-design-v0.md`](benchmark-design-v0.md) — scenario-family design, identifiability pilot, difficulty, partitioning, and leakage controls.
-- [`evaluation-v0.md`](evaluation-v0.md) — environment/runtime/task/scientific-behavior metrics plus capability and orchestration ablations.
-
-The lab owns TEP/domain-policy adapters and evaluation logic. It does not reimplement TEP physics or generic runtime mechanics.
+The lab owns domain state/projection/policy/tool adapters/scoring. It does not reimplement TEP physics or generic runtime contracts.
