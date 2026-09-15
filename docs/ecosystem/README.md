@@ -19,7 +19,7 @@ Existing knowledge projects remain optional services.
                     CONTROL PLANE
              Main Agent + deterministic
        gates / Executor / result verification
-            WorkBatch / SubtaskResult
+    explicit state-update + WorkBatch contracts
                        |
                        v
                     Information Plane
@@ -67,6 +67,7 @@ Owns:
 
 - Main Agent provider/interface;
 - generic InformationRef / ContextProjection / TaskStateStore;
+- ModelTurn / ModelStateUpdateProposal / StateDelta;
 - Task/Budget/ToolSpec/ToolResult;
 - standard + extra-dimensional resource accounting;
 - deterministic pre-execution gates;
@@ -105,6 +106,24 @@ Owns:
 - later HAZOP/recovery/AutoProcessResearch.
 
 It is the only core repo that intentionally knows both generic runtime contracts and TEP domain semantics.
+
+## State-update semantics
+
+Model reasoning state is explicit; it is not hidden in chat history.
+
+```text
+ContextProjection
+ -> ModelTurn
+      -> optional ModelStateUpdateProposal
+           -> atomic TaskStateStore.apply_batch
+      -> one action: NONE | TOOL_REQUEST | WORK_BATCH | FINISH_PROPOSAL
+```
+
+Model-proposed state deltas are bound to the exact projection revision the model saw. A stale/invalid update prevents the same turn's action from dispatching.
+
+Successful executable results are ingested deterministically. In the TEP lab every successful agent-visible ToolResult becomes an ObservationRecord automatically; evidence remains a separate explicit link.
+
+Parallel WorkBatch result-ingestion deltas bind the then-current state revision in a stable deterministic order, rather than all reusing the originating model revision.
 
 ## Information semantics
 
@@ -222,42 +241,57 @@ Rules:
 - scientific/remote tools remain behind adapters;
 - public contracts have one owning repo.
 
-## Current Design Freeze state
+## Design Freeze state — COMPLETE
 
-Independent review found `tep-sim` A1–A4 ready to implement independently.
+The program completed:
 
-Runtime/lab implementation remains held until the post-review canonical-document cleanup passes focused independent re-review.
+1. independent full architecture/spec review;
+2. formal adjudication;
+3. focused independent re-review;
+4. closure of the final MAJOR-R1 state-update contract gap.
 
-The adjudication is recorded in [`design-review-adjudication.md`](design-review-adjudication.md).
+Final record:
 
-Major fixes include:
+- [`design-freeze-record.md`](design-freeze-record.md)
 
-- request validation vs result verification split;
-- TaskStateStore/runtime↔lab boundary;
-- WorkBatch replacing full Dynamic DAG as v0 infra;
-- nested Tool Bridge budget accounting;
-- typed Prediction;
-- strong C0 baseline;
-- Rule three-axis model;
-- deconfounded evaluation;
-- exact ContextProjection trace refs;
-- archival Engineering Records.
+Supporting review records:
 
-## Research sequence
+- [`reviews/2026-09-15-independent-spec-review.md`](reviews/2026-09-15-independent-spec-review.md)
+- [`reviews/2026-09-15-focused-re-review.md`](reviews/2026-09-15-focused-re-review.md)
+- [`design-review-adjudication.md`](design-review-adjudication.md)
+
+Implementation status:
 
 ```text
-tep-sim A1-A4                       [may begin]
-
-focused design re-review
- -> runtime core contracts/gates
- -> RcaState/run-log/prediction/tools
- -> benchmark identifiability + C0
- -> blind RCA capability study
- -> orchestration O0-O5
- -> later HAZOP/recovery
- -> later AutoProcessResearch
- -> optional knowledge/memory studies
+tep-sim A1-A4          GO
+runtime B1-B5          GO in dependency order
+lab C1-C5              GO in dependency order
+D0 benchmark pilot     GO after upstream dependencies
 ```
+
+Deferred/open-research items remain explicitly non-blocking.
+
+## Research / implementation sequence
+
+```text
+tep-sim A1-A4
+     |
+runtime B1 -> B2/B3 -> B4 -> provider
+     |
+lab C1/C2/C3 -> C4/C5
+     |
+D0 benchmark identifiability + C0
+     |
+D1 blind RCA capability study
+     |
+D2 orchestration O0-O5
+     |
+later HAZOP / recovery / AutoProcessResearch
+     |
+optional knowledge / organizational-memory studies
+```
+
+Independent branches may run in parallel where frozen upstream contracts and file/module ownership permit.
 
 ## Documentation map
 
@@ -266,6 +300,7 @@ Program:
 - [`program-charter.md`](program-charter.md)
 - [`information-plane.md`](information-plane.md)
 - [`design-review-adjudication.md`](design-review-adjudication.md)
+- [`design-freeze-record.md`](design-freeze-record.md)
 - [`decision-register.md`](decision-register.md)
 - [`implementation-plan.md`](implementation-plan.md)
 - [`documentation-standard.md`](documentation-standard.md)
