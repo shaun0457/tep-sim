@@ -1,15 +1,13 @@
 # Industrial Simulation + Agent Ecosystem
 
-This program is centered on **AI agents operating inside a trustworthy industrial sandbox**. Generic P&ID digitization, arbitrary simulator generation, and 3D reconstruction are not current core goals.
+This program studies **AI agents operating inside a trustworthy industrial simulation world**. Generic P&ID digitization, arbitrary simulator generation, and 3D reconstruction are not current core goals.
 
-## Core program
-
-Use three core repositories:
+## Three-repository program
 
 ```text
 1. Environment / World Plane        -> tep-sim
 2. Agent Runtime / Control Plane    -> industrial-agent-runtime
-3. Integration / Information / Lab -> tep-agent-lab
+3. Domain / Information / Lab      -> tep-agent-lab
 ```
 
 Existing knowledge projects remain optional services.
@@ -17,26 +15,28 @@ Existing knowledge projects remain optional services.
 ## Program architecture
 
 ```text
-                     Hybrid Agent Runtime
-                     CONTROL PLANE
-          Main Agent + deterministic Coordinator
-             Executor + Verifier + gates
-                         |
-                         v
+                industrial-agent-runtime
+                    CONTROL PLANE
+             Main Agent + deterministic
+       gates / Executor / result verification
+            WorkBatch / SubtaskResult
+                       |
+                       v
                     Information Plane
-        ProcessGraph / Variable Registry / Rules
-       Evidence / Experiments / Investigation State
-                         |
-                         v
-                       tep-sim
-                     WORLD PLANE
+        refs / run log / state / records / rules
+                       |
+                       v
+                    tep-agent-lab
+             TEP-specific domain layer
+                       |
+                       v
+                     tep-sim
+                    WORLD PLANE
 ```
 
-The Information Plane is an architectural layer across existing repositories, not a fourth repo.
+The Information Plane is a logical ownership/reference layer across existing repos, not a fourth repo and not multiple mandatory databases.
 
-## 1. `tep-sim` — process world
-
-Purpose: trustworthy, reproducible Tennessee Eastman Process environment.
+## 1. `tep-sim` — trusted process world
 
 Owns:
 
@@ -45,207 +45,251 @@ Owns:
 - reset/observe/step/rollout;
 - snapshot/fork/replay;
 - typed disturbances/interventions;
-- machine-readable capability and deterministic safety evaluation;
-- machine-readable TEP topology/process semantics;
-- DEXPI/process-data adapter and entity-to-runtime binding registry;
-- K0 simulator/runtime truth and reviewed K1 environment constraints;
-- numeric run artifacts/provenance.
+- capability/environment safety evaluation;
+- ProcessGraph/DEXPI-derived semantics;
+- entity-to-runtime binding registry;
+- simulator/runtime truth;
+- run provenance/artifacts.
 
-For TEP, start from machine-readable DEXPI/process data. Do **not** build OCR/P&ID-recognition or generic simulator generation.
+For TEP, use machine-readable process semantics directly. Do not build P&ID OCR/generic simulator generation.
 
 ```text
-DEXPI / ProcessGraph = static structure + engineering semantics
-TEP simulator        = dynamic process behavior
-binding registry     = semantic entity <-> XMEAS/XMV/IDV
+DEXPI / ProcessGraph = static semantics/topology
+TEP simulator        = dynamic behavior
+binding registry     = semantic entity <-> runtime variable
 ```
 
-Does not own LLMs, Agent orchestration, Dynamic DAGs, RCA/HAZOP reasoning, or recovery strategy selection.
+`tep-sim` does not own LLMs, Agent orchestration, RCA/HAZOP reasoning, or recovery strategy selection.
 
-## 2. `industrial-agent-runtime` — Hybrid control plane
-
-Purpose: domain-independent goal-driven Agent runtime with deterministic execution authority.
+## 2. `industrial-agent-runtime` — generic control plane
 
 Owns:
 
-- Main Agent lifecycle/model interface;
-- deterministic Coordinator / Executor / Verifier;
-- local ReAct-style reasoning loop;
-- bounded model-proposed Dynamic DAG validation/scheduling;
-- task/budget/tool/result contracts;
-- ephemeral subtask/subagent execution;
-- context/reference discipline;
-- generic schema/permission/budget/side-effect/plan gates;
-- tracing/token/latency accounting;
-- framework-neutral checkpoint/approval interfaces;
-- optional LangGraph adapter.
+- Main Agent provider/interface;
+- generic InformationRef / ContextProjection / TaskStateStore;
+- Task/Budget/ToolSpec/ToolResult;
+- standard + extra-dimensional resource accounting;
+- deterministic pre-execution gates;
+- deterministic Executor/dispatcher;
+- post-execution result verification;
+- dependency-aware WorkBatch (`TOOL | SUBTASK` + `depends_on`);
+- ephemeral Subtask/SubtaskResult;
+- tracing/provenance;
+- fake provider/test contracts.
 
-Does not own TEP equations/topology/safety truth, Rule Registry domain content, DEXPI parsing, RCA/HAZOP/recovery workflows, or benchmark ground truth.
+Does not own TEP/domain state, Tool Bridge implementations, DEXPI parsing, rules/safety truth, RCA/HAZOP/recovery, or benchmark scoring.
 
-## 3. `tep-agent-lab` — information/research/benchmark lab
+v0 does not require:
 
-Purpose: study what agents can do inside the TEP process world.
+- full mutable Dynamic DAG infrastructure;
+- LangGraph;
+- MCP.
+
+Those may be studied/adapted later only after concrete requirements/evidence.
+
+## 3. `tep-agent-lab` — TEP domain/research layer
 
 Owns:
 
-- typed Investigation State;
-- hypotheses/evidence/experiment contracts;
-- Evidence Store / Experiment Ledger;
-- K2 simulation-validated rules and K3 literature heuristics;
-- TEP-specific environment tools;
-- Tool Bridge adapters to allowlisted scientific/open-source libraries;
-- domain experiment/recovery policies;
-- RCA experiments;
-- simulation-backed HAZOP;
-- recovery/counterfactual experiments;
-- AutoProcessResearch;
-- benchmark scenario families/identifiability/leakage controls;
-- capability + orchestration ablations;
-- scientific-behavior evaluation and reports.
+- RcaState implementation of TaskStateStore;
+- ObservationRecord / EvidenceLink;
+- Hypothesis / typed Prediction / Experiment;
+- structured CausalClaim;
+- Rule/policy metadata;
+- TEP-specific Agent tools;
+- Tool Bridge adapters;
+- append-only run views/artifacts;
+- Engineering Records;
+- benchmark design/identifiability/C0;
+- RCA/evaluation;
+- later HAZOP/recovery/AutoProcessResearch.
 
-This is the only core repo that intentionally knows both generic Agent Runtime semantics and TEP domain semantics.
+It is the only core repo that intentionally knows both generic runtime contracts and TEP domain semantics.
 
-## Knowledge authority
+## Information semantics
 
 ```text
-K0 simulator/runtime truth             -> tep-sim
-K1 reviewed physical/safety invariant  -> tep-sim / reviewed policy
-K2 validated engineering relationship  -> tep-agent-lab
-K3 paper/document heuristic            -> tep-agent-lab
-K4 Agent working hypothesis            -> Investigation State only
+Trace != Observation != Evidence != EngineeringRecord != Rule/Knowledge != Context
 ```
 
-K3/K4 cannot directly create hard gates.
+- successful tool/simulator output creates an ObservationRecord;
+- an explicit link makes an observation evidence for a claim/hypothesis;
+- Engineering Records archive completed work;
+- reusable rules/knowledge have separate provenance/validation/authority;
+- model Context is a bounded task-specific projection.
+
+v0 may implement logical information views using one append-only run log plus artifacts.
+
+## Rule / knowledge authority
+
+Canonical machine metadata:
+
+```text
+origin × validation × authority
+```
+
+Example axes:
+
+```text
+origin: SIMULATOR | FORMAL_DERIVATION | POLICY | LITERATURE | EXPERIMENT | AGENT
+validation: NONE | CORROBORATED | SIMULATION_VALIDATED | ROBUST_VALIDATED | REVIEWED
+authority: REFERENCE | ADVISORY | PLANNING | OPERATIONAL_PROPOSAL | HARD_GATE
+```
+
+K0–K4 is documentation shorthand only.
+
+Agent/paper/simulation evidence cannot directly self-promote hard execution authority.
 
 ## Tool Bridge principle
 
-Reuse mature libraries through narrow typed adapters rather than reimplementing standard analysis or giving the Agent arbitrary Python/shell access.
+Tool Bridge lives in the lab/provider layer, while runtime owns authorization/budget/dispatch.
 
-Candidate capabilities include:
+```text
+Agent
+ -> runtime ToolSpec/gates/resource reservation
+ -> lab validate_request
+ -> Executor
+ -> Tool Bridge adapter
+ -> pinned implementation
+ -> result + provenance + actual resource draw
+```
 
-- upstream TEP detectors;
-- signal correlation/lag/response features;
-- PCA/PLS baselines;
-- graph algorithms;
-- sensitivity analysis;
-- bounded numerical optimization.
+If a bridge internally executes simulator trials, it is `SIMULATE` and must expose nested rollout/horizon/trial usage.
 
-The Agent decides **which analysis/research question to ask**; deterministic tools perform the computation and return versioned evidence.
+First RCA bridge scope stays small:
+
+- response features / trajectory comparison;
+- cross-correlation / lag;
+- optional upstream TEP detector baseline.
+
+PCA/PLS/SALib/Optuna/Granger/MCP are later concrete-need additions.
+
+## Engineering Records
+
+v0 writes structured:
+
+- InvestigationReport;
+- DecisionRecord;
+- ExperimentRecord.
+
+They are archive/audit outputs first. They are not automatically retrieved into future benchmark context and do not automatically become Rules/Lessons/Runbooks.
+
+Later organizational-memory research may explicitly study record retrieval and knowledge promotion.
 
 ## AutoProcessResearch
 
-A separate lab mode adapts the AutoResearch pattern:
+Later separate task family:
 
 ```text
 frozen evaluator + bounded mutable surface
  -> baseline
- -> Agent hypothesis/change
- -> deterministic experiment/search
- -> score
- -> append ledger
- -> keep/reject/neutral
- -> repeat until deterministic stop
- -> hidden evaluation
+ -> Agent conceptual hypothesis/change
+ -> isolated simulation/search
+ -> deterministic score
+ -> append trial record
+ -> ACCEPT/REJECT/NEUTRAL
+ -> repeat
+ -> held-out evaluation
 ```
 
-It does not let the Agent modify TEP physics, evaluator code, safety policy, or its own authority.
+Reference MUTATE is disabled by default; numeric search tools expose full nested SIMULATE budget.
 
-## Existing repositories to reuse
+## Existing projects
 
 ### `manufacturing-kg-agent`
 
-Keep independent. It may later provide read-only process/document evidence after clean no-KG baselines exist. Extracted relationships enter as K3 candidates until validated.
+Independent optional evidence service after clean no-KG/no-memory baselines.
 
 ### `personal-agent-os`
 
-Keep independent. It solves personal orchestration/memory/email workflows rather than the narrow industrial control/research runtime.
-
-## Parked research — generic P&ID -> simulator
-
-Generic `pid2sim` is **not a current core project**. The research note [`pid-to-sim-automation.md`](pid-to-sim-automation.md) is retained only for future reference.
+Independent personal orchestration/memory project; not part of the industrial runtime.
 
 ## Dependency direction
 
 ```text
                       manufacturing-kg-agent
                               ^
-                              | optional evidence
+                              | optional later evidence
                               |
 industrial-agent-runtime ---> tep-agent-lab <--- tep-sim
 ```
 
 Rules:
 
-- `tep-sim` has no dependency on Agent repos.
-- `industrial-agent-runtime` has no dependency on TEP/domain repos.
-- `tep-agent-lab` pins versions/revisions of both.
-- optional knowledge/tool libraries stay behind adapters and do not become hidden architecture dependencies.
+- `tep-sim` depends on no Agent repo;
+- `industrial-agent-runtime` depends on no TEP/domain repo;
+- `tep-agent-lab` pins both;
+- scientific/remote tools remain behind adapters;
+- public contracts have one owning repo.
 
-## Phase 0 before implementation
+## Current Design Freeze state
 
-Core implementation is frozen until the architecture/spec consistency review in [`implementation-plan.md`](implementation-plan.md) is complete.
+Independent review found `tep-sim` A1–A4 ready to implement independently.
 
-Phase 0 covers:
+Runtime/lab implementation remains held until the post-review canonical-document cleanup passes focused independent re-review.
 
-- Hybrid orchestration;
-- Information Plane;
-- Investigation State;
-- K0–K4 Rule Registry;
-- Hypothesis/Experiment contracts;
-- Tool Bridge;
-- benchmark/evaluation design;
-- AutoProcessResearch contract.
+The adjudication is recorded in [`design-review-adjudication.md`](design-review-adjudication.md).
 
-After freeze, independent implementation branches may run in parallel under [`development-agent-orchestration.md`](development-agent-orchestration.md).
+Major fixes include:
 
-## Research sequence after freeze
+- request validation vs result verification split;
+- TaskStateStore/runtime↔lab boundary;
+- WorkBatch replacing full Dynamic DAG as v0 infra;
+- nested Tool Bridge budget accounting;
+- typed Prediction;
+- strong C0 baseline;
+- Rule three-axis model;
+- deconfounded evaluation;
+- exact ContextProjection trace refs;
+- archival Engineering Records.
+
+## Research sequence
 
 ```text
-trusted TEP world
- -> Hybrid runtime / gates
- -> Investigation State + information contracts
- -> environment + analysis Tool Bridge
- -> blind RCA baseline
- -> orchestration ablation
- -> HAZOP / recovery
- -> AutoProcessResearch
- -> optional KG evidence / broader scenarios
+tep-sim A1-A4                       [may begin]
+
+focused design re-review
+ -> runtime core contracts/gates
+ -> RcaState/run-log/prediction/tools
+ -> benchmark identifiability + C0
+ -> blind RCA capability study
+ -> orchestration O0-O5
+ -> later HAZOP/recovery
+ -> later AutoProcessResearch
+ -> optional knowledge/memory studies
 ```
 
 ## Documentation map
 
-Program-level:
+Program:
 
-- [`program-charter.md`](program-charter.md) — purpose, role, architecture invariants
-- [`information-plane.md`](information-plane.md) — shared information/reference architecture
-- [`documentation-standard.md`](documentation-standard.md) — README/spec/ADR/open-question rules
-- [`development-workflow.md`](development-workflow.md) — branch/PR/spec-first workflow
-- [`development-agent-orchestration.md`](development-agent-orchestration.md) — parallel coding-agent policy
-- [`implementation-plan.md`](implementation-plan.md) — Design Freeze + cross-repo phases
-- [`decision-register.md`](decision-register.md) — current accepted/proposed decisions
+- [`program-charter.md`](program-charter.md)
+- [`information-plane.md`](information-plane.md)
+- [`design-review-adjudication.md`](design-review-adjudication.md)
+- [`decision-register.md`](decision-register.md)
+- [`implementation-plan.md`](implementation-plan.md)
+- [`documentation-standard.md`](documentation-standard.md)
+- [`development-workflow.md`](development-workflow.md)
+- [`development-agent-orchestration.md`](development-agent-orchestration.md)
 
-Environment:
-
-- [`../architecture.md`](../architecture.md)
-- [`../roadmap.md`](../roadmap.md)
-- [`../specs/`](../specs/README.md)
-- [`../dexpi-tep-integration.md`](../dexpi-tep-integration.md)
-- [`../open-questions.md`](../open-questions.md)
-
-Future-repo scaffolds:
+Blueprints:
 
 - `blueprints/industrial-agent-runtime/`
 - `blueprints/tep-agent-lab/`
 
+Environment:
+
+- [`../architecture.md`](../architecture.md)
+- [`../specs/`](../specs/README.md)
+- [`../dexpi-tep-integration.md`](../dexpi-tep-integration.md)
+
 ## What not to build now
 
-Do not spend core-project effort on:
-
-- raster P&ID OCR;
-- generic simulator generation;
+- raster P&ID OCR/generic simulator generation;
 - photorealistic 3D plant reconstruction;
-- a separate HAZOP ontology repo;
-- a separate visualization repo;
-- permanent role-based Supervisor/MachineExpert/DataEngineer/DataScientist Agent organizations;
+- permanent Supervisor/MachineExpert/DataEngineer/DataScientist role hierarchies;
 - unrestricted recursive swarms;
-- persistent global learned memory before simple baselines are measured;
+- full Dynamic DAG engine before measured need;
+- LangGraph/MCP integration before concrete need;
+- automatic cross-run memory before clean baselines;
 - arbitrary Agent Python/shell/package installation as normal Tool Bridge behavior.
