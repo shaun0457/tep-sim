@@ -1,111 +1,150 @@
 # Roadmap — Industrial Agent Runtime
 
-The runtime roadmap builds generic mechanics in the smallest testable order. It does not wait for TEP integration to validate core behavior.
+Implementation begins only after the program Phase 0 Design Freeze. The runtime roadmap then builds framework-neutral Hybrid mechanics in the smallest testable order.
 
 Canonical specs live in `docs/specs/`.
 
-## Phase 0 — Contracts first
+## Phase 0 — Base contracts
 
-Branch: `feat/contracts-executor-v0`  
-Spec: `docs/specs/runtime-v0.md`
+Branch: `feat/contracts-runtime-v0`  
+Specs: `runtime-v0.md`, `hybrid-orchestration-v0.md`
 
 Implement:
 
 - `Task`;
 - `Budget`;
-- `ToolSpec`;
-- `ToolCallRequest`;
-- `ToolResult`;
+- `ToolSpec` / request/result;
+- plan/plan-node contracts;
 - `RuntimeResult`;
 - `TraceEvent`;
-- deterministic fake model provider;
-- minimal explicit executor/state machine.
+- model-provider interface;
+- deterministic fake provider;
+- simple reference execution path.
 
-Exit: fake-provider tests complete typed no-tool and read-tool tasks deterministically.
+Exit: fake-provider tests complete typed no-tool/read-tool tasks and represent valid/invalid plan data deterministically.
 
-## Phase 1 — Generic deterministic gates
+## Phase 1 — Hybrid Coordinator / Executor / Verifier
 
-Branch: `feat/deterministic-gates-v0`  
-Spec: `docs/specs/deterministic-gates-v0.md`
+Branch: `feat/hybrid-orchestration-v0`  
+Spec: `hybrid-orchestration-v0.md`
 
 Implement:
 
-- schema/parse gate;
-- tool allowlist gate;
-- budget/recursion gate;
-- side-effect class gate;
-- consumer/domain-validator hook;
-- structured denial/approval decisions;
-- fail-closed behavior.
+- deterministic Coordinator;
+- deterministic Executor;
+- deterministic Verifier;
+- direct/local Main-Agent routing;
+- Dynamic DAG validation/scheduling primitives;
+- plan revision tracking;
+- hard stop/termination states;
+- tool-exposure hook.
+
+Exit:
+
+- simple task avoids DAG overhead;
+- valid bounded DAG executes;
+- cycle/authority/budget violations fail before execution;
+- missing evidence/artifact refs fail verification.
+
+## Phase 2 — Generic deterministic gates
+
+Branch: `feat/deterministic-gates-v0`  
+Spec: `deterministic-gates-v0.md`
+
+Implement schema/parse, tool allowlist, budget/recursion/plan-limit, side-effect, consumer-validator, and approval-state contracts.
 
 Exit: denied operations provably do not execute and all gate decisions are traceable.
 
-## Phase 2 — Ephemeral subagents
+## Phase 3 — Ephemeral subagents
 
 Branch: `feat/subagents-v0`  
-Spec: `docs/specs/subagents-v0.md`
+Spec: `subagents-v0.md`
 
-Implement proposed v0 policy:
+Implement:
 
-- depth 1 by default;
-- max 3 children per parent by default;
-- no child reference-world mutation authority;
-- scoped context/tool subset;
-- `EvidenceBundle` result;
-- parent-child trace links;
-- deterministic depth/count enforcement.
+- scoped child task/context/tools;
+- EvidenceBundle;
+- parent/child trace;
+- configurable depth/count limits;
+- no implicit child mutation authority;
+- optional independent-node parallel scheduling behind same contract.
 
-Exit: parent runs two independent child analyses and consumes only compact structured evidence.
+Exit: parent runs two bounded child analyses and consumes only structured evidence.
 
-## Phase 3 — Context discipline and observability
+## Phase 4 — Context/reference discipline + observability
 
-Harden:
+Implement:
 
-- context-reference abstraction;
-- artifact references instead of transcript/data dumping;
-- token/model/tool/subagent accounting;
-- static tool-schema caching where useful;
+- generic InformationRef/ContextBroker interfaces;
+- visibility/budget hooks;
+- artifact references;
+- context projection/cache hooks;
+- model/tool/subagent/plan accounting;
 - deterministic trace export;
-- duplicate/redundant subtask diagnostics.
+- duplicate/redundant work diagnostics.
 
-Exit: one run can explain every model/tool/subagent/gate step and its resource usage without requiring provider-specific internal objects.
+Exit: a run can explain every model/plan/node/tool/subagent/gate transition without provider-specific objects or full transcript dependence.
 
-## Phase 4 — First real model provider
+## Phase 5 — LangGraph adapter
+
+Branch: `feat/langgraph-adapter-v0`
+
+Map framework-neutral Coordinator/state contracts to LangGraph for consumers that need:
+
+- macro workflow graph;
+- checkpoint/resume;
+- human interrupts;
+- durable structured state;
+- graph observability.
+
+This is an accepted adapter path, not a replacement for public runtime contracts.
+
+Exit:
+
+- same simple contract test runs with reference executor and adapter;
+- adapter checkpoint/resume preserves task/plan/trace identity;
+- core imports/public types remain usable without LangGraph-native state types.
+
+## Phase 6 — First real model provider
 
 Branch: `feat/provider-adapter-v0`
 
-Choose one provider only after core contracts are stable. Keep provider SDK objects behind the model interface.
+Choose one provider after core contracts are stable. Keep SDK objects behind the model interface.
 
-Exit: one integration smoke task can run under both fake and real provider with the same public `Task`/result contracts.
+Exit: the same smoke task runs under fake and real provider with identical public contract shape/tracing semantics.
 
-## Phase 5 — First domain integration
+## Phase 7 — First domain integration
 
-Consume the runtime from `tep-agent-lab`; do not import TEP into this repository.
+Consume runtime from `tep-agent-lab`; never import TEP into core.
 
 Required proof:
 
-- TEP tools register through generic `ToolSpec`;
-- lab domain validators plug into the consumer-validator hook;
-- simulation tools remain isolated;
-- subagent context is TEP-specific only because the lab supplies it;
-- core runtime remains domain-free.
+- domain Investigation State is supplied through consumer refs/projections;
+- TEP tools register through generic ToolSpec;
+- lab validators plug into consumer hooks;
+- Tool Bridge results look like ordinary typed tools to runtime;
+- Dynamic DAG can schedule isolated simulation/analysis/subtask nodes;
+- core remains domain-free.
 
-## Phase 6 — Optional LangGraph / approval adapter
+## Phase 8 — Performance/concurrency hardening
 
-Only implement after a real consumer requires at least one of:
+Only after correctness:
 
-- durable checkpoint/resume;
-- human approval interrupts;
-- long-running resumable tasks;
-- persistent graph state across process restarts.
+- choose asyncio/thread/process/job execution strategy where needed;
+- parallel ready-node scheduling;
+- backpressure/timeout handling;
+- trace/checkpoint storage backend;
+- provider rate-limit handling;
+- benchmark runtime overhead.
 
-The explicit executor remains the semantic reference implementation. Public contracts must not become LangGraph-specific.
+Do not let concurrency implementation alter public semantic contracts.
 
-## Not in v0 roadmap
+## Not in v0 runtime roadmap
 
-- global persistent memory;
-- autonomous hiring/retiring organization;
+- global persistent learned memory;
+- autonomous hiring/retiring organizations;
 - unlimited recursive agents;
-- peer-to-peer agent chat network;
+- peer-to-peer chat network;
 - TEP/process safety rules;
-- domain-specific RAG/KG logic.
+- domain RAG/KG logic;
+- arbitrary shell/code execution as default Tool Bridge.
