@@ -4,64 +4,84 @@ Repository-wide rules for coding agents working on `industrial-agent-runtime`.
 
 ## Product boundary
 
-This is a **domain-independent agent harness**. Do not encode TEP, chemical-process, manufacturing, finance, or other domain semantics in core runtime code.
+This repository is a **domain-independent agent runtime**. Do not encode TEP, chemical-process, manufacturing, finance, or other domain semantics in core runtime code.
 
 ## Canonical specs
 
-Before implementing runtime behavior, read the owning spec:
+Before implementation, read:
 
 - `docs/specs/runtime-v0.md`
-- `docs/specs/subagents-v0.md`
+- `docs/specs/hybrid-orchestration-v0.md`
 - `docs/specs/deterministic-gates-v0.md`
+- `docs/specs/subagents-v0.md`
 - `docs/open-questions.md`
-- `docs/decisions/ADR-001-minimal-explicit-executor.md`
+- `docs/decisions/ADR-002-hybrid-orchestration.md`
 
-If implementation evidence contradicts a proposal spec, update the spec/ADR rather than silently changing semantics.
+`ADR-001-minimal-explicit-executor.md` is historical/superseded context, not current architecture authority.
+
+If implementation evidence contradicts a proposal spec, report/update the spec/ADR rather than silently inventing semantics.
 
 ## Hard rules
 
-1. Prefer deterministic code to LLM calls for validation, permissions, budgeting, serialization, recursion/retry limits, and routing that can be expressed explicitly.
+1. Prefer deterministic code for validation, permissions, budgeting, serialization, state revisions, routing, dependency scheduling, and machine-checkable verification.
 2. Model output is a request/proposal, never execution authority.
-3. Subagents are ephemeral child tasks, not permanent role hierarchies.
-4. Every child receives explicit goal, context refs, allowed tools, budget, and output schema.
-5. v0 defaults: `max_subagent_depth=1`, at most 3 children per parent, child reference-world mutation disabled.
-6. Child context is scoped; do not automatically copy the parent transcript/tool set.
-7. Child returns compact structured evidence; do not automatically merge hidden child transcripts into parent context.
-8. Cap model calls, tool calls, steps, retries, subagent count, and depth deterministically.
-9. Invalid structured output and unknown policy fail closed.
-10. Model-provider code stays behind interfaces; core tests must run with a deterministic fake provider.
-11. LangGraph is optional/later; public contracts must not require LangGraph types.
-12. Record model/tool/subagent/gate events with parent-child provenance and budget deltas.
-13. No TEP/domain tool implementations in core; consumers register adapters/validators.
+3. Pre-execution request validation and post-execution result verification are distinct stages.
+4. Runtime must not import application/domain state classes; use `TaskStateStore`.
+5. Every model turn has an immutable `ContextProjection` ref with prompt/model/tool metadata.
+6. Budgets include standard counters plus configured `extra_dimensions`; compound tools cannot hide nested simulator/optimizer use.
+7. `SIMULATE` may mutate only isolated/sandbox state and never reference state.
+8. `MUTATE` requires deterministic consumer validation and expected-state revision binding when enabled.
+9. Subagents are ephemeral child tasks, not persistent roles.
+10. Child authority is a strict subset of task/parent authority; no escalation exceptions.
+11. Subagent count is cumulative per task, including `SUBTASK` WorkBatch items.
+12. Child at depth limit cannot create another SUBTASK through WorkBatch or another equivalent path.
+13. Child returns `SubtaskResult`, not `EvidenceBundle`/full transcript.
+14. v0 dependency planning is `WorkBatch` with `TOOL | SUBTASK` + `depends_on`; do not invent `ANALYSIS`/`MERGE` node types or a full Dynamic DAG engine.
+15. LangGraph and MCP are not v0 core dependencies.
+16. Core tests run with a deterministic fake model provider and no domain import.
+17. No arbitrary agent shell/Python/import execution as the normal tool model.
 
-## Side-effect path
+## Request path
 
 ```text
-model ToolCallRequest
- -> schema gate
- -> tool allowlist
- -> budget/recursion gate
- -> generic side-effect gate
- -> optional consumer/domain validator
- -> optional approval
- -> tool adapter
- -> structured ToolResult
+model request / WorkItem
+ -> G0 schema
+ -> G1 allowlist/authority
+ -> G2 budget/resource reservation
+ -> G3 side-effect policy
+ -> consumer.validate_request
+ -> optional authority escalation/approval
+ -> frozen request
+ -> Executor
+ -> post-execution verify_result
+ -> TaskStateStore.apply
 ```
 
-Do not implement arbitrary agent-generated shell/Python execution as the normal runtime path. A consuming product may register a separately sandboxed code-execution tool under its own policy.
+## WorkBatch semantics
 
-## Testing
+```text
+WorkItem.kind = TOOL | SUBTASK
+```
 
-At minimum test:
+- ready items may run in parallel within policy;
+- failed required dependency => dependent `SKIPPED_DEPENDENCY`;
+- no silent retries;
+- merge/open-ended integration happens on the next Main Agent turn.
+
+## Testing minimum
 
 - fake-provider typed task;
 - allowed read tool;
-- malformed/unknown tool request;
-- budget exhaustion;
-- consumer-validator denial;
-- subagent count/depth limit;
-- child mutation denial;
-- parent-child trace correctness;
-- deterministic replay of fake-provider tests.
+- malformed/unknown request;
+- standard/extra-dimensional budget denial;
+- compound SIMULATE reservation/accounting;
+- consumer request-validator denial;
+- post-result missing-ref rejection;
+- TaskStateStore stale revision rejection;
+- WorkBatch cycle/dependency/failure behavior;
+- subagent cumulative count/depth limit;
+- child MUTATE denial;
+- exact ContextProjection trace refs;
+- deterministic fake-provider replay.
 
-Keep this file short; detailed behavior belongs in `docs/specs`, unresolved assumptions in `docs/open-questions.md`, and rationale in ADRs.
+Keep this file concise; detailed semantics belong in `docs/specs`, unresolved empirical questions in `docs/open-questions.md`, and rationale in ADRs.
