@@ -1,76 +1,90 @@
 # tep-sim
 
-Tennessee Eastman Process (TEP) dynamic simulation with an event-driven agent layer for diagnosis, recovery planning, and controlled intervention.
+Agent-agnostic Tennessee Eastman Process (TEP) simulation sandbox for reproducible process-control, fault, safety, and counterfactual experiments.
 
-## Goal
+## Scope
 
-Build a reproducible TEP testbed where:
+`tep-sim` owns the **environment**, not the agent.
 
-1. the physical/process simulation runs deterministically;
-2. alarms, safety checks, feature extraction, and action validation are code, not LLM prompts;
-3. an LLM is called only when an event needs diagnosis or recovery reasoning;
-4. every proposed control action is typed, validated, logged, and reversible;
-5. the process state and agent decisions can later be visualized as a pipeline/dashboard.
+It should provide a stable programmatic world that can be used by humans, scripts, RL policies, LLM agents, HAZOP tooling, and future integration labs without knowing which reasoning system is driving it.
+
+Core responsibilities:
+
+- deterministic TEP dynamics and reproducible seeds;
+- canonical XMEAS / XMV / IDV metadata;
+- disturbance and intervention APIs;
+- observation and telemetry APIs;
+- snapshot / fork / replay for counterfactual experiments;
+- explicit capability discovery so callers know what the environment can actually simulate;
+- deterministic safety-limit evaluation and run termination;
+- traceable run metadata and results;
+- later, read-only visualization consumers.
+
+Out of scope:
+
+- LLM provider integration;
+- LangGraph or other agent orchestration;
+- prompts, agent memory, dynamic subagent spawning;
+- HAZOP reasoning logic;
+- RCA reasoning logic;
+- P&ID image digitization;
+- generic P&ID-to-simulation model generation.
+
+Those live in separate repositories described in [`docs/ecosystem/README.md`](docs/ecosystem/README.md).
 
 ## Simulator
 
-The process model is vendored as a git submodule at `vendor/tep-sim-upstream` and currently points to `jkitchin/tennessee-eastman-profbraatz`.
+The process model is vendored as a git submodule at `vendor/tep-sim-upstream` and points to `jkitchin/tennessee-eastman-profbraatz`.
 
-Important runtime facts:
+Important facts:
 
 - `TEPSimulator.step()` advances the process one simulation step.
 - `ControlMode.CLOSED_LOOP` uses the built-in PI controllers and can overwrite manual MV changes.
-- Agent-driven control therefore uses `ControlMode.MANUAL` or a custom controller/plugin.
-- Upstream already exposes measurements, manipulated variables, disturbances, streaming history, detector hooks, and custom controller interfaces.
+- Direct intervention experiments therefore use `ControlMode.MANUAL` or a suitable custom controller/plugin.
+- Upstream already exposes measurements, manipulated variables, disturbances, streaming history, detector hooks, and custom-controller interfaces.
 
-## Architecture decision
+## Target environment API
 
-Use **CLI coding agents for development**, not as the online plant-control runtime.
+The long-term public API should feel like this:
 
-The online runtime is a hybrid:
+```python
+env = TEPEnvironment(seed=42)
+obs = env.reset()
 
-```text
-TEP simulator
-    |
-    v
-state sampler / rolling window
-    |
-    v
-deterministic detectors + safety gates
-    |
-    +---------------- no event ----------------> continue simulation
-    |
-    v
-compact incident context
-    |
-    v
-LLM diagnosis / recovery proposal
-    |
-    v
-deterministic action validator
-    |
-    +------------ reject / safe fallback ------> monitor
-    |
-    v
-apply bounded XMV action
-    |
-    v
-post-action verification
+snapshot = env.snapshot()
+branch = env.fork(snapshot)
+
+branch.inject(
+    Intervention(
+        kind="disturbance",
+        target="IDV(4)",
+        value=1,
+    )
+)
+
+result = branch.rollout(horizon_seconds=1800)
+report = branch.evaluate_safety(result)
 ```
 
-LangGraph is useful around the **slow reasoning path** (diagnose -> propose -> verify/escalate), where persistence, retries, interrupts, or human approval are valuable. It should not own the 1-second simulation loop.
+The exact API can evolve, but three properties are non-negotiable:
 
-See [`docs/architecture.md`](docs/architecture.md) for the design and [`docs/roadmap.md`](docs/roadmap.md) for implementation order.
+1. reproducibility;
+2. typed interventions;
+3. no hidden LLM behavior inside the environment.
 
-## Agent principle
+## Capability boundary
 
-The agent never receives the full simulation history and never directly calls `set_mv()`.
+A caller must be able to ask what the sandbox supports before requesting an experiment.
 
-Instead it receives a compact typed incident snapshot and returns a typed proposal. A deterministic gate validates variable identity, bounds, rate-of-change, safety rules, cooldowns, and action permissions before anything reaches the simulator.
+For example, TEP can model process disturbances such as feed changes, cooling-water disturbances, valve sticking, reaction-kinetics variation, manipulated-variable changes, and resulting process/shutdown behavior.
+
+It must **not pretend** to model hazards that are absent from its physics, such as a pipe rupture, toxic-cloud dispersion, ignition, fire radiation, or blast overpressure. Unsupported scenarios should return an explicit capability error rather than a fabricated result.
 
 ## Variable mapping
 
-Do not hard-code XMEAS/XMV meanings in prompts. Use the simulator's canonical metadata as the source of truth. In particular, the vendored simulator maps:
+Runtime code must derive variable metadata from the vendored simulator, not from an LLM prompt or duplicated literature table. A temporary human-readable mapping is kept in [`docs/runtime-variable-map.md`](docs/runtime-variable-map.md).
+
+In particular, the vendored simulator maps:
 
 - XMV(6): Purge Valve
 - XMV(7): Separator Pot Liquid Flow
@@ -79,20 +93,30 @@ Do not hard-code XMEAS/XMV meanings in prompts. Use the simulator's canonical me
 - XMV(10): Reactor Cooling Water Flow
 - XMV(11): Condenser Cooling Water Flow
 
-This mapping is critical for experiments involving XMEAS(9) reactor temperature.
-
-## Development agents
-
-Repository-level instructions for Codex/Claude-style coding agents live in [`AGENTS.md`](AGENTS.md). Claude-specific setup remains in [`CLAUDE.md`](CLAUDE.md).
-
 ## Near-term milestone
 
-The first useful milestone is **not** a 3D plant visualization. It is a headless, reproducible closed experiment:
+The first environment milestone is a headless reproducible experiment:
 
 ```text
-normal run -> inject one TEP disturbance -> deterministic detection
--> agent diagnosis -> bounded proposed action -> gate -> apply/reject
--> verify recovery -> save run trace
+reset
+-> run baseline
+-> snapshot
+-> fork
+-> inject supported disturbance
+-> rollout
+-> capture telemetry and safety state
+-> replay with same seed/config
+-> obtain identical result within numerical tolerance
 ```
 
-Only after that loop is stable should the dashboard/pipeline visualization become the next layer.
+After that, add scenario compilation, HAZOP-friendly deviation contracts, and visualization adapters.
+
+## Documentation
+
+- [`docs/architecture.md`](docs/architecture.md) — sandbox architecture and contracts
+- [`docs/roadmap.md`](docs/roadmap.md) — implementation sequence
+- [`docs/runtime-variable-map.md`](docs/runtime-variable-map.md) — current runtime mapping reference
+- [`docs/ecosystem/README.md`](docs/ecosystem/README.md) — multi-repository ecosystem
+- [`docs/ecosystem/pid-to-sim-automation.md`](docs/ecosystem/pid-to-sim-automation.md) — boundary between P&ID digitization and executable simulation
+- [`AGENTS.md`](AGENTS.md) — repository rules for coding agents
+- [`CLAUDE.md`](CLAUDE.md) — concise Claude Code context
