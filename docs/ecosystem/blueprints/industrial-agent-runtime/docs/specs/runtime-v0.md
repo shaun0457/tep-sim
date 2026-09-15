@@ -1,102 +1,223 @@
 # Runtime v0
 
-Status: accepted base contracts / implemented later under Design Freeze  
+Status: proposal  
 Version: v0  
 Owner repo: `industrial-agent-runtime`
 
 ## Goal
 
-Define the domain-independent base contracts used by the Hybrid runtime: one goal-driven Main Agent, deterministic Coordinator/Executor/Verifier, typed tools, bounded Dynamic DAGs/subtasks, structured results, and complete traces without embedding application-specific safety truth.
+Define the domain-independent contracts used by the Hybrid runtime: one Main Agent, deterministic pre-execution gates, a deterministic dispatcher, post-execution verification, bounded subtasks/work batches, generic state interfaces, extensible budget accounting, and complete trace/provenance without embedding application-specific safety truth.
 
-The detailed orchestration contract is in `hybrid-orchestration-v0.md`.
+Detailed orchestration semantics are defined in `hybrid-orchestration-v0.md`.
 
-## Runtime layers
+## Runtime boundary
 
 ```text
-Task + information refs
+Task + InformationRef(s)
         |
         v
-Coordinator
+TaskStateStore.project()
+        |
+        v
+ContextProjection
         |
         v
 Main Agent
-  direct/local ReAct
-  or Dynamic DAG proposal
+        |
+ ToolCall / WorkBatch / FinishProposal
         |
         v
-Verifier / deterministic gates
+G0-G3 + consumer.validate_request
         |
         v
 Executor
         |
         v
-Tool adapter / consuming application
+consumer.verify_result
+        |
+        v
+TaskStateStore.apply(delta)
 ```
 
+Runtime core never imports application-specific state, TEP semantics, RCA schemas, or domain safety rules.
+
 ## Core contracts
+
+### `InformationRef`
+
+Owned by runtime as the generic cross-component reference envelope; the referenced content remains owned by its producing repository/application.
+
+```text
+InformationRef
+  ref_id
+  kind
+  owner
+  version
+  checksum?
+  visibility: AGENT | EVALUATOR | INTERNAL
+  created_at
+```
+
+A runtime must never place `EVALUATOR` refs into an agent-visible `ContextProjection`.
 
 ### `Task`
 
 ```text
 task_id
 goal
-context_refs
-allowed_tools
+context_refs[]
+allowed_tools[]
 budget
 output_schema
 parent_task_id?
 metadata?
 ```
 
-`goal` is natural language. Authority is encoded in explicit tool/policy/budget fields, not prose.
+Authority is encoded in explicit policy/tool/budget fields, not natural-language prose.
 
 ### `Budget`
 
-At minimum:
-
 ```text
-max_model_calls
-max_tool_calls
-max_subagents
-max_subagent_depth
-max_steps
-max_plan_nodes?
-max_plan_revisions?
-max_parallel_width?
-max_total_tokens?
+Budget
+  max_model_calls
+  max_tool_calls
+  max_subagents
+  max_subagent_depth
+  max_steps
+  max_total_tokens?
+  max_parallel_width?
+  extra_dimensions: map<string, number>
 ```
 
-Consumer/application budgets may additionally include simulation rollouts/horizon, cost, and time.
+`extra_dimensions` lets a consumer add measurable quotas without teaching runtime their domain meaning. Examples:
+
+```text
+simulation_rollouts
+simulated_horizon_seconds
+optimizer_trials
+wall_time_seconds
+provider_cost_units
+```
+
+The runtime treats configured extra dimensions as deterministic counters/reservations.
+
+`max_subagents` is cumulative per task/run, including SUBTASK items proposed through WorkBatch revisions. It is not reset by replanning/new batches.
 
 ### `ToolSpec`
 
 ```text
-name
-description
-input_schema
-output_schema
-side_effect_class
-required_policy_tags
+ToolSpec
+  name
+  description
+  input_schema
+  output_schema
+  side_effect_class
+  required_policy_tags[]
+  declared_budget_draw?: map<string, number | expression>
+  max_budget_draw?: map<string, number>
+  isolation_guarantee?
+  provider_metadata?
 ```
+
+A compound tool must expose the resource dimensions it can consume. If one call can internally trigger simulator rollouts, the ToolSpec must be `SIMULATE` and declare/reserve the relevant rollout/horizon/trial draw before dispatch.
 
 ### `ToolCallRequest`
 
-Model-produced typed request. Parsing success never implies execution authority.
+Model-produced typed request. Parse/schema validity never grants execution authority.
 
 ### `ToolResult`
 
 ```text
-request_id
-status
-structured_output
-artifact_refs?
-error?
-provenance
+ToolResult
+  request_id
+  status
+  structured_output
+  artifact_refs[]?
+  information_refs[]?
+  actual_budget_draw: map<string, number>
+  error?
+  provenance
 ```
 
-### `Plan` / `PlanNode`
+### `SubtaskResult`
 
-Dynamic-plan data structures are framework-neutral and defined in `hybrid-orchestration-v0.md`.
+Defined fully in `subagents-v0.md`.
+
+A child returns a compact task result and referenced observations/artifacts, not a privileged evidence object and not its full transcript.
+
+### `WorkBatch`
+
+Dependency-aware work contract is defined in `hybrid-orchestration-v0.md`.
+
+v0 does not require a general mutable Dynamic DAG engine.
+
+### `TaskStatus`
+
+Runtime owns only generic lifecycle status:
+
+```text
+RUNNING
+WAITING
+READY
+DONE
+FAILED
+EXHAUSTED
+CANCELLED
+```
+
+Domain-specific investigation phases/statuses belong in consumer state/metadata.
+
+### `StateDelta`
+
+Generic envelope for a consumer-owned state mutation request:
+
+```text
+StateDelta
+  base_revision
+  operation
+  target_ref_or_path
+  value_or_ref
+  producer
+  reason_ref?
+```
+
+Runtime does not interpret application fields. The consumer `TaskStateStore` validates legal fields/operations.
+
+### `ContextProjection`
+
+Exact model-visible input must be materialized as an immutable, addressable artifact/ref.
+
+```text
+ContextProjection
+  projection_id
+  task_id
+  base_revision
+  content
+  included_refs[]
+  visibility_policy_version
+  approximate_tokens
+  checksum
+```
+
+The consumer chooses relevant domain content. Runtime may enforce visibility, maximum size/token policy, and ref integrity; it does not decide TEP relevance.
+
+### `TaskStateStore`
+
+Consumer-implemented protocol used by the generic Coordinator:
+
+```text
+revision() -> Revision
+status() -> TaskStatus
+project(policy) -> ContextProjection
+apply(delta, expected_revision) -> NewRevision
+```
+
+Required properties:
+
+- optimistic revision checking;
+- deterministic rejection of illegal/stale deltas;
+- domain field validation remains in consumer implementation;
+- runtime depends only on this interface, never the consumer state class.
 
 ### `RuntimeResult`
 
@@ -104,6 +225,7 @@ Dynamic-plan data structures are framework-neutral and defined in `hybrid-orches
 task_id
 status
 structured_output
+state_revision
 trace_ref
 budget_usage
 warnings/errors
@@ -117,29 +239,38 @@ Every meaningful transition records:
 event_id
 task_id
 parent_task_id?
-plan/node refs?
+batch/work/subtask/request refs?
 type
 timestamp
-model/provider/tool metadata?
-input summary
-output summary
+status/error
 budget delta
 latency/cost when known
-status/error
-artifact refs?
+input_summary
+output_summary
+artifact_refs[]?
 ```
+
+For every `MODEL_TURN`, the event MUST additionally reference:
+
+```text
+context_projection_ref
+prompt_template_version
+provider/model/version
+sampling/config parameters
+registered_tool_set_version or tool-spec refs
+```
+
+Summaries are for human display; they are not sufficient evidence for replay/leakage audit.
 
 ## Provider abstraction
 
-Core runtime depends on an internal model interface rather than one provider SDK.
-
-Conceptually:
+Core runtime depends on an internal model interface rather than one provider SDK:
 
 ```text
 generate(context_projection, tool_specs, output_schema, limits) -> ModelTurn
 ```
 
-A deterministic fake provider is mandatory for tests before a real provider is required.
+A deterministic fake provider is mandatory for tests.
 
 Provider-specific message objects must not appear in public runtime contracts.
 
@@ -148,95 +279,97 @@ Provider-specific message objects must not appear in public runtime contracts.
 May:
 
 - request allowed READ/COMPUTE/SIMULATE tools;
-- propose Dynamic DAGs;
-- create bounded subtasks;
-- consume EvidenceBundles;
-- produce final structured output;
-- produce side-effect proposals.
+- propose WorkBatch/Subtask work;
+- consume `SubtaskResult`s;
+- propose final typed output;
+- create PROPOSE-class candidate data when explicitly allowlisted.
 
 Cannot:
 
-- bypass Coordinator/Verifier/gates;
-- execute tools directly;
-- change task/tool/budget policy;
-- grant children extra authority;
-- directly mutate consumer reference state.
+- bypass gates/consumer validation;
+- execute adapters directly;
+- update TaskStateStore directly without validated delta;
+- change policy/budgets;
+- grant child authority;
+- directly mutate reference-world state.
 
-## Coordinator / Executor / Verifier
+## Pre/post validation split
 
-Detailed responsibilities are defined in `hybrid-orchestration-v0.md`.
+### Pre-execution
 
-Base invariant:
-
-> model reasoning proposes; deterministic runtime validates, schedules, executes, verifies, accounts, and traces.
-
-## Simple reference loop
-
-A minimal explicit loop remains supported as the simplest/reference path:
+`deterministic-gates-v0.md` owns:
 
 ```text
-LOAD_CONTEXT
- -> MAIN_AGENT_TURN
- -> PARSE/ROUTE
- -> GATE
- -> EXECUTE
- -> VERIFY
- -> UPDATE
- -> STOP_CHECK
- -> repeat/finish
+G0 parse/schema
+G1 allowlist
+G2 budget/resource reservation/recursion
+G3 side-effect policy
+consumer.validate_request
+optional approval/escalation
 ```
 
-It is not the complete architecture for complex investigations; Dynamic DAG semantics sit alongside it.
+### Post-execution
+
+`hybrid-orchestration-v0.md` owns deterministic `verify_result` checks over returned data/provenance/state update.
+
+Do not use one ambiguous "Verifier" term for both phases.
 
 ## Failure behavior
 
-Fail closed for malformed output, unknown tools, invalid/cyclic plan, exhausted budget, invalid subtask request, denied authority, missing evidence refs, or consumer validator denial.
+Fail closed for malformed output, unknown tools, exhausted/unreservable budget, invalid WorkBatch/subtask request, stale state revision, denied authority, missing refs, hidden-ref exposure, or consumer request/result validation failure.
 
-A denial/failure becomes a structured trace event and may be returned for bounded replanning if policy/budget allow.
+A denial/failure is a structured trace event. Replanning/retry requires a new explicit Main Agent decision within remaining budget.
 
-## Context / Information Plane discipline
+## Context discipline
 
-Runtime passes references/projections instead of concatenating full histories. Consumer applications resolve domain Information Plane refs and produce compact projections.
+Consumers resolve domain refs and construct `ContextProjection`; runtime enforces generic visibility/ref/size policy.
 
-Child transcripts are not copied automatically into parent context; only structured results/evidence refs are returned.
-
-Conversation transcript is not assumed to be canonical application state.
+Child transcripts are not copied into parent context. Conversation history is not canonical task state.
 
 ## Persistence
 
-v0 requires complete per-task/run trace and optional checkpoint serialization. It does not require learned cross-run Agent memory.
+v0 requires:
 
-## LangGraph boundary
+- durable per-run trace/events;
+- immutable ContextProjection artifacts for model turns;
+- serializable task/state references sufficient for audit/replay.
 
-Hybrid semantics/public contracts are framework-neutral.
+It does not require learned cross-run Agent memory.
 
-An accepted LangGraph adapter may provide macro-graph execution, checkpoints, interrupts, and graph observability for consumers such as `tep-agent-lab`.
+## Framework boundary
 
-The package must remain testable/usable without requiring LangGraph-native public types and should retain a simple reference executor for unit tests/baselines.
+Runtime contracts are serializable and framework-neutral.
+
+LangGraph is not required by v0 and is not on the critical implementation path. Add an adapter only after a concrete consumer demonstrates checkpoint/resume/interrupt/persistent-graph requirements not reasonably served by the reference runtime loop.
+
+MCP is not a runtime dependency. A future adapter may register MCP-provided tools through the same ToolSpec/gate/Executor contract.
 
 ## Invariants
 
-- No fixed domain roles in core runtime.
-- No TEP/process-specific variable/rule/safety truth in core runtime.
-- Coordinator/Executor/Verifier are deterministic components by default.
-- Every tool/plan/subtask is validated before execution.
-- Dynamic DAGs are data proposals until accepted by Coordinator policy.
-- Every subtask is bounded/trace-linked.
-- Every task terminates by success, explicit failure, cancellation, hard stop, or budget exhaustion.
-- Tests run without network/model access via fake provider.
+- No domain-specific variables/rules/safety truth in runtime core.
+- Runtime does not import consumer state types.
+- Pre-execution authorization and post-execution result verification are distinct.
+- Every tool/WorkBatch/subtask is validated before dispatch.
+- Child authority never exceeds explicit parent/task authority.
+- Compound tools cannot hide resource use from configured budget dimensions.
+- Every model turn has an exact immutable context projection ref.
+- Every task terminates by success, explicit failure, cancellation, or exhaustion.
+- Core tests run without network/provider access using the fake provider.
 
 ## Acceptance tests
 
 1. Fake provider completes a typed no-tool task.
 2. Fake provider requests an allowed read tool and consumes a typed result.
-3. Unknown/denied tool is rejected without execution.
-4. Budget exhaustion deterministically stops the loop.
-5. Valid simple path completes without Dynamic DAG.
-6. Valid bounded plan/DAG can be represented/routed; cyclic/over-budget plan is rejected.
-7. Main Agent spawns one valid child and receives only its EvidenceBundle.
-8. Verifier rejects a final result referencing nonexistent evidence/artifact.
-9. Core package tests import no TEP/domain module and require no LangGraph-native public contract.
+3. Unknown/denied tool is rejected without dispatch.
+4. Standard and extra-dimension budget exhaustion deterministically stops/denies execution.
+5. A SIMULATE compound tool reserves rollout/trial budget before adapter execution and reconciles actual usage after.
+6. Consumer `TaskStateStore` implementation can project/apply state without runtime importing consumer types.
+7. Stale StateDelta is rejected by expected revision.
+8. Model turn trace includes immutable ContextProjection ref, prompt/model/tool metadata.
+9. Parent spawns one valid child and receives only `SubtaskResult`.
+10. Post-execution verifier rejects a final result referencing a nonexistent artifact/ref.
+11. Core package imports no TEP/domain, LangGraph, or MCP requirement.
 
 ## Non-goals
 
-v0 does not implement global learned memory, autonomous hiring/retiring organizations, permanent specialist identities, unrestricted peer-to-peer chat, arbitrary recursive swarms, application-specific safety truth, or arbitrary agent shell/code execution as the normal tool model.
+v0 does not implement global learned memory, fixed specialist organizations, unrestricted peer-to-peer chat, arbitrary recursive swarms, application-specific safety truth, a general mutable Dynamic DAG engine, or arbitrary agent shell/Python execution as the normal tool model.
