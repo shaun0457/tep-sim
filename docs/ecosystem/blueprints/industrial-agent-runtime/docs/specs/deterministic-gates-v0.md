@@ -1,6 +1,6 @@
 # Deterministic Gates v0
 
-Status: proposal  
+Status: accepted  
 Version: v0  
 Owner repo: `industrial-agent-runtime`
 
@@ -9,6 +9,21 @@ Owner repo: `industrial-agent-runtime`
 Separate model reasoning from execution authority through deterministic, auditable **pre-execution** gates. Post-execution result verification is a separate contract in `hybrid-orchestration-v0.md`.
 
 Core runtime gates remain generic. Domain-specific process/safety policy is supplied by consumer-owned validators.
+
+## Scope distinction
+
+This spec governs **executable ToolCall/WorkItem requests**.
+
+A model-proposed internal task-state update (`ModelStateUpdateProposal`) is not a tool call and does not enter G1-G3. Its separate path is defined in `runtime-v0.md`:
+
+```text
+ModelStateUpdateProposal
+ -> schema/projection revision checks
+ -> consumer TaskStateStore legal-operation/ref/visibility validation
+ -> atomic apply_batch
+```
+
+That path may mutate only consumer-owned investigation/task state. It cannot execute external tools, change runtime budget/policy/authority, or mutate reference-world state.
 
 ## Pre-execution gate pipeline
 
@@ -86,6 +101,8 @@ Checks:
 
 No side effect occurs before G0 passes.
 
+ModelTurn/StateUpdate schema checks use the same generic parsing discipline but are routed by `runtime-v0.md`, not treated as executable ToolSpecs.
+
 ## G1 — allowlist/authority gate
 
 Checks that the current task/agent/subtask has explicit authority for the operation/tool/class.
@@ -114,11 +131,13 @@ If the request cannot fit remaining quota, deny before adapter execution.
 
 After execution, actual usage is reconciled against the reservation and recorded in trace/budget state. Adapters may not hide nested simulator/tool usage from declared configured dimensions.
 
+A model state-update proposal does not consume `max_tool_calls`; runtime-v0 accounts one `max_steps` unit for each accepted/rejected update proposal batch.
+
 ## G3 — side-effect policy
 
 Default v0 policy:
 
-- READ / COMPUTE: eligible after G0–G2, subject to consumer policy;
+- READ / COMPUTE: eligible after G0-G2, subject to consumer policy;
 - SIMULATE: eligible only when the adapter declares isolation and task policy grants sandbox execution;
 - PROPOSE: may create candidate data but cannot mutate reference state;
 - MUTATE: requires consumer validation and any configured authority escalation/approval;
@@ -126,9 +145,11 @@ Default v0 policy:
 
 `SIMULATE` never mutates the reference branch. A recovery action applied to the reference branch is always `MUTATE`.
 
+Internal `TaskStateStore` state updates are not classified as ToolSpec side effects; they are constrained by their own allowlisted consumer state operations and revision/visibility validation.
+
 ## Consumer pre-execution validator
 
-Core runtime invokes at most one logical consumer request-validation interface; the consumer may compose internal domain validators.
+Core runtime invokes at most one logical consumer request-validation interface for executable work; the consumer may compose internal domain validators.
 
 ```text
 validate_request(
@@ -149,6 +170,8 @@ lab experiment/recovery policy
 The generic runtime does not know those domain concepts.
 
 The validator returns deterministic decision/reason/normalized constraints and may freeze a normalized request. It does not depend on model hidden reasoning.
+
+Internal model-proposed state updates are validated by `TaskStateStore.apply_batch` semantics, not this executable-work hook.
 
 ## Post-execution result verification is separate
 
@@ -190,16 +213,17 @@ There is no automatic retry loop. A retry/replan is a new explicit request and c
 - Model text cannot override a gate.
 - Unknown authority/policy means deny for side-effecting operations.
 - Same request/policy/state/budget produces the same deterministic gate outcome.
-- Denied operations produce no side effect.
+- Denied executable operations produce no side effect.
 - Child authority never exceeds explicitly delegated task/parent authority.
 - SIMULATE cannot mutate reference state.
 - Compound tools reserve declared nested resource consumption before dispatch.
 - Domain rules remain outside generic runtime core.
 - MUTATE validation is state-revision bound.
+- Internal model state updates never bypass `TaskStateStore` validation and never count as executable tool authority.
 
 ## Acceptance tests
 
-1. Invalid schema fails at G0 with no adapter call.
+1. Invalid executable request schema fails at G0 with no adapter call.
 2. Unlisted operation fails at G1.
 3. Exhausted standard budget fails at G2.
 4. Compound SIMULATE tool whose requested trials exceed `extra_dimensions` fails at G2 before rollout.
@@ -210,3 +234,4 @@ There is no automatic retry loop. A retry/replan is a new explicit request and c
 9. A stale approved MUTATE request is rejected before application.
 10. Consumer denial cannot be overridden by another model message.
 11. Child requesting parent-only authority is denied.
+12. A ModelStateUpdateProposal is routed to TaskStateStore validation, consumes no tool-call budget, and cannot alter runtime budget/policy/authority fields.
