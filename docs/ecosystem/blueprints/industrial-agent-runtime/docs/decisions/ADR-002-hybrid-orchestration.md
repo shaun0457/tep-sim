@@ -5,123 +5,113 @@ Date: 2026-09-15
 
 ## Context
 
-The target industrial Agent must choose evidence, hypotheses, experiments, and delegation while budgets, permissions, execution, and machine-checkable invariants remain deterministic.
+The target industrial Agent must be autonomous enough to choose evidence, hypotheses, experiments, and delegation, while process invariants, budgets, authority, state transitions, and execution semantics should not consume repeated LLM reasoning.
 
-A prior design coupled this Hybrid idea to a full model-proposed Dynamic DAG and suggested a LangGraph adapter early. Independent review found those details under-specified and premature.
+Pure ReAct is flexible but can create long/unstructured trajectories. A fully fixed workflow is reproducible but cannot adapt strategy to unknown incidents. A fully model-controlled Dynamic DAG adds flexibility but creates unnecessary v0 execution semantics before its value is demonstrated.
+
+The design review therefore retained a Hybrid control/authority boundary while simplifying v0 dynamic planning to dependency-aware WorkBatch.
 
 ## Decision
 
-Adopt a **Hybrid contract** for v0:
+Use a Hybrid runtime:
 
 ```text
-consumer TaskStateStore.project
+ContextProjection
         |
-        v
-Main Agent
-  local goal-driven/ReAct reasoning
+Main Agent / ModelTurn
         |
- ToolCall / WorkBatch / FinishProposal
+        +-- optional ModelStateUpdateProposal
+        |      -> validated atomic TaskStateStore.apply_batch
         |
-        v
-pre-execution G0-G3 + consumer.validate_request
-        |
-        v
-Deterministic Executor
-        |
-        v
-post-execution verify_result
-        |
-        v
-consumer TaskStateStore.apply
+        +-- one action
+               |
+      TOOL_REQUEST | WORK_BATCH | FINISH | NONE
+               |
+       pre-execution deterministic gates
+               |
+            Executor
+               |
+       post-execution verify_result
+               |
+     deterministic result ingestion
+               |
+        TaskStateStore.apply_batch
 ```
 
-Coordinator/gates/Executor/post-execution Verifier are deterministic runtime responsibilities, not permanent LLM personas.
+### Authority
 
-This ADR accepts the implementation boundary, **not** a claim that Hybrid is empirically better than ReAct or a fixed workflow. That is measured by `evaluation-v0.md`.
+- Main Agent decides strategy and proposes work/internal reasoning-state changes.
+- Model-proposed state changes are explicit, revision-bound, and limited to consumer task state.
+- Coordinator owns runtime routing, budgets, WorkBatch validation/scheduling, and hard termination.
+- Executor performs the exact validated executable request.
+- Post-execution Verifier checks machine-checkable result/provenance/invariant conditions.
+- Domain validators/state-operation semantics remain consumer-owned.
 
-## Dependency-aware work decision
-
-v0 does not require a general mutable Dynamic DAG engine.
-
-For bounded dependent/parallel work, Main Agent may propose:
-
-```text
-WorkBatch
-  items:
-    - TOOL or SUBTASK
-    - depends_on[]
-```
-
-Coordinator deterministically validates acyclicity, cumulative budgets, authority, visibility, and dependency readiness.
-
-There are no v0 `ANALYSIS` or `MERGE` graph node types:
-
-- deterministic analysis is a TOOL;
-- open-ended analysis/merge is the next Main Agent turn;
-- simulation is a TOOL with `side_effect_class=SIMULATE`.
-
-Richer dynamic replanning/cancellation/graph semantics require a later spec and are an empirical orchestration extension.
-
-## Pre/post validation decision
-
-The term Verifier refers only to post-execution result/state verification.
-
-Pre-execution authorization is:
-
-```text
-G0 schema
-G1 allowlist/authority
-G2 budget/resource reservation
-G3 side-effect policy
-consumer.validate_request
-```
-
-Post-execution verification checks result refs/provenance/accounting/state invariants that cannot exist before dispatch.
-
-## State boundary decision
-
-Runtime owns generic `TaskStateStore`, `TaskStatus`, `StateDelta`, `ContextProjection`, and `InformationRef` contracts.
-
-Consumers own domain state schemas and projection relevance.
-
-The runtime must never import TEP/RCA state types.
+Coordinator/Executor/Verifier are not permanent LLM agents.
 
 ## Framework decision
 
-Public contracts remain framework-neutral/serializable.
+Public runtime contracts remain framework-neutral and serializable.
 
-LangGraph is **not** a v0 core dependency or scheduled delivery. It may be added only when a concrete checkpoint/resume/interrupt/persistent-graph requirement demonstrates value beyond the reference loop.
+LangGraph is **not** a v0 dependency or scheduled deliverable. Reconsider only when a concrete checkpoint/resume/interrupt requirement exceeds the reference loop.
 
-MCP is similarly not an orchestration dependency; it may later appear only behind a Tool Provider adapter.
+MCP is likewise not a runtime dependency; it may later be one external Tool Provider protocol behind normal tool registration/gates.
+
+## Work planning decision
+
+v0 uses:
+
+```text
+WorkBatch
+  WorkItem(kind=TOOL | SUBTASK, depends_on=[...])
+```
+
+Coordinator validates acyclicity, dependencies, budgets, authority, and visibility before scheduling.
+
+Simple work must not require a WorkBatch.
+
+A richer mutable Dynamic DAG with replanning/cancellation/persistent graph semantics remains an empirical research extension, not v0 infrastructure.
+
+## State-update decision
+
+`ModelTurn` may contain an optional `ModelStateUpdateProposal` plus one action.
+
+Model state updates:
+
+- are bound to the exact ContextProjection revision seen by the model;
+- are atomically validated/applied by consumer TaskStateStore;
+- consume step budget, not tool-call budget;
+- cannot alter generic runtime authority/budget/status or external/reference world;
+- block same-turn executable dispatch if rejected.
+
+Deterministic result-ingestion deltas bind the then-current revision at application time so parallel WorkBatch results do not false-fail as stale.
 
 ## Consequences
 
 Positive:
 
-- preserves Agent autonomy for open-ended investigation;
-- keeps authorization/accounting mechanically testable;
-- removes undefined graph node semantics from the critical path;
-- keeps state/repo boundaries explicit;
-- allows dependency-aware parallel work without graph-framework lock-in;
-- enables clean ReAct/fixed-workflow/Hybrid/WorkBatch/subagent ablations.
+- preserves autonomy for investigation/experiment planning;
+- externalizes reasoning state instead of relying on conversation memory;
+- keeps execution/state authority auditable;
+- supports bounded parallel work without a large graph engine;
+- supports direct comparison of one-shot/ReAct/fixed workflow/Hybrid/WorkBatch/subagent architectures;
+- avoids generic-runtime coupling to TEP or one framework.
 
 Costs:
 
-- runtime still needs explicit state/budget/ref contracts;
-- consumer must implement TaskStateStore/projection logic;
-- richer dynamic graph behavior is deferred rather than available by default.
+- more typed state contracts than a plain ReAct loop;
+- consumer TaskStateStore must define legal domain update operations;
+- parallel result ingestion needs deterministic ordering;
+- two mutation domains must remain distinct: internal task state versus external/reference-world mutation.
 
-## Alternatives considered
+## Alternatives
 
-1. Pure ReAct as sole architecture — retained as experimental baseline, rejected as the v0 authority/state contract because deterministic policy/state handling is still required.
-2. Fixed workflow only — retained as orchestration baseline.
-3. Full Dynamic DAG from day one — deferred after review because execution/failure/merge/replanning semantics were not justified for v0.
-4. Permanent Coordinator/Executor/Verifier LLM agents — rejected.
-5. LangGraph-first runtime — deferred until concrete durable-graph requirements exist.
+1. Pure ReAct — retained as an ablation/local reasoning pattern, rejected as the sole authority/state architecture.
+2. Fixed workflow only — retained as an ablation, rejected as the only investigation strategy.
+3. Full Dynamic DAG v0 — deferred because its value is not yet demonstrated and its node/replan/cancel semantics would add premature complexity.
+4. Permanent Coordinator/Executor/Verifier agents — rejected; these responsibilities are deterministic components unless a bounded semantic critic is explicitly studied.
+5. Tool calls for all reasoning-state bookkeeping — rejected; hypothesis/evidence/working-state updates use the explicit ModelStateUpdateProposal path and do not inflate tool-call accounting.
 
-## Revisit triggers
+## Revisit trigger
 
-- WorkBatch cannot express a measured useful investigation/planning behavior;
-- mutable DAG replanning/cancellation shows measurable value;
-- durable checkpoint/resume/interrupt becomes a concrete requirement;
-- simpler O1/O2 orchestration consistently matches/exceeds the Hybrid implementation at lower cost.
+Revisit if benchmark evidence shows a simpler architecture achieves equal/better investigation quality/efficiency, if WorkBatch is insufficient for measured complex cases, or if another domain demonstrates the state-update/action split is too restrictive.
