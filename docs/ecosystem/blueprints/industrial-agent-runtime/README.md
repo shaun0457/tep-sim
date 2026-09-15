@@ -1,171 +1,146 @@
 # industrial-agent-runtime
 
-Domain-independent Hybrid runtime for one goal-driven Main Agent, deterministic Coordinator/Executor/Verifier components, bounded Dynamic DAGs, typed tools, ephemeral subagents, and deterministic execution gates.
+Domain-independent control plane for one goal-driven Main Agent using typed tools, deterministic authority gates, consumer-owned state adapters, dependency-aware work, and bounded ephemeral subagents.
 
 ## Purpose
 
-Industrial agent experiments should not embed generic orchestration inside every simulator/domain repository. This runtime provides reusable agent mechanics while remaining ignorant of TEP, XMEAS/XMV/IDV, HAZOP mappings, process-safety truth, and benchmark-specific scoring.
+Provide reusable Agent runtime mechanics without embedding TEP, process safety, RCA/HAZOP semantics, or scientific-library implementations.
 
-## Core principles
-
-- one Main Agent provides open-ended reasoning;
-- Coordinator, Executor, and Verifier are deterministic runtime components by default, not permanent LLM roles;
-- simple tasks use a local ReAct-style loop without forcing a plan graph;
-- complex tasks may use a model-proposed, deterministically validated Dynamic DAG;
-- subagents are temporary bounded tasks, not job titles;
-- model outputs are requests/proposals, not execution authority;
-- deterministic code handles schemas, DAG validity, permissions, budgets, recursion/plan limits, execution, provenance, and machine-checkable verification;
-- context is reference-based and assembled per task rather than accumulated indefinitely;
-- every model turn, plan revision, node, tool, subagent, gate, and result is traceable;
-- tests use a deterministic fake provider;
-- public contracts are framework-neutral; LangGraph is supported through an adapter rather than defining the API.
-
-## Conceptual runtime
+## Core shape
 
 ```text
-Task / Goal
-   |
-   v
-Information refs / Context projection
-   |
-   v
-Deterministic Coordinator
-   |
-   v
+consumer TaskStateStore.project
+        |
+        v
 Main Agent
-   |\
-   | +-- simple --> tool/subtask
-   |
-   +---- complex --> Dynamic DAG proposal
-                       /   |   \
-                    tool subtask sim
-                       \   |   /
-                         merge
-   |
-   v
-Deterministic Verifier
-   |
-   v
-schema / permission / budget / side-effect gates
-   |
-   v
-Deterministic Executor
-   |
-   v
-consumer tools / environments
+        |
+ ToolCall / WorkBatch / FinishProposal
+        |
+        v
+G0-G3 + consumer.validate_request
+        |
+        v
+Executor
+        |
+        v
+post-execution verify_result
+        |
+        v
+TaskStateStore.apply
 ```
 
-## Repository owns
+Only the Main Agent is assumed to require an LLM.
 
-- model-provider abstraction;
-- Main Agent invocation contract;
-- deterministic Coordinator/Executor/Verifier;
-- dynamic-plan/DAG validation and scheduling semantics;
-- task/tool/budget/result contracts;
-- ephemeral-subagent execution;
-- context/reference broker interfaces;
-- generic tool registry/permissions;
-- deterministic generic gates;
-- traces/observability;
-- LangGraph/checkpoint/approval adapters.
+## Runtime owns
 
-## Repository does not own
+- `InformationRef`;
+- `Task` / `Budget` including extra resource dimensions;
+- `ToolSpec` / request/result contracts;
+- generic `TaskStatus` / `StateDelta` / `ContextProjection` / `TaskStateStore` protocol;
+- dependency-aware `WorkBatch` (`TOOL | SUBTASK` + `depends_on`);
+- deterministic pre-execution gates;
+- deterministic Executor/dispatcher;
+- deterministic post-execution result verification;
+- ephemeral `Subtask` / `SubtaskResult`;
+- provider abstraction + fake provider;
+- exact model-turn tracing/resource accounting.
+
+## Runtime does not own
 
 - TEP variables/equations/topology;
-- application-specific Investigation State fields;
-- process Rule Registry content;
-- application-specific safety limits;
-- HAZOP/RCA/recovery workflows;
-- P&ID/DEXPI parsing;
-- domain knowledge bases;
-- experiment ground truth/scorers.
+- application-specific Investigation/RCA state fields;
+- HAZOP/recovery policies;
+- domain safety/actuator limits;
+- DEXPI parsing;
+- scientific Tool Bridge implementations;
+- benchmark ground truth/scorers;
+- knowledge/promotion workflows.
 
-## Suggested package layout
+## Critical invariants
+
+- model proposes; deterministic code authorizes and executes;
+- pre-execution validation != post-execution verification;
+- runtime never imports domain state types;
+- child authority never exceeds task/parent authority;
+- SIMULATE never mutates reference state;
+- compound tools cannot hide nested budget consumption;
+- model turns reference exact immutable ContextProjection artifacts;
+- conversation history is not canonical application state;
+- no arbitrary Agent Python/shell as the normal tool model.
+
+## Dependency-aware work
+
+v0 deliberately does not implement a general mutable Dynamic DAG engine.
+
+```text
+WorkBatch
+  items:
+    TOOL | SUBTASK
+    depends_on[]
+```
+
+Coordinator validates acyclicity/budget/authority and schedules ready items. Failed required dependency causes dependents to be skipped. Merge/open-ended integration is the next Main Agent turn.
+
+Full graph replanning/cancellation is later research.
+
+## Framework boundary
+
+Public contracts are serializable/framework-neutral.
+
+- LangGraph: not a v0 dependency; consider only after a concrete checkpoint/resume/interrupt need.
+- MCP: not a runtime dependency; may later be one external Tool Provider protocol behind ordinary ToolSpec/gates.
+
+## Suggested package direction
 
 ```text
 src/industrial_agent_runtime/
   contracts/
+    refs.py
     task.py
-    result.py
+    state.py
     tool.py
     budget.py
-    plan.py
+    work.py
     trace.py
   runtime/
     coordinator.py
     executor.py
     verifier.py
-    main_agent.py
-    context.py
-    subtask.py
   gates/
     schema.py
     permission.py
     budget.py
     side_effect.py
-    plan.py
-  tools/
-    registry.py
   models/
     base.py
     fake.py
     providers/
   tracing/
     recorder.py
-  orchestration/
-    langgraph_adapter.py
-  persistence/
-    checkpoint.py
 
 tests/
 docs/
 AGENTS.md
 ```
 
-## Minimal API direction
-
-```python
-runtime = AgentRuntime(
-    model=model,
-    tools=tools,
-    policy=policy,
-    coordinator=coordinator,
-    verifier=verifier,
-)
-
-result = runtime.run(
-    Task(
-        goal="Investigate the incident and return evidence-backed hypotheses",
-        context_refs=[...],
-        allowed_tools=[...],
-        budget=Budget(
-            max_model_calls=8,
-            max_tool_calls=20,
-            max_subagents=3,
-            max_subagent_depth=1,
-            max_steps=30,
-            max_plan_nodes=8,
-            max_plan_revisions=2,
-        ),
-        output_schema=InvestigationResult,
-    )
-)
-```
-
-The runtime must not know what a reactor, pump, CNC machine, or TEP fault is.
+Component names are implementation organization, not separate services/agents.
 
 ## First consumer
 
-`tep-agent-lab` is the first serious consumer. It supplies TEP-specific Investigation State, Information Plane refs, Tool Bridge adapters, policies, and output/evaluation schemas.
+`tep-agent-lab` implements TaskStateStore for RcaState, registers TEP/Tool Bridge adapters, and supplies consumer `validate_request` / `verify_result` domain logic.
 
 ## Documentation
 
-- `AGENTS.md` — minimal coding-agent constraints
-- `docs/architecture.md` — Hybrid runtime boundary
-- `docs/roadmap.md` — implementation order
-- `docs/specs/runtime-v0.md` — core execution contracts
-- `docs/specs/hybrid-orchestration-v0.md` — Coordinator/Executor/Verifier + ReAct/Dynamic DAG semantics
-- `docs/specs/subagents-v0.md` — ephemeral-subagent contract
-- `docs/specs/deterministic-gates-v0.md` — generic gate model
-- `docs/open-questions.md` — remaining empirical/implementation choices
-- `docs/decisions/` — ADRs
+Canonical contracts:
+
+- `docs/specs/runtime-v0.md`
+- `docs/specs/hybrid-orchestration-v0.md`
+- `docs/specs/deterministic-gates-v0.md`
+- `docs/specs/subagents-v0.md`
+
+Rationale/history:
+
+- `docs/decisions/ADR-002-hybrid-orchestration.md` — current accepted architecture decision
+- `docs/decisions/ADR-001-minimal-explicit-executor.md` — superseded historical context
+
+Research/implementation unknowns belong in `docs/open-questions.md`.
