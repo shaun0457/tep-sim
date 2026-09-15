@@ -5,7 +5,7 @@ Integration and benchmark laboratory for autonomous engineering investigation ov
 Depends on pinned versions of:
 
 - `tep-sim` — trusted process world + DEXPI/ProcessGraph semantics;
-- `industrial-agent-runtime` — generic Main-Agent runtime with deterministic gates/state interfaces, dependency-aware WorkBatch, and bounded subagents.
+- `industrial-agent-runtime` — generic Main-Agent runtime with explicit state updates, deterministic gates/state interfaces, dependency-aware WorkBatch, and bounded subagents.
 
 The lab owns TEP-specific state/projection, tools, policy, experiments, engineering records, benchmark/evaluation logic, and later HAZOP/recovery/AutoResearch studies.
 
@@ -17,7 +17,7 @@ The Main Agent may:
 
 - inspect process state/topology;
 - select observations/analysis tools;
-- form/update hypotheses;
+- form/update hypotheses through typed state updates;
 - make typed predictions;
 - design counterfactual experiments;
 - propose dependency-aware TOOL work;
@@ -27,31 +27,24 @@ The Main Agent may:
 
 It does not receive unrestricted reference-world mutation authority.
 
-## Core research questions
-
-1. Can an Agent diagnose hidden TEP incidents without evaluator truth/candidate labels?
-2. Can it select useful observations/topology/analysis rather than consume the full plant state?
-3. Can it design experiments whose typed predictions meaningfully discriminate plausible causes?
-4. Does Hybrid orchestration improve investigation quality/efficiency relative to one-shot/ReAct/fixed workflow?
-5. Does dependency-aware WorkBatch/subagent use add value beyond simpler Agent loops?
-6. When is a strong deterministic C0 baseline already sufficient, making an Agent unnecessary?
-7. Later: can validated knowledge, recovery, HAZOP, AutoResearch, and structured historical records improve engineering work without authority leakage?
-
 ## Core architecture
 
 ```text
 industrial-agent-runtime
  CONTROL PLANE
-  Main Agent
+  ContextProjection
+  Main Agent / ModelTurn
+  ModelStateUpdateProposal + one routed action
   pre-execution gates
   Executor
   post-execution verifier
+  deterministic result ingestion
   WorkBatch / SubtaskResult
             |
             v
 tep-agent-lab
  DOMAIN / INFORMATION PLANE
-  RcaState implements TaskStateStore
+  RcaState implements TaskStateStore.apply_batch
   ObservationRecord / EvidenceLink
   Hypothesis / Prediction / Experiment
   Rule metadata: origin x validation x authority
@@ -67,6 +60,37 @@ tep-sim
   snapshot / fork / rollout
   capability / environment safety
 ```
+
+## State / evidence semantics
+
+```text
+ContextProjection
+ -> ModelTurn.state_update?
+ -> atomic RcaState apply_batch
+ -> optional executable action
+```
+
+Model-proposed RCA state updates are projection-revision-bound. If stale/invalid, no same-turn tool/work dispatch occurs.
+
+All successful agent-visible ToolResults are automatically registered as immutable ObservationRecords during deterministic result ingestion.
+
+```text
+Observation != Evidence
+```
+
+Evidence is created only when the model/application explicitly adds a `HypothesisEvidenceLink` through a typed state update.
+
+Parallel WorkBatch result-ingestion batches bind the then-current RcaState revision in deterministic stable work-item order.
+
+## Core research questions
+
+1. Can an Agent diagnose hidden TEP incidents without evaluator truth/candidate labels?
+2. Can it select useful observations/topology/analysis rather than consume the full plant state?
+3. Can it design experiments whose typed predictions meaningfully discriminate plausible causes?
+4. Does Hybrid orchestration improve investigation quality/efficiency relative to one-shot/ReAct/fixed workflow?
+5. Does dependency-aware WorkBatch/subagent use add value beyond simpler Agent loops?
+6. When is a strong deterministic C0 baseline already sufficient, making an Agent unnecessary?
+7. Later: can validated knowledge, recovery, HAZOP, AutoResearch, and structured historical records improve engineering work without authority leakage?
 
 ## Information model
 
@@ -93,13 +117,14 @@ K0–K4 may appear only as human-facing shorthand. Paper/Agent/simulation eviden
 Tool Bridge adapters live in the lab, but authorization/budget/dispatch remains in generic runtime.
 
 ```text
-Agent
+Agent action
  -> runtime ToolSpec/gates/budget
  -> lab validate_request
  -> Executor
  -> Tool Bridge / tep-sim adapter
  -> result + actual resource usage
  -> post-execution verification
+ -> deterministic Observation/state ingestion
 ```
 
 Any bridge that internally runs TEP trials is `SIMULATE` and consumes explicit rollout/horizon/trial budget.
@@ -114,9 +139,10 @@ No arbitrary Agent Python/shell/import/package-install authority.
 incident -> RcaState
  -> observations
  -> hypotheses + typed predictions
- -> evidence links
+ -> explicit evidence links
  -> discriminating analysis/counterfactuals
  -> deterministic ExperimentResults
+ -> explicit ExperimentInterpretation state updates
  -> structured CausalClaim
  -> InvestigationReport
 ```
@@ -153,50 +179,6 @@ Use:
 - hidden variants;
 - data-informed difficulty tiers;
 - scientific-behavior/resource metrics.
-
-## Suggested v0 repository direction
-
-```text
-src/tep_agent_lab/
-  contracts/
-    rca_state.py
-    hypothesis.py
-    prediction.py
-    experiment.py
-    evidence.py
-    causal_claim.py
-    rules.py
-    records.py
-  information/
-    run_log.py
-    projection.py
-  tools/
-    environment.py
-    topology.py
-    bridge.py
-  policies/
-    request_validation.py
-    result_verification.py
-    benchmark.py
-  evals/
-    baseline_c0.py
-    diagnosis.py
-    scientific_behavior.py
-    efficiency.py
-
-scenarios/
-  development/
-  research/
-  hidden_eval/
-
-runs/
-reports/
-tests/
-docs/
-AGENTS.md
-```
-
-Do not pre-create HAZOP/recovery/AutoResearch modules until their phase begins.
 
 ## Ground-truth policy
 
