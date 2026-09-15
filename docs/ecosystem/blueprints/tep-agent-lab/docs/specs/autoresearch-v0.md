@@ -1,37 +1,48 @@
 # AutoProcessResearch v0
 
-Status: accepted direction / v0 contract proposal  
+Status: proposal  
 Owner repo: `tep-agent-lab`
 
 ## Goal
 
-Adapt the autonomous experiment-loop pattern popularized by Karpathy's `autoresearch` to a process-simulation playground without allowing the agent to modify TEP physics, scoring code, or safety policies.
+Adapt the bounded autonomous experiment-loop pattern popularized by Karpathy's `autoresearch` to a process-simulation playground without allowing the Agent to modify TEP physics, evaluator/scoring code, hidden scenarios, or its own authority.
 
-The mode is intended for autonomous engineering research over a frozen evaluation setup:
+This is a **later separate research task family**, not normal RCA runtime and not an orchestration-ablation row.
 
 ```text
 Research goal
- -> hypothesis
- -> bounded experiment
+ -> hypothesis/change proposal
+ -> bounded experiment/search
  -> deterministic score
- -> keep/reject/update best
- -> record result
- -> repeat until stop condition
+ -> append record
+ -> ACCEPT / REJECT / NEUTRAL
+ -> repeat until deterministic stop
+ -> hidden evaluation
 ```
 
-## What we borrow from autoresearch
+## Core design pattern
 
-The useful design pattern is:
+Borrow:
 
-- keep the research surface deliberately small;
-- freeze preparation/evaluation logic;
-- define a measurable objective;
-- use a fixed/bounded budget per experiment;
-- keep failures and negative results;
-- maintain a persistent experiment record;
-- make accepted improvements monotonic relative to the declared metric/constraints.
+- small explicit mutable surface;
+- frozen preparation/evaluation logic;
+- measurable objective;
+- fixed/bounded per-trial and total budgets;
+- append-only failed/negative results;
+- monotonic best-candidate pointer under frozen acceptance policy.
 
-Unlike code-training autoresearch, the mutable artifact here is normally a process/recovery/controller/experiment configuration, not simulator source code.
+Unlike code-training autoresearch, the Agent does not edit simulator source. The mutable artifact is a bounded strategy/configuration/search surface.
+
+## Prerequisites
+
+Do not implement this mode before:
+
+- recovery/search objective exists;
+- simulator fork/scoring is stable;
+- runtime extra-dimensional budget accounting works;
+- Tool Bridge optimizer/search paths account for nested simulation use;
+- RESEARCH/HIDDEN_EVAL partitions are frozen;
+- normal RCA/recovery tracing/evaluation is reliable.
 
 ## `ResearchSpec`
 
@@ -40,15 +51,16 @@ ResearchSpec
   research_id
   goal
   research_mode
-  mutable_surface
+  mutable_surface_schema
   frozen_evaluator_ref
   baseline_ref
   primary_objective
   direction: MINIMIZE | MAXIMIZE
   hard_constraints[]
   secondary_metrics[]
-  scenario_distribution_ref
-  parameter/search bounds?
+  research_scenario_distribution_ref
+  hidden_eval_ref
+  parameter/search_bounds?
   per_trial_budget
   total_budget
   seed_policy
@@ -57,161 +69,153 @@ ResearchSpec
   tool_policy
 ```
 
-The human/research harness owns the `ResearchSpec`. The Agent cannot silently change the frozen evaluator, objective, constraints, benchmark scenarios, or authority policy.
+The harness owns/freeze the spec. The Agent cannot modify evaluator/objective/constraints/scenario partitions/tool authority/budgets during the campaign.
 
-## Candidate v0 research modes
+## Mutable versus frozen surface
 
-### Recovery strategy search
+### Potential mutable surface
 
-Agent proposes mechanisms/strategy structure; deterministic simulation and scorer evaluate safety/recovery/production/control-effort outcomes.
+- recovery strategy structure represented by an explicit future schema;
+- allowed actuator targets/sequence;
+- bounded controller/action parameters;
+- experiment/diagnostic policy parameters;
+- detector/policy parameters in an explicitly separate study.
 
-### Controller/parameter tuning
+The exact `change_set`/strategy representation must be specified before the first campaign; free-form code modification is not permitted.
 
-Agent chooses relevant parameters, bounds, objectives, and rationale. A deterministic optimizer Tool Bridge performs numeric search where appropriate.
+### Frozen
 
-### Detector/policy tuning
+- TEP simulator/source physics;
+- benchmark/evaluator/scorer implementation;
+- hidden scenarios;
+- safety/capability truth;
+- Rule authority policy;
+- ToolSpec authority/allowlist;
+- primary objective/weights;
+- total/per-trial budget.
 
-Agent may investigate threshold/window/feature choices against frozen train/dev scenarios. Hidden evaluation remains separate to reduce benchmark overfitting.
+## Explicit authority boundary
 
-### Experimental design research
+AutoProcessResearch tool policy MUST exclude reference-world `MUTATE` by default.
 
-Agent searches for experiment policies that discriminate hypotheses efficiently, scored by diagnosis quality versus rollout/tool budget.
+All simulator experiments run via isolated `SIMULATE` paths. An AutoResearch campaign cannot apply its candidate directly to the reference branch merely because it scored well.
 
-## Explicit non-goals for v0
-
-AutoProcessResearch does not allow the Agent to:
-
-- edit TEP physics/source implementation;
-- alter hidden ground truth;
-- edit the scoring/evaluator implementation during a session;
-- widen its own tool/authority budgets;
-- redefine hard safety constraints;
-- change benchmark cases to make the metric easier;
-- install arbitrary dependencies;
-- self-modify generic runtime code during an experiment campaign.
-
-Agent/runtime/prompt optimization may be studied later as a separate meta-research mode with stronger leakage/overfitting controls.
+If a later study explicitly tests applying a selected candidate, that is a separate recovery/MUTATE protocol using state-revision-bound validation.
 
 ## Experiment loop
 
 ```text
 INITIALIZE
  -> evaluate baseline
- -> load Experiment Ledger / best-known candidate
- -> MAIN AGENT proposes one research hypothesis
- -> compile one conceptual experiment
- -> validate mutable surface + budget + constraints
- -> execute isolated simulation/search
+ -> load best candidate + append-only trial history
+ -> Main Agent proposes one conceptual hypothesis/change
+ -> compile/validate mutable surface + budget + constraints
+ -> optional dependency-aware TOOL WorkBatch for independent trial evaluation
+ -> isolated simulation/search
  -> deterministic scorer
- -> verifier checks artifacts/constraints/provenance
- -> append result to ledger
+ -> post-execution result/provenance verification
+ -> append ExperimentRecord/trial record
  -> ACCEPT / REJECT / NEUTRAL
- -> update best-known candidate if accepted
+ -> update best pointer if accepted
  -> STOP_CHECK
  -> repeat
 ```
 
-### One conceptual change per trial
+There is no required full Dynamic DAG engine. Independent rollout work may use ordinary runtime WorkBatch semantics.
 
-v0 SHOULD prefer one clearly attributable mechanism/change per trial. A deterministic numerical optimizer may evaluate multiple numeric points inside that one experiment when the conceptual change is "search this bounded parameter space."
+## One conceptual change per trial
 
-This preserves attribution without forcing the LLM to guess one floating-point value per model turn.
+Prefer one attributable conceptual change per top-level trial.
 
-## Candidate contract
+A deterministic optimizer may evaluate many numeric points inside one conceptual trial such as "search this bounded parameter space." Nested trials/rollouts remain visible in runtime budgets and provenance.
+
+## `ResearchCandidate`
 
 ```text
 ResearchCandidate
   candidate_id
   parent_candidate_ref?
   hypothesis_ref
-  change_set
+  typed_change_set
   mutable_surface_refs
   rationale
   complexity_delta?
 ```
 
-`change_set` must be expressible within the allowed mutable surface.
+`typed_change_set` must validate against the frozen mutable-surface schema.
 
 ## Scoring
 
-v0 uses one primary scalar objective plus hard constraints and recorded secondary metrics.
+Use one primary scalar objective plus hard constraints and recorded secondary metrics in the first implementation.
 
-Example recovery score:
+Example:
 
 ```text
 hard constraints:
-  no invalid operation
-  no prohibited safety violation
+  supported operation
+  no prohibited process/safety state
 
 primary objective:
-  weighted recovery loss
+  frozen weighted recovery loss
 
-secondary metrics:
+secondary:
   min safety margin
   time to recover
   production deviation
   control effort
-  shutdown
+  shutdown event
 ```
 
-The scalarization/weights are frozen in `ResearchSpec`, not invented per trial by the Agent.
-
-Multi-objective Pareto tracking may be added later, but v0 should remain easy to interpret.
+Weights/scalarization are frozen by ResearchSpec, not changed per trial by the Agent.
 
 ## Acceptance policy
 
-Default monotonic policy:
-
 ```text
-ACCEPT if:
+ACCEPT:
+  valid run
   hard constraints pass
-  AND primary objective improves by configured minimum delta
-  AND run validity checks pass
+  objective improves by frozen minimum delta
 
-REJECT if:
-  constraint violation, failure, or objective regression
+REJECT:
+  invalid/failure/constraint violation/objective regression
 
-NEUTRAL if:
-  statistically/meaningfully indistinguishable under configured tolerance
+NEUTRAL:
+  valid but no meaningful improvement under frozen tolerance
 ```
 
-No result is deleted; acceptance only changes `best_candidate_ref`.
+Acceptance updates only the best-candidate pointer. No trial is deleted.
 
-## Stochastic/noisy metrics
+## Noisy/stochastic objectives
 
-If a metric is noisy, `ResearchSpec` may require repeated seeds/replications before acceptance.
+ResearchSpec may require repeated deterministic environment seeds/replications.
 
-Acceptance must use a frozen deterministic statistical policy, e.g. mean/quantile/worst-case over the declared seed set.
-
-The Agent may observe uncertainty but cannot choose only favorable seeds after seeing results.
+The aggregation policy (mean/quantile/worst-case/etc.) and seed sampling are frozen before seeing candidate results. The proposing Agent cannot cherry-pick favorable validation seeds.
 
 ## Deterministic optimizer delegation
 
 For bounded numeric search:
 
 ```text
-Main Agent:
-  identifies mechanism
-  selects variables/bounds
-  defines why they matter
-          |
-          v
-Tool Bridge optimizer:
-  grid/random/TPE/evolutionary/etc.
-  evaluates objective through isolated rollouts
-          |
-          v
-best numeric candidate + trial history
-          |
-          v
-Main Agent interprets result
+Main Agent
+  chooses mechanism/variables/bounds/objective rationale
+        |
+        v
+SIMULATE Tool Bridge optimizer
+  reserves optimizer_trials + rollouts + horizon
+  executes isolated trials
+        |
+        v
+best numeric candidate + full trial history
+        |
+        v
+Main Agent interprets
 ```
 
-Optimizer method/version/seed/trials are pinned in provenance.
+Optimizer method/version/seed and every nested trial/resource draw are pinned in provenance.
 
-## Experiment Ledger
+## Trial record
 
-Every trial is append-only and records:
+Each top-level trial is append-only and may be materialized as an `ExperimentRecord`:
 
 ```text
 trial_id
@@ -222,118 +226,85 @@ resolved run/search spec
 objective + secondary metrics
 constraint verdict
 status: ACCEPT | REJECT | NEUTRAL | FAILED
-failure class?
+failure_class?
 artifact refs
-model/tool/library versions
-budget usage
-notes/interpretation refs
+model/tool/library/scorer versions
+actual budget usage
+interpretation refs
 ```
 
-Failed experiments are valuable negative knowledge and prevent repeated dead ends.
+## Stopping
 
-## Ideas backlog
+Deterministic backstops may include:
 
-The research state MAY maintain an explicit backlog:
+- total model/tool/trial/rollout/horizon budget exhaustion;
+- wall/compute budget if configured;
+- target score reached;
+- maximum accepted improvements;
+- plateau over N valid trials under frozen tolerance;
+- no valid bounded proposal remains;
+- external cancellation.
+
+Agent may recommend stopping, but cannot disable deterministic limits.
+
+## Overfitting protection
+
+Use:
 
 ```text
-ResearchIdea
-  idea_id
-  hypothesis
-  expected benefit
-  required tools
-  estimated cost
-  dependencies
-  status
+RESEARCH scenarios — declared iterative feedback
+HIDDEN_EVAL — not exposed after every trial; reserved for final/generalization checks
 ```
 
-The Agent chooses among untested ideas based on evidence, remaining budget, and expected value rather than rediscovering ideas from transcript history.
+A candidate that improves visible research score is not claimed generally better without held-out evaluation.
 
-## Stopping conditions
+Historical Engineering Record retrieval is disabled unless explicitly part of the research condition.
 
-A session stops when any deterministic condition is met:
+## Suggested first campaign
 
-- total trial/model/tool/simulation budget exhausted;
-- wall/compute budget exhausted if configured;
-- maximum accepted improvements reached;
-- plateau: no meaningful improvement over N valid trials;
-- no valid candidate remains in backlog and Main Agent returns no bounded proposal;
-- configured target metric reached;
-- human cancellation.
+Possible later question:
 
-The Agent may recommend stopping, but deterministic budget/backstop rules remain authoritative.
+> Find a robust bounded recovery strategy for a curated reactor cooling-water-related disturbance family.
 
-## Benchmark-overfitting protection
-
-Research scenarios are separated into:
-
-```text
-DEV/RESEARCH scenarios — visible through declared feedback
-HIDDEN EVAL scenarios — evaluator-only final generalization check
-```
-
-An accepted candidate may improve dev performance but must not be claimed generally better until hidden evaluation confirms it.
-
-## Interaction with Dynamic DAG
-
-A single research trial may use a bounded Dynamic DAG for parallel independent rollouts/analysis. The trial remains one ledger item with child run refs.
-
-Dynamic DAG expansion is constrained by the trial's fixed budget.
-
-## Suggested first AutoProcessResearch campaign
-
-Research question:
-
-> Find a robust bounded recovery strategy for a curated reactor cooling-water disturbance family.
-
-Mutable surface:
-
-- selected recovery strategy structure;
-- approved actuator targets/sequence;
-- bounded numeric controller/action parameters through optimizer tool.
-
-Frozen:
-
-- TEP simulator revision;
-- scenario set/seeds;
-- safety constraints;
-- objective/scorer;
-- tool/rule policy.
-
-Compare:
+Prerequisite comparisons:
 
 - no action;
-- deterministic hand-designed baseline;
-- Agent manual candidate loop;
-- Agent + deterministic optimizer;
-- optional Dynamic DAG parallel evaluation.
+- deterministic hand-designed baseline if one is justifiable;
+- Agent conceptual candidate loop;
+- Agent + deterministic optimizer.
 
-## Evaluation metrics
+Full mutable Dynamic DAG and subagent swarms are not prerequisites.
 
-- best hidden-eval objective;
-- experiments to first improvement;
+## Evaluation
+
+AutoProcessResearch metrics are defined under the separate task-family section of `evaluation-v0.md`, including:
+
+- hidden-eval objective;
+- trials to improvement;
 - accepted/rejected/failed counts;
-- duplicate/redundant trial rate;
-- total simulated horizon;
-- model/tool/tokens/cost;
-- safety/constraint violations attempted;
+- duplicate/redundant rate;
+- nested simulation/search cost;
+- constraint violations attempted;
 - robustness across scenarios/seeds;
-- complexity of accepted strategy.
+- accepted-strategy complexity.
 
 ## Invariants
 
-- Evaluator/scoring logic is frozen per campaign version.
-- Agent cannot mutate world/reference physics or its own authority policy.
-- Every trial is reproducible and retained.
-- Numeric search is delegated to deterministic optimizers when appropriate.
-- Improvements are only relative to the declared metric/scenario distribution.
-- Hidden evaluation remains inaccessible to the research agent.
+- AutoResearch is not normal RCA orchestration.
+- Evaluator/objective/hidden scenarios/authority are frozen per campaign.
+- Reference MUTATE is unavailable by default.
+- Simulator-running search tools are SIMULATE and budget-visible.
+- Every trial/negative result is retained.
+- Agent cannot self-change its authority/budget/evaluator.
+- Hidden evaluation remains inaccessible to the research Agent.
 
 ## Acceptance tests
 
-1. Run baseline and create first best-candidate ref.
-2. Execute one valid candidate and accept an improvement.
-3. Execute one regression and reject it without losing history.
-4. Block an attempt to change evaluator/objective/safety constraints.
-5. Delegate bounded numeric tuning to an optimizer bridge and preserve all trial provenance.
-6. Stop deterministically on plateau/budget.
-7. Evaluate final best candidate on hidden scenarios unavailable to the Agent.
+1. Run baseline and create initial best-candidate ref.
+2. Execute one valid isolated candidate and ACCEPT an improvement.
+3. Execute a regression and REJECT without deleting history.
+4. Block attempts to change evaluator/objective/hidden scenarios/authority policy.
+5. Verify reference MUTATE tool is absent/denied in AutoResearch mode.
+6. Delegate bounded numeric search to a SIMULATE optimizer bridge and reconcile nested resource usage.
+7. Stop deterministically on plateau/budget.
+8. Evaluate final candidate on held-out hidden scenarios unavailable during iterative search.
