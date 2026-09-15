@@ -8,27 +8,33 @@ This register summarizes current program decisions. Detailed rationale belongs i
 | D-002 | `tep-sim` is agent-agnostic and owns environment truth only. | accepted | Breaking this requires explicit architecture change. |
 | D-003 | Use machine-readable DEXPI/process semantics for TEP; do not build P&ID OCR/model generation now. | accepted | Agent research is stable and a separately funded P&ID project is started. |
 | D-004 | No 3D/Omniverse/Blender milestone for v0; use topology + telemetry first. | accepted | A concrete spatial-reasoning research question requires it. |
-| D-005 | v0 product role is **Autonomous Industrial Process Investigator**; long-term direction may expand toward Autonomous Process Engineer. | accepted | Investigation tasks fail to represent the target use cases or recovery/control becomes the primary research goal. |
-| D-006 | One Main Agent by default; subagents are ephemeral bounded tasks, not permanent organizational roles. | accepted | Ablations show another organization materially improves results. |
-| D-007 | Use **Hybrid orchestration**: goal-driven Main Agent + deterministic Coordinator/Executor/Verifier; local ReAct for simple work; bounded Dynamic DAG for complex work. Public contracts remain framework-neutral. | accepted | Benchmark results show a simpler/fixed architecture dominates without losing target capability. |
-| D-008 | Coordinator/Executor/Verifier are deterministic runtime components by default, not additional permanent LLM agents. | accepted | A specific semantic-verification task demonstrates measurable benefit from an optional critic subtask. |
-| D-009 | LangGraph may implement the TEP/lab macro workflow and checkpointing through an adapter, but LangGraph-native types do not define public runtime contracts. | accepted direction | Another framework/runtime becomes clearly preferable or adapter overhead is unjustified. |
-| D-010 | v0 subagent defaults: depth 1, max 3 children, child no reference mutation. | proposal | Subagent experiments quantify need for different limits. |
-| D-011 | Deterministic gates separate model reasoning from execution authority. Generic gates handle schema/allowlist/budget/side-effect class; TEP domain safety stays downstream. | accepted | Exact layers may evolve; authority separation is invariant. |
-| D-012 | Counterfactual simulation is a first-class agent tool; recovery defaults to simulate-before-reference-mutation. | accepted direction | Simulation cost/latency invalidates the policy for a target task. |
-| D-013 | Hidden scenario ground truth is evaluator-only in blind diagnosis. | accepted | Only explicit non-blind study condition. |
-| D-014 | First research benchmark targets reactor/cooling-water scenarios; exact disturbance/timing/magnitude are fixture decisions based on identifiability. | accepted direction | Pilot trajectories show poor diagnosability/coverage. |
-| D-015 | Build single-agent/counterfactual baselines before measuring Dynamic DAG/subagent value. | accepted | None; required for attribution. |
-| D-016 | No persistent cross-run learned agent memory in v0. | proposal | Repeated-task studies show measurable need beyond evidence/run artifacts. |
-| D-017 | `manufacturing-kg-agent` is optional evidence augmentation, added after no-KG baselines. | accepted | Knowledge becomes necessary for a target task. |
-| D-018 | P&ID-to-simulator (`pid2sim`) is parked research, not a current repo/milestone. | accepted | Explicit future project restart. |
-| D-019 | Use an **Information Plane** (not a new repo) for ProcessGraph, registries, evidence refs, Experiment Ledger, artifacts, and Investigation State. Conversation transcripts are not canonical state. | accepted | Multiple independent domains justify extracting a shared information service. |
-| D-020 | Domain knowledge uses K0–K4 levels: simulator truth, formal invariants, validated relationships, literature heuristics, and agent hypotheses. LLM/paper extraction cannot directly create hard gates. | accepted | A better provenance/knowledge-control model is demonstrated. |
-| D-021 | Hypotheses and experiments are first-class typed objects; deterministic experiment results are separated from model interpretation. | accepted | None expected; schemas may evolve. |
-| D-022 | Reuse mature scientific/open-source functionality through an allowlisted **Tool Bridge** rather than arbitrary agent Python/shell execution or local reimplementation. | accepted | A dependency is less reliable than a small local implementation or cannot satisfy provenance/security requirements. |
-| D-023 | Numeric parameter search should normally use deterministic optimizers/search tools; the Agent chooses mechanism, variables, bounds, objectives, and interprets results. | accepted | A research task explicitly studies LLM numeric search behavior. |
-| D-024 | Add `AutoProcessResearch` as a separate lab mode with frozen evaluator, bounded mutable surface, fixed experiment budgets, append-only ledger, and keep/reject/neutral decisions. | accepted direction | Initial campaigns show insufficient research value or excessive benchmark gaming. |
-| D-025 | Evaluation uses two orthogonal ablation axes: **capability ablation** and **orchestration architecture ablation**, plus scientific-behavior metrics such as experiment information value/redundancy. | accepted | Metrics prove unreliable and require revision. |
+| D-005 | v0 product/research role is **Autonomous Industrial Process Investigator**; long-term direction may expand toward Autonomous Process Engineer. | accepted | Investigation tasks fail to represent target use cases or recovery/control becomes the primary research goal. |
+| D-006 | One Main Agent by default; subagents are ephemeral bounded tasks, not permanent organizational roles. | accepted scope decision | An explicit ablation later justifies another organization. |
+| D-007 | Use a **Hybrid contract**: goal-driven Main Agent + deterministic runtime authority shell. The architecture contract is accepted as the v0 implementation shape; whether it outperforms simpler orchestration is an empirical question. | accepted | Orchestration ablations show simpler architecture should replace it. |
+| D-008 | Coordinator/gates/Executor/post-execution Verifier are deterministic runtime components by default, not permanent LLM agents. | accepted | A bounded semantic critic demonstrates value as an optional subtask. |
+| D-009 | v0 does not require a full Dynamic DAG engine. Complex work uses dependency-aware `WorkBatch` (`TOOL`/`SUBTASK` + `depends_on`). Rich Dynamic DAG replanning/cancellation is deferred research. | accepted | O4/O5 evidence demonstrates richer graph semantics are necessary/useful. |
+| D-010 | LangGraph is not a v0 core dependency or scheduled critical-path deliverable. Public contracts stay framework-neutral/serializable. | accepted | Concrete checkpoint/resume/interrupt requirements justify an adapter. |
+| D-011 | v0 subagent defaults: depth 1, cumulative max 3 per task, child reference mutation disabled. | proposal | Subagent experiments quantify better limits. |
+| D-012 | Deterministic pre-execution gates separate model reasoning from execution authority. Post-execution result verification is a separate stage. | accepted | Exact hook signatures may evolve; authority separation is invariant. |
+| D-013 | Counterfactual simulation is a first-class investigation capability; SIMULATE never mutates reference state. Recovery reference mutation is a distinct MUTATE path. | accepted | None for class separation; recovery policy may evolve. |
+| D-014 | Hidden scenario ground truth/candidate answer sets are evaluator-only in blind diagnosis. | accepted | Only explicit non-blind study condition. |
+| D-015 | First research benchmark starts with reactor/cooling-water-related scenarios; exact causes/timing/magnitude/difficulty are fixture decisions based on identifiability and strong deterministic C0 performance. | accepted direction | Pilot data shows poor coverage/diagnosability. |
+| D-016 | Build strong deterministic/single-Agent baselines before claiming value from WorkBatch/subagents. | accepted | None; required for attribution. |
+| D-017 | No persistent cross-run learned Agent memory/retrieval in v0 benchmark. Engineering records are archival first. | proposal | A separate memory study explicitly enables retrieval. |
+| D-018 | `manufacturing-kg-agent` is optional evidence augmentation after clean no-KG baselines. | accepted | Knowledge becomes necessary for a target task. |
+| D-019 | P&ID-to-simulator (`pid2sim`) is parked research, not a current repo/milestone. | accepted | Explicit future project restart. |
+| D-020 | Use an **Information Plane** as a logical contract/ownership boundary, not a fourth repo or five mandatory storage services. v0 may use one append-only run log + artifacts + typed views. | accepted | Multiple independent domains/scale justify extracting shared persistence services. |
+| D-021 | Generic `InformationRef`, `ContextProjection`, `TaskStateStore`, budgets/tool contracts belong to `industrial-agent-runtime`; domain state/projection semantics belong to consuming lab. | accepted | A second domain proves a different generic boundary is needed. |
+| D-022 | Observation and Evidence are distinct: tool/simulator output creates immutable observation/result records; an explicit evidence link relates observations to claims/hypotheses. | accepted | None expected; exact schemas may evolve. |
+| D-023 | Domain Rules use independent `origin × validation × authority` metadata. K0–K4 is documentation shorthand only. Agent/paper/simulation evidence cannot self-promote authority. | accepted | A better evidence/authority model is demonstrated. |
+| D-024 | Hypotheses, Predictions, experiments, deterministic results, and model interpretations are first-class distinct objects. | accepted | None expected; feature vocabulary may evolve. |
+| D-025 | Reuse mature scientific/open-source functionality through allowlisted **Tool Bridge adapters** outside generic runtime. Runtime owns ToolSpec/gates/budget/execution authority. | accepted | A bridged dependency is less reliable than a small local implementation. |
+| D-026 | Compound tools that internally run simulation are `SIMULATE` and must declare/reserve nested rollout/horizon/trial budgets. | accepted | None expected; resource dimensions may evolve. |
+| D-027 | Numeric parameter search normally uses deterministic/seeded search/optimizer tools; the Agent chooses mechanism, variables, bounds/objectives, and interprets results. | accepted | A study explicitly investigates LLM numeric search. |
+| D-028 | `AutoProcessResearch` remains a separate later lab task/mode with frozen evaluator, bounded mutable surface, explicit budgets, append-only experiment history, and hidden evaluation. It is not an orchestration-ablation row. | accepted direction | Initial campaigns show poor research value or benchmark gaming. |
+| D-029 | `evaluation-v0.md` is the sole canonical comparison matrix. Capability and orchestration axes are separated; tool exposure is held fixed across orchestration comparisons unless exposure itself is studied. | accepted | Metrics/study design prove unreliable. |
+| D-030 | Every first RCA benchmark version includes a strong deterministic C0 enumerate/simulate/match baseline. A case C0 solves cheaply/reliably cannot be used to claim Agent necessity. | accepted | A different deterministic baseline is demonstrably stronger/more appropriate. |
+| D-031 | v0 writes structured `InvestigationReport`, `DecisionRecord`, and `ExperimentRecord`. Lesson Learned/Runbook/manual promotion is deferred and does not happen automatically. | accepted | Cross-incident organizational-memory study begins. |
 
 ## Canonical supporting documents
 
@@ -36,21 +42,36 @@ Program-level:
 
 - `program-charter.md`
 - `information-plane.md`
+- `design-review-adjudication.md`
 - `documentation-standard.md`
 - `development-workflow.md`
 - `implementation-plan.md`
 
-Runtime/lab contracts:
+Runtime:
 
+- `blueprints/industrial-agent-runtime/docs/specs/runtime-v0.md`
 - `blueprints/industrial-agent-runtime/docs/specs/hybrid-orchestration-v0.md`
 - `blueprints/industrial-agent-runtime/docs/specs/deterministic-gates-v0.md`
+- `blueprints/industrial-agent-runtime/docs/specs/subagents-v0.md`
+
+Lab:
+
 - `blueprints/tep-agent-lab/docs/specs/investigation-state-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/knowledge-rule-registry-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/hypothesis-experiment-v0.md`
+- `blueprints/tep-agent-lab/docs/specs/tool-surface-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/tool-bridge-v0.md`
-- `blueprints/tep-agent-lab/docs/specs/autoresearch-v0.md`
-- per-repo architecture/spec/open-question/ADR documents.
+- `blueprints/tep-agent-lab/docs/specs/engineering-records-v0.md`
+- `blueprints/tep-agent-lab/docs/specs/benchmark-design-v0.md`
+- `blueprints/tep-agent-lab/docs/specs/evaluation-v0.md`
+- task-specific RCA/HAZOP/recovery/AutoResearch specs.
+
+## Status rule
+
+- Architecture/ADR decisions use accepted/proposed/superseded states in their own records.
+- Specs use only `proposal | accepted | deprecated` per `documentation-standard.md`.
+- An accepted architecture contract is not evidence that the architecture empirically outperforms alternatives.
 
 ## Rule
 
-A proposed decision may be used to build a minimal experiment, but results should validate or revise it. An accepted decision must not change only inside code or chat; update this register plus the relevant ADR/spec.
+An accepted decision must not change only inside code/chat; update this register plus the owning ADR/spec. Empirical superiority claims require benchmark evidence rather than decision-register status.
