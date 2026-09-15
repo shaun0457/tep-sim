@@ -25,7 +25,7 @@ This register summarizes current program decisions. Detailed rationale belongs i
 | D-019 | P&ID-to-simulator (`pid2sim`) is parked research, not a current repo/milestone. | accepted | Explicit future project restart. |
 | D-020 | Use an **Information Plane** as a logical contract/ownership boundary, not a fourth repo or five mandatory storage services. v0 may use one append-only run log + artifacts + typed views. | accepted | Multiple independent domains/scale justify extracting shared persistence services. |
 | D-021 | Generic `InformationRef`, `ContextProjection`, `TaskStateStore`, budgets/tool contracts belong to `industrial-agent-runtime`; domain state/projection semantics belong to consuming lab. | accepted | A second domain proves a different generic boundary is needed. |
-| D-022 | Observation and Evidence are distinct: tool/simulator output creates immutable observation/result records; an explicit evidence link relates observations to claims/hypotheses. | accepted | None expected; exact schemas may evolve. |
+| D-022 | Observation and Evidence are distinct: every successful agent-visible tool/simulator result is registered as an immutable observation/result record; an explicit evidence link relates observations to claims/hypotheses. | accepted | None expected; exact schemas may evolve. |
 | D-023 | Domain Rules use independent `origin × validation × authority` metadata. K0–K4 is documentation shorthand only. Agent/paper/simulation evidence cannot self-promote authority. | accepted | A better evidence/authority model is demonstrated. |
 | D-024 | Hypotheses, Predictions, experiments, deterministic results, and model interpretations are first-class distinct objects. | accepted | None expected; feature vocabulary may evolve. |
 | D-025 | Reuse mature scientific/open-source functionality through allowlisted **Tool Bridge adapters** outside generic runtime. Runtime owns ToolSpec/gates/budget/execution authority. | accepted | A bridged dependency is less reliable than a small local implementation. |
@@ -35,6 +35,8 @@ This register summarizes current program decisions. Detailed rationale belongs i
 | D-029 | `evaluation-v0.md` is the sole canonical comparison matrix. Capability and orchestration axes are separated; tool exposure is held fixed across orchestration comparisons unless exposure itself is studied. | accepted | Metrics/study design prove unreliable. |
 | D-030 | Every first RCA benchmark version includes a strong deterministic C0 enumerate/simulate/match baseline. A case C0 solves cheaply/reliably cannot be used to claim Agent necessity. | accepted | A different deterministic baseline is demonstrably stronger/more appropriate. |
 | D-031 | v0 writes structured `InvestigationReport`, `DecisionRecord`, and `ExperimentRecord`. Lesson Learned/Runbook/manual promotion is deferred and does not happen automatically. | accepted | Cross-incident organizational-memory study begins. |
+| D-032 | `ModelTurn` has an explicit optional `ModelStateUpdateProposal` plus one routed action. Model-proposed task-state updates are projection-revision-bound, atomically validated/applied through consumer `TaskStateStore`, consume `max_steps` but not `max_tool_calls`, and cannot change runtime authority/budget/external state. Deterministic result-ingestion updates bind the current revision at apply time. | accepted | A second consumer demonstrates that the state-update/action split is insufficient. |
+| D-033 | Phase 0 runtime/lab **Design Freeze is complete** after the independent full review, adjudication, focused re-review, and closure of the sole remaining MAJOR-R1 contract gap. Implementation may proceed under `implementation-plan.md`; deferred/open-research items remain non-blocking. | accepted | A new BLOCKER/MAJOR contradiction is discovered during implementation; use `SPEC_CONFLICT` and reopen the owning contract. |
 
 ## Canonical supporting documents
 
@@ -43,6 +45,7 @@ Program-level:
 - `program-charter.md`
 - `information-plane.md`
 - `design-review-adjudication.md`
+- `design-freeze-record.md`
 - `documentation-standard.md`
 - `development-workflow.md`
 - `implementation-plan.md`
@@ -65,6 +68,11 @@ Lab:
 - `blueprints/tep-agent-lab/docs/specs/benchmark-design-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/evaluation-v0.md`
 - task-specific RCA/HAZOP/recovery/AutoResearch specs.
+
+Review records:
+
+- `reviews/2026-09-15-independent-spec-review.md`
+- `reviews/2026-09-15-focused-re-review.md`
 
 ## Status rule
 
