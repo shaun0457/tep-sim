@@ -1,72 +1,60 @@
 # Roadmap — TEP Agent Lab
 
-Lab implementation begins after focused Design Freeze re-review. Build the smallest RCA substrate first; HAZOP/Recovery/AutoResearch remain later research phases.
+Phase 0 Design Freeze is complete. The lab may now implement the first RCA information/tool/evaluation slice in dependency order.
 
 Canonical specs live in `docs/specs/`.
 
-## Phase 0 — Reproducible benchmark shell
+## Phase 0 — Reproducible lab / benchmark shell
 
-Specs:
-
-- `benchmark-design-v0.md`
-- `evaluation-v0.md`
+Specs: `evaluation-v0.md`, `benchmark-design-v0.md`
 
 Deliver:
 
-- pinned environment/runtime/lab revisions;
-- versioned scenario/fixture schema;
-- DEVELOPMENT / RESEARCH / HIDDEN_EVAL partitions;
-- deterministic Agent-visible projection path;
-- append-only run/artifact manifest;
+- pinned `tep-sim` and `industrial-agent-runtime` revisions;
+- versioned case/scenario-family schema;
+- development/research/hidden-eval partitions;
+- evaluator-only vs Agent-visible projection;
+- run/artifact manifest;
 - leakage audit;
 - deterministic re-scoring;
-- identifiability/C0 pilot utilities.
+- first identifiability pilot utilities.
 
-Exit: a minimal fake run can be projected, traced, leakage-tested, and re-scored reproducibly.
+Exit: a minimal/fake run can be projected, traced, re-scored, and leakage-tested reproducibly.
 
-## Phase 1 — RcaState / run log / Engineering Records
+## Phase 1 — RcaState / Information Plane
 
-Branch: `feat/investigation-state-v0`
-
-Specs:
-
-- `investigation-state-v0.md`
-- `engineering-records-v0.md`
-- program `information-plane.md`
+Branch: `feat/investigation-state-v0`  
+Specs: `investigation-state-v0.md`, `engineering-records-v0.md`
 
 Deliver:
 
 - RcaState implementing runtime TaskStateStore;
-- one append-only run log + artifact layout;
-- ObservationRecord and HypothesisEvidenceLink;
-- deterministic `project_rca_state` ContextProjection;
-- state revisions/deltas;
-- InvestigationReport / DecisionRecord / ExperimentRecord;
-- evaluator visibility protection.
+- allowlisted RCA StateDelta operations;
+- atomic `apply_batch` revision/visibility validation;
+- model-proposed state-update path;
+- automatic ObservationRecord registration for successful agent-visible ToolResults;
+- explicit EvidenceLink lifecycle;
+- deterministic result-ingestion order for parallel WorkBatch results;
+- append-only run log/artifacts;
+- ContextProjection;
+- InvestigationReport / DecisionRecord / ExperimentRecord.
 
-Exit: one RCA investigation is reconstructable without chat transcript and records do not automatically leak into future context.
+Exit: one investigation is reconstructable without relying on chat transcript as canonical state, and model/tool-derived state changes have one unambiguous route.
 
 ## Phase 2 — Rule / policy metadata
 
 Branch: `feat/rule-registry-v0`  
 Spec: `knowledge-rule-registry-v0.md`
 
-Deliver only the metadata/authority needed for first RCA/policy tests:
+Deliver:
 
 ```text
 origin × validation × authority
 ```
 
-Include:
+with a small representative rule/policy set, provenance/versioning, and hard-authority restrictions.
 
-- simulator/environment authoritative refs when consumed;
-- explicit reviewed lab policy examples;
-- advisory/planning relation examples;
-- provenance/versioning/conflict representation.
-
-Do not implement a full K3→K2/organizational-memory promotion engine yet.
-
-Exit: literature/Agent/experiment claims cannot self-grant hard authority and lab intervention policy is explicit data, not prompt-only text.
+Do not implement the full promotion engine yet.
 
 ## Phase 3 — Hypothesis / Prediction / Experiment
 
@@ -77,95 +65,83 @@ Deliver:
 
 - Hypothesis;
 - typed Prediction;
-- HypothesisEvidenceLink;
+- EvidenceLink state operations;
 - ExperimentProposal;
 - frozen ExperimentRunSpec;
-- canonical experiment dedup key;
-- deterministic ExperimentResult/PredictionEvaluation;
-- model interpretation as a separate object.
+- deterministic ExperimentResult / PredictionEvaluation;
+- ExperimentInterpretation -> StateDelta mapping;
+- canonical experiment duplicate key.
 
-Exit: two plausible hypotheses can make distinct typed predictions and be tested by one traceable experiment.
+Exit: two competing hypotheses can be tested by a traceable discriminating experiment and updated only through explicit typed state changes.
 
-## Phase 4 — Blind TEP tool surface
+## Phase 4 — TEP environment tools + minimal Tool Bridge
 
-Branch: `feat/tool-surface-v0`  
-Spec: `tool-surface-v0.md`
+Branches:
 
-Deliver:
+```text
+feat/tool-surface-v0
+feat/tool-bridge-v0
+```
 
-- current/history/metadata tools;
-- topology measurements/actuators without canonical hidden candidate-cause bindings;
-- snapshot/fork/rollout/capability tools;
-- runtime ToolSpec/gate registration;
-- lab request/result validator hooks;
-- leakage tests;
+Specs: `tool-surface-v0.md`, `tool-bridge-v0.md`
+
+### Environment tools
+
+- observations/history;
+- ProcessGraph/topology without canonical answer leakage;
+- snapshot/fork/rollout;
+- capability/safety;
 - no MUTATE in blind RCA.
 
-Exit: Agent can inspect/simulate TEP only through typed leakage-audited tools.
+### Initial bridge
 
-## Phase 5 — Minimal Tool Bridge
+Start minimal and benchmark-driven:
 
-Branch: `feat/tool-bridge-v0`  
-Spec: `tool-bridge-v0.md`
+- response features / trajectory comparison;
+- cross-correlation / lag;
+- optional upstream TEP detector baseline.
 
-First implementation:
+Sensitivity/optimization dependencies are introduced only when later task families require them.
 
-1. response-feature extraction / trajectory comparison;
-2. cross-correlation / lag;
-3. optional upstream TEP detector adapter for baseline studies.
+Exit: runtime can inspect/analyze/simulate TEP only through typed, versioned, leakage-audited tools; arbitrary Agent Python/shell/import is unavailable.
 
-Defer PCA/PLS/SALib/Optuna/Granger/MCP until a concrete experiment requires them.
+## Phase 5 — Benchmark identifiability + C0
 
-Compound tools that run TEP must be SIMULATE and declare nested resource budgets.
-
-Exit: tool/library versions and actual resource draws are fully traceable; arbitrary Agent Python/shell/import is unavailable.
-
-## Phase 6 — Benchmark identifiability + C0
-
-Branch: `exp/rca-benchmark-pilot-v0`
-
-Specs:
-
-- `benchmark-design-v0.md`
-- `rca-v0.md`
-- `evaluation-v0.md`
+Branch: `exp/rca-benchmark-pilot-v0`  
+Specs: `benchmark-design-v0.md`, `evaluation-v0.md`, `rca-v0.md`
 
 Deliver:
 
-- reactor/cooling-related scenario family variants;
-- strong C0 enumerate/simulate/match baseline;
-- multiple seeds/timings/magnitudes;
+- scenario variants;
+- strong deterministic enumerate/simulate/match C0;
 - healthy/no-abnormal case;
-- local candidate/topology leakage audit;
-- data-informed difficulty labeling;
-- at least one non-local/nontrivial case before MEDIUM/HARD claims.
+- topology/candidate leakage audit;
+- data-informed difficulty;
+- at least one non-local/nontrivial case for medium/hard claims.
 
-Exit: the first Agent benchmark is neither trivially encoded nor physically indistinguishable.
-
-## Phase 7 — Blind RCA capability study
+## Phase 6 — Blind RCA capability ladder
 
 Branch: `exp/rca-reactor-v0`
 
-Use canonical capability conditions from `evaluation-v0.md`:
+Canonical capability progression:
 
 ```text
-C0 deterministic baseline
 C1 static LLM
-C2 + telemetry
-C3 + topology
-C4 + analysis bridge
-C5 + counterfactual simulation
+ -> C2 telemetry
+ -> C3 topology
+ -> C4 analysis bridge
+ -> C5 counterfactual simulation
 ```
 
-Later knowledge/research tools require their own study.
+Subagents are not a capability row.
 
-Exit: at least one blind case has complete RcaState, typed predictions/experiments/evidence, structured CausalClaim, InvestigationReport, and deterministic scoring.
+Exit: at least one blind incident is reproducibly investigated with evidence-backed hypotheses, typed predictions, and counterfactual results.
 
-## Phase 8 — Orchestration ablation
+## Phase 7 — Orchestration architecture ablation
 
 Branch: `exp/orchestration-ablation-v0`
 
-Hold Agent-visible capability/tool policy fixed and compare:
+Hold capability/tool exposure constant and compare:
 
 ```text
 O0 one-shot
@@ -176,61 +152,49 @@ O4 O3 + dependency-aware TOOL WorkBatch
 O5 O4 + bounded SUBTASK work
 ```
 
-Measure diagnosis, prediction/experiment quality, evidence efficiency, tool/rollout/tokens, work/subtask overhead, and stopping behavior.
+Measure task quality, scientific behavior, state/tool/rollout/subtask overhead, and stopping efficiency.
 
-A full mutable Dynamic DAG is not a required condition; it needs a separate future spec if studied.
-
-## Phase 9 — Simulation-backed HAZOP
+## Phase 8 — Simulation-backed HAZOP
 
 Branch: `exp/hazop-reactor-v0`  
 Spec: `hazop-v0.md`
 
-Start only after RCA contracts/tracing/evaluation are stable.
+Start with reactor/cooling subsystem and a small supported/unsupported deviation pack.
 
-Keep supported/unsupported capability honesty and structured evidence refs.
-
-## Phase 10 — Recovery planning
+## Phase 9 — Recovery planning
 
 Branch: `exp/recovery-reactor-v0`  
 Spec: `recovery-v0.md`
 
-Start with forked strategy ranking/no-action baseline. SIMULATE never mutates reference state.
+Rank forked strategies first. Enable reference application only after revision-bound MUTATE/gate tests and explicit benchmark policy permit it.
 
-Enable reference MUTATE only after revision-bound validation/gate tests and explicit benchmark policy.
-
-## Phase 11 — AutoProcessResearch
+## Phase 10 — AutoProcessResearch
 
 Branch: `exp/autoresearch-recovery-v0`  
 Spec: `autoresearch-v0.md`
 
-Prerequisites:
+Prerequisites: stable recovery objective, scenario split, Tool Bridge optimizer path, Experiment Ledger/run history, and hidden evaluation.
 
-- stable recovery/search objective;
-- Research/HIDDEN_EVAL split;
-- optimizer/search Tool Bridge if needed;
-- nested SIMULATE budget accounting;
-- append-only experiment history.
-
-AutoResearch is a separate task family, not an orchestration row.
-
-## Phase 12 — Knowledge / organizational memory research
+## Phase 11 — Knowledge / organizational-memory research
 
 Only after clean no-KG/no-memory baselines:
 
-- connect `manufacturing-kg-agent` read-only;
-- extract literature candidates;
-- implement evidence-driven validation/promotion workflow if needed;
-- create LessonLearned/Runbook candidates from multiple records;
-- compare no-history vs structured-record retrieval vs approved rule/runbook retrieval;
-- ensure historical records do not contaminate hidden evaluation.
+- manufacturing-kg-agent read-only evidence;
+- literature/document rule candidates;
+- validation/promotion workflow if needed;
+- structured Engineering Record retrieval across incidents;
+- Lesson Learned / Runbook proposal studies.
 
-## Not on the first critical path
+## Phase 12 — Benchmark freeze / expansion
 
-- full Dynamic DAG engine;
-- LangGraph/MCP integration;
+Freeze representative versioned packs across healthy/negative, RCA difficulty, orchestration, HAZOP, recovery, AutoResearch, and optional knowledge/memory conditions.
+
+## Not on the critical path
+
 - P&ID OCR/model generation;
 - 3D visualization;
 - plant-wide formal HAZOP automation;
-- learned cross-run memory;
-- recursive swarms;
-- production real-plant control authority.
+- learned cross-run Agent memory before explicit study;
+- unrestricted recursive swarms;
+- production deployment control authority;
+- full Dynamic DAG/LangGraph/MCP infrastructure without measured need.
