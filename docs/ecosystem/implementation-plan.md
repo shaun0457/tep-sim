@@ -1,289 +1,402 @@
 # Cross-Repository Implementation Plan
 
-This plan is **not authorization to implement immediately**. Core architecture/spec decisions must pass Phase 0 Design Freeze first. After freeze, work may be parallelized across coding agents/subagents using small spec-scoped branches.
+This plan follows the independent design review and `design-review-adjudication.md`.
 
-## Phase 0 — Architecture / Spec Freeze
+It is not authorization for broad implementation until the remaining runtime/lab proposal specs pass focused re-review. `tep-sim` A1–A4 are explicitly independent and may proceed now.
 
-**Goal:** remove architectural ambiguity before implementation branches diverge.
+## Phase 0 — Design Review Closure
 
-Required accepted/reviewed contracts:
+### Already resolved in canonical specs
 
-### Program level
-
-- three-repository boundary;
-- Autonomous Investigator v0 role / long-term Process Engineer direction;
-- Information Plane ownership/reference model;
-- deterministic knowledge authority and provenance policy;
-- development/parallel-agent workflow.
-
-### `industrial-agent-runtime`
-
-- `runtime-v0.md`;
-- `hybrid-orchestration-v0.md`;
-- `deterministic-gates-v0.md`;
-- `subagents-v0.md`;
-- Coordinator/Executor/Verifier responsibility boundary;
-- framework-neutral contract / LangGraph adapter boundary.
-
-### `tep-agent-lab`
-
-- `investigation-state-v0.md`;
-- `knowledge-rule-registry-v0.md`;
-- `hypothesis-experiment-v0.md`;
-- `tool-surface-v0.md`;
-- `tool-bridge-v0.md`;
-- `evaluation-v0.md`;
-- RCA/HAZOP/recovery contracts;
-- `autoresearch-v0.md`.
+- pre-execution request validation vs post-execution result verification;
+- generic runtime `InformationRef`, `ContextProjection`, `TaskStateStore`;
+- dependency-aware `WorkBatch` replacing full Dynamic DAG as v0 infrastructure;
+- extensible Budget dimensions and compound Tool resource accounting;
+- `SubtaskResult` instead of runtime `EvidenceBundle`;
+- Observation versus Evidence lifecycle;
+- typed Prediction/ExperimentResult separation;
+- Rule `origin × validation × authority` model;
+- blind RCA candidate-binding restrictions;
+- mandatory strong deterministic C0 baseline;
+- Engineering Record archive contracts;
+- canonical/deconfounded evaluation matrices;
+- LangGraph/MCP removed from v0 critical path.
 
 ### Freeze exit criteria
 
-- no canonical document contradicts the Decision Register;
-- every accepted decision has an owner/spec/ADR or explicit minimal contract;
-- remaining unknowns are empirical/implementation questions, not unresolved core architecture;
-- branch dependency graph is explicit;
-- implementation agents can work from specs without inventing product architecture.
+Before runtime/lab feature implementation begins:
 
-Until these criteria are met, do not start broad feature implementation merely because an older roadmap says to.
+1. canonical README/architecture/AGENTS/roadmap/ADR documents reference the updated specs rather than old Dynamic DAG/K0–K4/EvidenceBundle semantics;
+2. every spec uses allowed status vocabulary;
+3. no BLOCKER/implementation-defining MAJOR contradiction remains in focused independent re-review;
+4. coding agents can implement runtime B1 and lab C1 without inventing product architecture;
+5. deferred items are explicitly marked DEFER/OPEN_RESEARCH rather than implicit dependencies.
 
 ---
 
-## Phase A — `tep-sim`: trusted world
+# Phase A — `tep-sim`: trusted world — GO
 
-### A1 — Environment adapter
+Independent review found A1–A4 sufficiently self-contained/testable. They may begin before runtime/lab Design Freeze.
+
+## A1 — Environment adapter
 
 Branch: `feat/environment-api-v0`  
 Spec: `docs/specs/environment-api-v0.md`
 
-Deliver `TEPEnvironment`, canonical config/observation/intervention/result contracts, run provenance, and baseline tests.
+Deliver:
 
-### A2 — Snapshot / fork / replay
+- `TEPEnvironment`;
+- canonical config/observation/intervention/result contracts;
+- provenance;
+- deterministic baseline tests.
+
+## A2 — Snapshot / fork / replay
 
 Branch: `feat/snapshot-fork-v0`  
 Spec: `docs/specs/snapshot-fork-replay-v0.md`
 
-Deliver fidelity investigation, isolated branches, replay/provenance, explicit `EXACT`/`RECONSTRUCTED`/`UNSUPPORTED` state.
+Deliver:
 
-### A3 — DEXPI / ProcessGraph binding
+- snapshot-fidelity investigation;
+- branch isolation;
+- replay/provenance;
+- explicit fidelity status.
+
+## A3 — DEXPI / ProcessGraph binding
 
 Branch: `feat/dexpi-binding-v0`  
 Spec: `docs/specs/dexpi-binding-v0.md`
 
-Deliver pinned TEP semantic fixture, normalized graph, topology queries, variable binding registry, and validation tests.
+Deliver:
 
-### A4 — Capability / hard safety truth
+- pinned TEP semantic fixture;
+- normalized ProcessGraph;
+- topology queries;
+- canonical variable/binding registry;
+- validation tests.
+
+## A4 — Capability / hard environment truth
 
 Branch: `feat/capability-safety-v0`  
 Spec: `docs/specs/safety-capability-v0.md`
 
-Deliver capability registry, minimal deterministic scenario compilation, hard safety/capability evaluation, explicit unsupported-physics behavior.
+Deliver:
+
+- capability registry;
+- minimal deterministic scenario compilation;
+- environment/safety evaluation;
+- explicit unsupported-physics behavior.
 
 ---
 
-## Phase B — `industrial-agent-runtime`: hybrid control plane
+# Phase B — `industrial-agent-runtime`: generic control plane — HOLD until focused re-review passes
 
-### B1 — Contracts / state-independent executor primitives
+## B1 — Core contracts / reference loop
 
 Branch: `feat/contracts-runtime-v0`
 
-Implement Task/Budget/ToolSpec/ToolResult/TraceEvent/RuntimeResult, fake provider, trace recorder, and framework-neutral interfaces.
+Specs:
 
-### B2 — Hybrid Coordinator / Executor / Verifier
+- `docs/specs/runtime-v0.md`
+- `docs/specs/hybrid-orchestration-v0.md`
 
-Branch: `feat/hybrid-orchestration-v0`  
-Spec: `docs/specs/hybrid-orchestration-v0.md`
+Deliver:
 
-Deliver deterministic Coordinator/Executor/Verifier, local Main-Agent loop, plan routing, stop/termination handling, and Dynamic DAG proposal/validation primitives.
+- InformationRef;
+- Task;
+- Budget with extra dimensions;
+- ToolSpec/ToolCallRequest/ToolResult;
+- TaskStatus/StateDelta/ContextProjection/TaskStateStore protocol;
+- WorkBatch/WorkItem;
+- RuntimeResult/TraceEvent;
+- deterministic fake provider;
+- reference runtime loop/dispatcher;
+- exact model-turn projection tracing.
 
 Exit:
 
-- simple task runs without DAG;
-- valid bounded DAG executes;
-- cyclic/over-authority DAG fails before execution;
-- deterministic verifier catches invalid refs/contracts.
+- fake-provider tasks run without domain imports;
+- consumer fake TaskStateStore works without runtime knowing its state class;
+- dependency-aware TOOL WorkBatch executes deterministically;
+- no LangGraph/MCP dependency required.
 
-### B3 — Deterministic gates
+## B2 — Deterministic pre-execution gates
 
-Branch: `feat/deterministic-gates-v0`
+Branch: `feat/deterministic-gates-v0`  
+Spec: `docs/specs/deterministic-gates-v0.md`
 
-Implement schema, allowlist, budget, authority/side-effect gates and consumer-validator hook.
+Deliver:
 
-### B4 — Ephemeral subagents
+- G0 schema;
+- G1 allowlist/authority;
+- G2 standard + extra-dimensional resource reservation;
+- G3 side-effect policy;
+- consumer `validate_request` hook;
+- revision-bound MUTATE validation contract;
+- GateDecision tracing.
 
-Branch: `feat/subagents-v0`
+## B3 — Post-execution verification
 
-Implement bounded child tasks, isolated context, EvidenceBundle, parent-child trace, configurable depth/count limits.
+May be implemented in B1/B2 modules or a small dedicated module; do not invent another agent/service.
 
-### B5 — LangGraph adapter
+Deliver deterministic:
 
-Branch: `feat/langgraph-adapter-v0`
+- result/ref/provenance checks;
+- actual-budget reconciliation;
+- consumer `verify_result` hook;
+- final-output structural readiness checks.
 
-Only after B1–B4 contracts stabilize. Map generic state/coordinator semantics to LangGraph without exposing LangGraph types in public contracts.
+## B4 — Ephemeral subagents
 
-Use it first from `tep-agent-lab` for macro workflow/checkpointing. The generic runtime remains usable without it.
+Branch: `feat/subagents-v0`  
+Spec: `docs/specs/subagents-v0.md`
 
-### B6 — Real provider adapter
+Deliver:
+
+- bounded child tasks;
+- cumulative per-task child budget;
+- scoped context/tools;
+- `SubtaskResult`;
+- no child MUTATE;
+- no nested SUBTASK bypass at depth limit;
+- parent-child trace.
+
+## B5 — First real provider
 
 Branch: `feat/provider-adapter-v0`
 
-Add one reliable provider behind the generic model interface. Freeze provider/model version per benchmark run.
+Add one provider only after fake-provider contracts pass. Provider SDK types stay behind the internal model interface.
+
+## Explicitly not scheduled in B v0
+
+- LangGraph adapter;
+- MCP runtime dependency;
+- general mutable Dynamic DAG engine.
+
+These require concrete later evidence/requirements.
 
 ---
 
-## Phase C — `tep-agent-lab`: information + investigation plane
+# Phase C — `tep-agent-lab`: first RCA information/investigation plane — HOLD until focused re-review passes
 
-### C1 — Investigation State / Information refs
+## C1 — RCA state / run log / projection
 
 Branch: `feat/investigation-state-v0`
 
-Implement typed InvestigationState, EvidenceStore refs, ExperimentLedger refs, revisions/deltas, context projection, and evaluator visibility separation.
+Specs:
 
-### C2 — Knowledge / Rule Registry
+- `docs/specs/investigation-state-v0.md`
+- `docs/specs/engineering-records-v0.md`
+- program `information-plane.md`
 
-Branch: `feat/rule-registry-v0`
+Deliver:
 
-Implement K0–K4 metadata model, rule provenance/versioning, enforcement classes, candidate extraction/promotion records, and hard-authority restrictions.
+- RcaState implementing runtime TaskStateStore;
+- append-only per-run events/log/artifacts;
+- ObservationRecord / HypothesisEvidenceLink lifecycle;
+- deterministic `project_rca_state` ContextProjection;
+- InvestigationReport / DecisionRecord / ExperimentRecord;
+- ground-truth visibility tests.
 
-Initial implementation may contain only a few representative rules; architecture/provenance correctness matters more than rule count.
+Do not build five physical information databases/services.
 
-### C3 — Hypothesis / Experiment contracts
+## C2 — Rule/policy metadata
 
-Branch: `feat/hypothesis-experiment-v0`
+Branch: `feat/rule-registry-v0`  
+Spec: `docs/specs/knowledge-rule-registry-v0.md`
 
-Implement first-class hypotheses, evidence links, experiment proposals/run specs/results, deterministic compilation, duplicate ledger checks.
+Deliver a small representative registry using:
 
-### C4 — Environment + analysis Tool Surface
+```text
+origin × validation × authority
+```
 
-Branch: `feat/tool-surface-v0`
+Include:
 
-Expose TEP observation/topology/fork/rollout/capability tools plus stable bridge interfaces.
+- simulator/environment refs where consumed;
+- explicit reviewed lab policy rules;
+- advisory test examples;
+- provenance/versioning.
 
-### C5 — Tool Bridge
+Do not implement the full cross-incident promotion engine yet.
 
-Branch: `feat/tool-bridge-v0`
+## C3 — Hypothesis / Prediction / Experiment
 
-Bridge mature allowlisted scientific libraries and upstream TEP analysis capabilities. Initial candidates:
+Branch: `feat/hypothesis-experiment-v0`  
+Spec: `docs/specs/hypothesis-experiment-v0.md`
 
-- upstream TEP detectors;
-- SciPy signal/lag features;
-- selected scikit-learn PCA/PLS baselines;
-- graph algorithms;
-- SALib sensitivity analysis;
-- Optuna-style bounded numeric optimization.
+Deliver:
 
-No arbitrary agent Python/shell/import tool is introduced as the normal analysis path.
+- Hypothesis;
+- typed Prediction;
+- evidence links;
+- ExperimentProposal/RunSpec/Result/Interpretation;
+- canonical experiment dedup key;
+- deterministic prediction feature evaluation where supported.
+
+## C4 — TEP tool surface
+
+Branch: `feat/tool-surface-v0`  
+Spec: `docs/specs/tool-surface-v0.md`
+
+Initial blind RCA surface:
+
+- observations/history;
+- variable/process metadata;
+- topology measurements/actuators without canonical hidden cause list;
+- snapshot/fork/rollout/capability;
+- no MUTATE;
+- no default canonical `get_related_disturbances` answer leakage.
+
+## C5 — Minimal Tool Bridge
+
+Branch: `feat/tool-bridge-v0`  
+Spec: `docs/specs/tool-bridge-v0.md`
+
+First implementation only:
+
+1. response-feature extraction/trajectory comparison;
+2. cross-correlation/lag;
+3. optional existing TEP detector baseline if required.
+
+Defer SALib/Optuna/PCA/PLS/Granger until a concrete experiment requires them.
 
 ---
 
-## Phase D — first agent research benchmarks
+# Phase D — first RCA research
 
-### D1 — Blind RCA baseline
+## D0 — Benchmark/identifiability/C0 pilot
+
+Branch: `exp/rca-benchmark-pilot-v0`
+
+Specs:
+
+- `docs/specs/benchmark-design-v0.md`
+- `docs/specs/evaluation-v0.md`
+- `docs/specs/rca-v0.md`
+
+Deliver before Agent superiority claims:
+
+- scenario variants;
+- strong C0 enumerate/simulate/match baseline;
+- healthy/no-abnormal case;
+- candidate/topology leakage audit;
+- data-informed difficulty labels;
+- at least one non-local/nontrivial case for medium/hard investigation claims.
+
+## D1 — Blind RCA capability ladder
 
 Branch: `exp/rca-reactor-v0`
 
-Start with Main Agent under fixed capability budget. Add counterfactual simulation after read/topology baseline.
+Use the canonical capability axis in `evaluation-v0.md`.
 
-### D2 — Orchestration ablation
+Start with C1–C5 as infrastructure becomes available. Do not add subagents as a capability row.
+
+## D2 — Orchestration ablation
 
 Branch: `exp/orchestration-ablation-v0`
 
-Compare, over the same capability set where practical:
+Canonical conditions:
 
 ```text
-one-shot
-ReAct
-fixed DAG
-Hybrid macro + ReAct
-Hybrid + Dynamic DAG
-Hybrid + Dynamic DAG + bounded subagents
+O0 one-shot
+O1 ReAct
+O2 fixed workflow
+O3 Hybrid reference loop
+O4 O3 + dependency-aware TOOL WorkBatch
+O5 O4 + bounded SUBTASK work
 ```
 
-Dynamic DAG/subagent value must be measured rather than assumed.
+Use identical Agent-visible capability/tool policy across O1–O5 unless tool exposure is explicitly being studied.
 
-### D3 — Simulation-backed HAZOP
+The value of WorkBatch/subagents is measured rather than assumed.
+
+---
+
+# Phase E — later task families
+
+Only after RCA environment/tracing/evaluation contracts are stable.
+
+## E1 — Simulation-backed HAZOP
 
 Branch: `exp/hazop-reactor-v0`
 
-Use curated supported/unsupported deviations and Rule/Capability registries.
+Use capability honesty and evidence/provenance contracts. Do not claim formal plant HAZOP completion.
 
-### D4 — Recovery planning
+## E2 — Recovery planning
 
 Branch: `exp/recovery-reactor-v0`
 
-Rank forked strategies against no-action/deterministic baselines. Reference mutation remains gated and may stay disabled in early runs.
+Rank forked strategies first. Reference MUTATE remains disabled until state-revision-bound validation/gates are proven.
+
+## E3 — AutoProcessResearch
+
+Branch: `exp/autoresearch-recovery-v0`
+
+Only after deterministic recovery/scoring/search-space contracts exist.
+
+AutoProcessResearch remains a separate research task family, not an orchestration-ablation condition.
+
+Numeric search may later add Optuna/SALib-style bridge tools with SIMULATE nested-budget accounting.
 
 ---
 
-## Phase E — AutoProcessResearch
+# Phase F — optional knowledge / organizational memory
 
-Only after deterministic recovery/scoring/tool infrastructure is reliable.
+After clean no-KG/no-memory baselines:
 
-### E1 — Research loop / Experiment Ledger
+- connect `manufacturing-kg-agent` through read-only evidence adapters;
+- validate literature/document candidates;
+- implement KnowledgePromotionProposal/ValidationPlan/ValidationResult/PromotionDecision if needed;
+- study structured Engineering Record retrieval across incidents;
+- compare no-history vs record retrieval vs approved rule/runbook retrieval;
+- add subsystem/fault families;
+- detector-triggered start;
+- 2D investigation UI if useful.
 
-Branch: `exp/autoresearch-recovery-v0`  
-Spec: `docs/specs/autoresearch-v0.md`
+Lesson Learned/Runbook/manual promotion must be evaluated/authority-governed rather than automatically generated from one incident.
 
-Deliver frozen ResearchSpec/evaluator, baseline, candidate/ledger loop, accept/reject/neutral policy, deterministic stop conditions, hidden evaluation.
-
-### E2 — Deterministic optimizer bridge
-
-Compare Agent-only candidate selection with Agent mechanism selection + bounded numeric optimizer.
-
-### E3 — Dynamic DAG research trials
-
-Optionally parallelize independent scenario/seed evaluations inside one fixed trial budget.
+Still out of scope: generic P&ID OCR/model generation and 3D reconstruction.
 
 ---
 
-## Phase F — knowledge augmentation / expansion
+# Parallel development after freeze
 
-After clean no-KG baselines:
+Use `development-agent-orchestration.md` and `development-workflow.md`.
 
-- integrate `manufacturing-kg-agent` through read-only evidence tools;
-- evaluate paper/document K3 candidate extraction;
-- run K3 -> K2 validation campaigns;
-- add more TEP subsystem/fault families;
-- test detector-triggered incident start;
-- evaluate cross-incident memory separately if justified;
-- build 2D process/branch investigation UI if useful.
-
-Still out of scope: generic P&ID OCR/model generation and 3D digital-twin reconstruction.
-
-## Evaluation is continuous
-
-`evaluation-v0.md` applies from the first benchmark onward. Every architecture/capability extension must preserve comparable traces and score:
-
-- task outcome;
-- scientific/investigation behavior;
-- cost/efficiency;
-- safety/authority compliance;
-- reproducibility.
-
-## Post-freeze parallel development
-
-After Phase 0, independent branches MAY be executed by multiple coding agents in parallel when file/module ownership and dependencies do not overlap. Parallelism follows `development-workflow.md`; integration order follows this dependency chain, not completion race.
-
-## Critical dependency graph
+A coding agent receives:
 
 ```text
-tep-sim A1 -> A2 -> A3/A4
-
-runtime B1 -> B2 -> B3
-                 -> B4
-                 -> B5 adapter
-
-lab C1 + C2 + C3
-        |    |
-        +----+----> C4/C5 tools
-                     |
-                     v
-                  D1 RCA
-                     |
-                  D2 orchestration ablation
-                     |
-               D3 HAZOP / D4 Recovery
-                     |
-                  E AutoResearch
+repo/branch
+canonical spec
+owned files/modules
+dependencies
+acceptance tests
+handoff contract
 ```
 
-The exact branches may overlap after contracts are frozen, but downstream labs must pin known upstream contract versions.
+On spec conflict it reports `SPEC_CONFLICT`; it does not silently redesign architecture.
+
+## Dependency graph
+
+```text
+tep-sim A1 -> A2 -> A3/A4                     [may start now]
+
+runtime B1 -> B2/B3 -> B4 -> B5 provider       [after re-review]
+
+lab C1 + C2 + C3
+       \   |   /
+        C4/C5
+          |
+         D0 benchmark pilot
+          |
+         D1 RCA capability
+          |
+         D2 orchestration
+          |
+      E1/E2 later tasks
+          |
+      E3 AutoResearch
+          |
+      F knowledge/memory studies
+```
