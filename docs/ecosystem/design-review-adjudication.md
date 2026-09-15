@@ -4,80 +4,93 @@ Status: review record (not a spec)
 
 ## Source review
 
-Independent review basis: `review-report.md`, reviewing `architecture/hybrid-agent-runtime` at commit `9a1316d`.
+Independent review:
+
+`docs/ecosystem/reviews/2026-09-15-independent-spec-review.md`
+
+Reviewed ref: `architecture/hybrid-agent-runtime` at commit `9a1316d`.
 
 The independent reviewer concluded **NOT READY FOR DESIGN FREEZE**, while explicitly allowing `tep-sim` A1–A4 to proceed independently.
 
-This document records the program owner's adjudication. It is not a replacement for the owning specs; accepted findings are implemented by updating the canonical specs and ADRs.
+This document records the program owner's adjudication. It is not a replacement for owning specs/ADRs.
+
+## Current closure status
+
+The accepted findings below have now been propagated into the canonical program/runtime/lab specs and entry documents on `architecture/hybrid-agent-runtime`.
+
+Current release policy:
+
+- `tep-sim` A1–A4: **GO** independently;
+- runtime/lab implementation: **HOLD pending focused independent re-review**;
+- the re-review should check blocker/major closure and contradictions, not redesign the full program from scratch.
 
 ## Adjudication policy
 
-Each finding is classified as:
-
-- **ACCEPT** — reviewer finding and proposed direction are adopted;
-- **ACCEPT WITH MODIFICATION** — problem is accepted but the chosen solution differs;
-- **REJECT** — finding is not adopted, with rationale;
-- **DEFER** — valid concern but not required for v0 implementation;
-- **OPEN_RESEARCH** — must be answered by pilot/ablation rather than architecture preference.
+- **ACCEPT** — finding/direction adopted;
+- **ACCEPT WITH MODIFICATION** — problem accepted, chosen solution adjusted;
+- **REJECT** — not adopted with rationale;
+- **DEFER** — valid concern but not required for current v0 slice;
+- **OPEN_RESEARCH** — answer through pilot/ablation rather than architecture preference.
 
 ## Top findings
 
-| Review finding | Decision | Adjudicated action |
+| Review finding | Decision | Adjudicated action / current contract |
 |---|---|---|
-| Verifier pre/post execution ambiguity | ACCEPT | Pre-execution checks belong to G0–G3 plus consumer `validate_request`; deterministic Verifier is post-execution `verify_result` over result/state/provenance/evidence. |
-| Runtime Coordinator owns lab InvestigationState transitions without interface | ACCEPT | Add generic runtime `TaskStateStore` and `ContextProjection` contracts. Lab implements domain state; runtime never imports lab state types. |
-| Dynamic DAG node semantics incomplete | ACCEPT WITH MODIFICATION | v0 replaces the full `TOOL/ANALYSIS/SIMULATION/SUBTASK/MERGE` DAG engine with a dependency-aware `WorkBatch` of `TOOL` or `SUBTASK` work items. Full model-revisable Dynamic DAG remains an orchestration research condition, not required v0 infrastructure. |
-| Compound Tool Bridge calls bypass simulation budgets | ACCEPT | Add extensible budget dimensions and declared/max budget draw to tool contracts. Any bridge tool that internally executes simulator rollouts is `SIMULATE` and reserves rollout/horizon/trial budget before execution. |
-| Free-text expected outcomes cannot support deterministic experiment scoring | ACCEPT | Add typed `Prediction` objects and use them for discrimination/falsification metrics. |
-| TEP bindings may leak a trivial candidate-cause set | ACCEPT | Define C0 as deterministic enumerate/simulate/trajectory-match. Benchmark difficulty must be measured against C0; a case C0 solves trivially cannot be claimed as medium/hard investigation. Blind Agent tool policy does not expose canonical IDV answer labels by default. |
-| K0–K4 mixes origin, validation maturity, and authority | ACCEPT | Canonical Rule schema becomes `origin × validation × authority`; K0–K4 remains documentation shorthand/presets only. Promotion changes validation; authority is assigned independently by policy. |
-| Capability and orchestration ablation axes are confounded | ACCEPT | `evaluation-v0.md` is sole canonical matrix. Subagents belong to orchestration, not capability. Tool exposure policy is held fixed across orchestration comparisons unless exposure is the explicit independent variable. |
-| Trace summaries are insufficient for leakage/replay | ACCEPT | Every model turn references the exact `ContextProjection` artifact plus prompt/template/model/sampling metadata. Summaries remain display aids only. |
-| Semantic stopping claims an undefined information-gain estimator | ACCEPT | v0 stopping is Main Agent finish proposal plus deterministic structural verification. Formal information-gain stopping is OPEN_RESEARCH. |
+| Verifier pre/post ambiguity | ACCEPT | Pre-execution = G0–G3 + consumer `validate_request`; post-execution = deterministic `verify_result`. |
+| Runtime Coordinator owns lab state without interface | ACCEPT | Runtime owns generic `TaskStateStore`/`ContextProjection`; lab implements with RcaState. |
+| Dynamic DAG node semantics incomplete | ACCEPT WITH MODIFICATION | v0 full graph engine replaced by dependency-aware `WorkBatch` of `TOOL | SUBTASK` items. Rich Dynamic DAG is future research. |
+| Compound Tool Bridge bypasses simulation budgets | ACCEPT | Runtime Budget supports extra dimensions; ToolSpec declares/reserves nested draw; simulator-running compound tools are SIMULATE. |
+| Free-text expected outcomes block deterministic scoring | ACCEPT | Typed `Prediction`/PredictionEvaluation introduced. |
+| TEP bindings may expose trivial candidate set | ACCEPT | Blind tools hide canonical candidate bindings by default; mandatory strong C0 enumerate/simulate/match baseline. |
+| K0–K4 mixes origin/validation/authority | ACCEPT | Canonical Rule schema split to `origin × validation × authority`; K-labels are shorthand only. |
+| Capability/orchestration ablations confounded | ACCEPT | `evaluation-v0.md` is sole matrix; subagents orchestration-only; tool exposure fixed across orchestration comparisons. |
+| Trace summaries insufficient | ACCEPT | Every model turn references exact immutable ContextProjection + prompt/model/tool/config metadata. |
+| Semantic stopping uses undefined information gain | ACCEPT | v0 = Agent finish proposal + deterministic structural checks; formal information-gain stopping is OPEN_RESEARCH. |
 
-## Missing contracts
+## Missing contracts disposition
 
-| Contract | Decision | v0 action |
+| Contract | Decision | Current v0 action |
 |---|---|---|
-| `TaskStateStore` | ACCEPT | Add to runtime contract. |
-| Observation/evidence lifecycle | ACCEPT | Every successful query/tool output yields an immutable observation/result record; evidence is an explicit link from a claim/hypothesis to an observed result. `Observation != Evidence`. |
-| `Prediction` | ACCEPT | Add to hypothesis/experiment contract. |
-| Root-cause answer vocabulary | ACCEPT WITH MODIFICATION | Do not expose a complete multiple-choice candidate list. Agent emits structured `CausalClaim`; evaluator represents hidden truth in the same structured fields and performs deterministic matching. `NO_ABNORMAL_CAUSE` is explicit. |
-| Consumer budget dimensions | ACCEPT | Runtime Budget supports named extra dimensions; ToolSpec declares/reserves draw. |
-| Dynamic DAG node semantics | ACCEPT WITH MODIFICATION | Replace v0 engine with `WorkBatch + depends_on`; full DAG semantics are deferred research. |
-| Macro-stage enum | REJECT FOR V0 | Remove stage-dependent tool exposure from core v0. If later studied, define it as a separate exposure-policy ablation. |
-| `ContextProjection` | ACCEPT | Runtime owns minimal generic schema; consumer constructs it, runtime enforces size/visibility metadata. |
-| Knowledge-promotion five-object workflow | DEFER | Preserve architectural direction but do not implement in first RCA. Rule metadata must support future promotion. |
-| Lab policy rule contract | ACCEPT | Represent policy rules explicitly with `origin=POLICY`, validation/authority metadata; do not hide limits only in prompts. |
-| `RecoveryStrategy` DSL | DEFER | Define when recovery/AutoResearch implementation begins. |
-| Engineering records | ACCEPT WITH MODIFICATION | v0 requires typed `InvestigationReport`, `DecisionRecord`, and `ExperimentRecord`. Lesson Learned / Runbook / Manual promotion is later research. Records are archive-only in v0 and are not automatically retrieved into future benchmark contexts. |
-| Experiment dedup identity | ACCEPT | Canonical experiment key is based on content/state checksum + resolved interventions/config + horizon + seed policy + scorer/tool versions, not opaque snapshot IDs. |
-| C0 deterministic baseline | ACCEPT | Mandatory baseline for first RCA family. |
-| `InformationRef` owner | ACCEPT | Generic `InformationRef` belongs to runtime contracts; domain content ownership remains with producing repo. |
-| Approval/revision binding | ACCEPT | Any enabled `MUTATE` request must bind validation to an expected reference-state revision/version. |
+| `TaskStateStore` | ACCEPT | Defined in runtime-v0; RcaState implements it. |
+| Observation/evidence lifecycle | ACCEPT | Tool/simulator result -> immutable ObservationRecord; explicit HypothesisEvidenceLink makes evidence. |
+| `Prediction` | ACCEPT | Defined in hypothesis/experiment contract. |
+| Root-cause vocabulary | ACCEPT WITH MODIFICATION | Structured `CausalClaim`; evaluator truth uses same fields; full candidate list is not Agent-visible; `NO_ABNORMAL_CAUSE` explicit. |
+| Consumer budget dimensions | ACCEPT | `Budget.extra_dimensions`; ToolSpec declared/max draw; actual usage reconciled. |
+| Dynamic DAG node semantics | ACCEPT WITH MODIFICATION | WorkBatch replaces v0 full DAG engine. |
+| Macro-stage enum | REJECT FOR V0 | Stage-dependent tool exposure removed; exposure can be separate later ablation. |
+| `ContextProjection` | ACCEPT | Generic runtime schema; consumer constructs domain-relevant projection; runtime enforces generic visibility/ref/size. |
+| Knowledge-promotion five-object workflow | DEFER | Rule metadata supports future promotion, but workflow implementation waits for a real knowledge study. |
+| Lab policy rule contract | ACCEPT | Explicit POLICY origin/validation/authority metadata; not prompt-only. |
+| `RecoveryStrategy` DSL/schema | DEFER | Required before recovery/AutoResearch implementation, not first RCA. |
+| Engineering records | ACCEPT WITH MODIFICATION | v0 InvestigationReport/DecisionRecord/ExperimentRecord; lessons/runbooks/manual proposals later. |
+| Experiment dedup identity | ACCEPT | Canonical content/config/seed/scorer-based experiment key. |
+| C0 deterministic baseline | ACCEPT | Mandatory first-family baseline. |
+| `InformationRef` owner | ACCEPT | Generic envelope owned by runtime; content remains producer-owned. |
+| Approval/revision binding | ACCEPT | Any enabled MUTATE requires expected reference-state revision binding. |
 
 ## Simplification decisions
 
-### Dependency-aware work before full Dynamic DAG
-
-v0 orchestration supports:
+### Dependency-aware WorkBatch before full Dynamic DAG
 
 ```text
 Main Agent
-  -> WorkBatch
-       WorkItem(type=TOOL | SUBTASK, depends_on=[...])
-  -> deterministic validation/topological scheduling
-  -> post-execution verification
-  -> Main Agent integrates results on the next turn
+ -> WorkBatch
+      WorkItem(kind=TOOL | SUBTASK, depends_on=[...])
+ -> deterministic validation/topological scheduling
+ -> execution + post-result verification
+ -> next Main Agent turn integrates results
 ```
 
-There is no separate `ANALYSIS` or `MERGE` node type in v0. Simulation is a `TOOL` work item whose registered side-effect class is `SIMULATE`.
+No v0 `ANALYSIS` or `MERGE` graph node types.
 
-Full dynamic graph revision/cancellation/replanning remains an evaluated architecture extension.
+- deterministic analysis = TOOL;
+- simulation = TOOL with `side_effect_class=SIMULATE`;
+- open-ended integration/merge = next Main Agent turn;
+- full mutable graph revision/cancellation/replanning = future research.
 
-### Information Plane as logical boundary, not five storage systems
+### Information Plane as logical boundary, not five services
 
-v0 may persist one append-only run log plus artifact files:
+Valid v0 persistence may be:
 
 ```text
 runs/<run_id>/
@@ -87,19 +100,17 @@ runs/<run_id>/
   investigation-report.json
 ```
 
-Evidence, experiment ledger, state deltas, decisions, and trace are typed views/indexes over that durable record. Separate services/stores are introduced only when a second consumer or scale requirement justifies them.
+Evidence/experiment/state/decision/trace are typed views/records. Separate backing services require a demonstrated second-consumer/scale need.
 
 ### LangGraph and MCP
 
-Neither is a v0 core dependency.
+Neither is a v0 dependency or scheduled delivery.
 
-- Public runtime contracts stay serializable/framework-neutral.
-- LangGraph may be evaluated later if checkpoint/resume/interrupt requirements become concrete.
-- MCP may be used later as one Tool Provider protocol for remote/external tools; it is never the authorization/safety layer.
+- contracts stay serializable/framework-neutral;
+- LangGraph may be considered for concrete durable checkpoint/resume/interrupt requirements;
+- MCP may later be one external Tool Provider protocol, never the authorization layer.
 
 ## Rule authority decision
-
-K0–K4 is no longer the canonical machine schema.
 
 Canonical dimensions:
 
@@ -109,82 +120,97 @@ validation  = NONE | CORROBORATED | SIMULATION_VALIDATED | ROBUST_VALIDATED | RE
 authority   = REFERENCE | ADVISORY | PLANNING | OPERATIONAL_PROPOSAL | HARD_GATE
 ```
 
-Authority never increases because an Agent says a claim is important. Promotion evidence may increase `validation`; a separate deterministic policy maps `(origin, validation, scope)` to the maximum allowed authority.
+K0–K4 is documentation shorthand only.
 
-## Evidence lifecycle decision
+Promotion evidence may increase validation. Authority is assigned independently by explicit policy and cannot be self-promoted by model prose.
+
+## Evidence lifecycle
 
 ```text
 ToolResult / simulator result
-  -> immutable ObservationRecord
+  -> ObservationRecord
 
 ObservationRecord
   -> explicit HypothesisEvidenceLink
-  -> evidence for a claim
+  -> evidence for a claim/hypothesis
 ```
 
-A queried observation that the Agent never links to a hypothesis remains an observation and can be scored as irrelevant/unused work.
+Unused/unlinked observations remain query/work records and can be scored as irrelevant/unused.
 
-Subagent output is renamed from `EvidenceBundle` to `SubtaskResult`; the parent/lab decides which referenced observations become evidence links.
+Subagent output is `SubtaskResult`, not EvidenceBundle; the parent/lab decides which observation refs become evidence links.
 
 ## Evaluation decisions
 
-`evaluation-v0.md` is the only canonical ablation source.
+`evaluation-v0.md` is the sole canonical matrix.
 
-Capability axis excludes subagents. Orchestration axis contains subagent conditions. AutoProcessResearch is a separate task family, not simply another orchestration mode.
-
-The same tool exposure policy must be used across orchestration modes being compared unless tool exposure itself is the independent variable.
-
-C0 is a strong deterministic baseline, not a strawman:
+### Capability
 
 ```text
-enumerate evaluator-known supported candidate causes
- -> instantiate/fork candidates
- -> compare trajectories/features
- -> choose best/no-abnormal result
+C0 deterministic enumerate/simulate/match
+C1 static LLM
+C2 + telemetry
+C3 + non-answer-leaking topology
+C4 + analysis bridge
+C5 + counterfactual simulation
+C6/C7 later knowledge/research tools
 ```
 
-If C0 solves a case cheaply/reliably, the result is evidence that an Agent is unnecessary for that case, not a reason to weaken C0.
+### Orchestration
 
-## Engineering records and future organizational memory
+```text
+O0 one-shot
+O1 ReAct
+O2 fixed workflow
+O3 Hybrid reference loop
+O4 O3 + dependency-aware TOOL WorkBatch
+O5 O4 + bounded SUBTASK work
+```
 
-v0 records engineering work but does not yet learn across incidents.
+Subagents are not a capability row. Tool exposure is held fixed across orchestration comparisons. AutoProcessResearch is a separate later task family.
+
+C0 remains deliberately strong. If C0 solves a case cheaply/reliably, that is evidence the Agent is unnecessary for that case.
+
+## Engineering records / organizational memory
+
+v0 writes but does not yet learn across incidents.
 
 ```text
 Trace != Observation != Evidence != EngineeringRecord != Knowledge != Context
 ```
 
-Minimum archive records:
+Minimum records:
 
 - InvestigationReport;
 - DecisionRecord;
 - ExperimentRecord.
 
-Future Lesson Learned / Runbook promotion must use evidence-driven validation and independent authority policy. Historical records are not automatically injected into benchmark prompts.
+Historical records are not automatically injected into later benchmark contexts. Lesson Learned/Runbook/manual promotion is deferred to an explicit cross-incident knowledge study.
 
 ## Implementation release decision
 
-### May start now
+### GO now
 
-`tep-sim` A1–A4 remain independent of the review blockers:
+`tep-sim` A1–A4:
 
 - environment API;
 - snapshot/fork/replay;
 - DEXPI/process binding;
 - capability/safety.
 
-### Hold until canonical specs are aligned
+### HOLD pending focused re-review
 
-- runtime contracts/gates/subagents;
-- lab tool/state/evaluation implementation.
+- runtime implementation;
+- lab implementation.
 
-The hold is removed after the accepted review findings are reflected in canonical specs and a focused independent re-review reports no remaining BLOCKER and no unresolved implementation-defining MAJOR contradiction.
+The canonical alignment work itself is complete enough to request the focused re-review; the hold is removed only if that review finds no remaining BLOCKER or unresolved implementation-defining MAJOR contradiction.
 
-## Re-review contract
+## Focused re-review contract
 
-The independent re-review should not repeat the full architecture review. It should verify only:
+The independent reviewer should verify only:
 
-1. each original BLOCKER is closed or explicitly downgraded with rationale;
-2. each accepted MAJOR finding is reflected in its owning canonical spec;
-3. no new contradiction was introduced by the fixes;
-4. coding agents can implement runtime B1 and lab C1 without inventing product architecture;
-5. deferred/open-research items are clearly marked as non-blocking.
+1. each original BLOCKER is closed or explicitly downgraded with defensible rationale;
+2. each accepted implementation-defining MAJOR finding appears in the owning canonical spec;
+3. no new cross-document/cross-repo contradiction was introduced;
+4. runtime B1 and lab C1 could be implemented without inventing product architecture;
+5. deferred/open-research items are clearly non-blocking;
+6. old terms (`EvidenceBundle`, full-DAG v0 requirement, K0–K4 as canonical schema, scheduled LangGraph adapter, SIMULATE reference mutation) do not remain authoritative in current entry/canonical docs.
