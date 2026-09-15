@@ -1,83 +1,103 @@
 # Open Questions — `industrial-agent-runtime`
 
-Only unresolved empirical/implementation choices belong here. The Hybrid architecture, deterministic Coordinator/Executor/Verifier boundary, and framework-neutral LangGraph adapter direction are no longer open questions.
+Only unresolved empirical/implementation choices belong here. Current architecture contracts are owned by specs/ADR-002.
 
 ## OQ-1 — First real model provider
 
-Core remains provider-agnostic and fake-provider-testable.
+Core stays provider-agnostic and fake-provider-testable.
 
 Choose the first real adapter based on:
 
-- structured tool/schema reliability;
-- model quality on investigation/planning;
+- structured output/tool reliability;
+- investigation/planning quality;
 - tracing/token/cost visibility;
-- deterministic configuration controls;
-- ease of local/CI testing.
+- deterministic/configuration controls;
+- CI/local integration cost.
 
-Provider choice is an experiment/runtime adapter decision, not architecture.
+Provider choice is not architecture.
 
-## OQ-2 — Dynamic DAG limits
+## OQ-2 — WorkBatch parallel-width default
 
-Need empirical defaults for:
+Semantic contract supports ready-item parallel execution, but v0 may implement sequential scheduling first for correctness.
 
-```text
-max_plan_nodes
-max_plan_depth
-max_parallel_width
-max_plan_revisions
-per-node budget
-```
+Open implementation/default choices:
 
-Start conservative; tune using orchestration-ablation results rather than aesthetics.
+- default `max_parallel_width`;
+- asyncio/thread/process/job backend;
+- backpressure/timeout behavior.
+
+These must not alter public WorkBatch semantics.
 
 ## OQ-3 — Subagent depth/limit
 
-Initial proposal remains depth 1 and max 3 children per parent. Change only from measured quality/context/cost results.
+Initial proposal:
 
-## OQ-4 — Parallel executor implementation
+```text
+max_subagent_depth = 1
+max_subagents = 3 cumulative per task
+```
 
-The semantic contract allows independent nodes/subtasks to run in parallel. The first implementation may be sequential for correctness.
+Change only from measured quality/context/cost results.
 
-Open implementation choice: asyncio, threads, processes, or a job-executor abstraction depending on provider/tool blocking behavior.
+## OQ-4 — Model-based critic subtask
 
-Public contracts must not depend on the choice.
+Post-execution Verifier remains deterministic/authoritative for machine-checkable checks.
 
-## OQ-5 — Context Broker sophistication
+Open research question: does an optional bounded LLM critic improve semantic completeness enough to justify cost?
 
-How much automatic retrieval/compression should generic runtime provide versus consumer adapters?
+If studied:
 
-Default:
+- it is an ordinary Subtask;
+- output is advice/evidence only;
+- it cannot override gates/Verifier.
 
-- runtime manages refs, budgets, visibility, and projection hooks;
-- consumer owns domain selection/compaction;
-- model-generated summarization is not used where deterministic structured compaction is sufficient.
+## OQ-5 — Formal semantic stopping / information value
 
-Revisit after real context-pressure measurements.
+v0 stopping is Agent finish proposal + deterministic structural readiness checks.
 
-## OQ-6 — Persistent checkpoint backend
+Open research:
 
-LangGraph adapter/checkpointing direction is accepted, but storage backend is not.
+- explicit probability/belief semantics;
+- rank/probability update rule;
+- information-value estimator;
+- marginal-value stopping threshold.
 
-Candidates may include in-memory/reference implementation first, then SQLite/Postgres/object storage depending on actual resume/audit needs.
+Do not implement formal information-gain stopping until these semantics exist.
 
-Do not select infrastructure before state-size/concurrency requirements exist.
+## OQ-6 — Full Dynamic DAG value
 
-## OQ-7 — Human approval interface
+v0 uses dependency-aware WorkBatch only.
 
-Need a provider/UI-neutral contract for freezing an exact validated request and later approving/rejecting it without regeneration.
+A richer graph engine is justified only if experiments demonstrate value from features such as:
 
-The approval surface may live in CLI/UI/API; core only defines state/transition contracts.
+- in-place plan revisions;
+- cancellation of running branches;
+- richer graph-specific scheduling;
+- durable graph persistence.
 
-## OQ-8 — Optional semantic critic/verifier subtask
+If pursued, specify failure/retry/revision semantics before implementation.
 
-Deterministic Verifier is authoritative for machine-checkable constraints.
+## OQ-7 — LangGraph adapter threshold
 
-Open research question: does an optional LLM critic subtask improve semantic completeness enough to justify cost? If tested, it returns evidence/advice only and cannot override deterministic verification.
+LangGraph is deferred, not scheduled.
+
+Introduce only after a concrete need for one or more of:
+
+- durable checkpoint/resume;
+- human interrupt;
+- long-running graph persistence;
+- graph-level tooling whose value exceeds adapter cost.
+
+Do not select checkpoint/storage infrastructure before that requirement exists.
+
+## OQ-8 — Authority-escalation UI
+
+Runtime defines only the frozen request/revision-bound approval state contract for enabled high-authority MUTATE paths.
+
+The actual human/SME/UI mechanism may live in CLI/web/API and is not required for first blind RCA.
 
 ## OQ-9 — Cross-run learned memory
 
-No persistent learned agent memory in v0. Revisit only after repeated-task studies show measurable value beyond Information Plane evidence, rules, and Experiment Ledger.
+No automatic cross-run learned memory/retrieval in v0.
 
-## OQ-10 — Stop-policy thresholds
-
-Hybrid runtime supports semantic stop readiness plus hard budgets. Exact thresholds/policies for "evidence sufficient" remain consumer/task-specific and should be evaluated in the lab, not hard-coded globally.
+Future memory is a consumer capability experiment over Engineering Records/rules, not generic runtime default behavior.
