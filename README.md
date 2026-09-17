@@ -30,7 +30,7 @@ Out of scope:
 
 See [`docs/ecosystem/README.md`](docs/ecosystem/README.md) for the three-repository program boundary.
 
-## Running the A1 environment
+## Running the environment
 
 Python 3.11+ and the pinned submodule are required. Install the upstream package
 from its checkout, followed by this adapter:
@@ -65,7 +65,37 @@ to satisfy new bounds (it never silently clips a setpoint).
 Telemetry is streamed to JSONL and rollout metadata references immutable, checksummed
 artifacts. Each reset creates a new run; `close` persists termination. A1 reports
 upstream shutdown truth, while `safety_margins` is empty and its capability is false
-pending A4. Snapshot/fork/topology are deferred to their owning phases.
+pending A4. Topology and safety evaluation remain deferred to their owning phases.
+
+## Exact snapshots and replay
+
+The pinned Python backend supports exact local snapshots. A fork restores the
+process, controller, RNG, constraints, time, and termination state into an
+independent environment. Branches from one snapshot use cloned random state, so
+identical post-fork inputs produce exact trajectories; their provenance records
+the parent snapshot and randomness policy.
+
+```python
+snapshot = env.snapshot("before-test")
+branch = env.fork(snapshot, "counterfactual-a")
+branch.apply(intervention)
+branch.rollout(30 / 3600)
+
+replay_artifact = branch.persist_replay_spec()
+replayed = TEPEnvironment.replay(
+    replay_artifact,
+    trusted_artifact_root=env.config.artifact_directory,
+    branch_id="counterfactual-a-replay",
+)
+```
+
+Snapshot payloads use Python serialization and are only loaded from the exact
+run/branch snapshot location under a caller-supplied trusted artifact root.
+Metadata and state checksums detect corruption but do not authenticate an
+artifact producer. Do not treat an imported artifact tree as trusted. Replay
+requires the trusted root explicitly and accepts only the three typed A1
+interventions. See
+[`ADR-001`](docs/decisions/ADR-001-exact-python-snapshot-state.md).
 
 ## Simulator
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping
+from typing import Any, Mapping
 
 
 class ControlMode(str, Enum):
@@ -81,3 +81,72 @@ class RolloutResult:
     telemetry: ArtifactRef
     provenance: ArtifactRef
     termination_reason: str
+
+
+class SnapshotFidelity(str, Enum):
+    EXACT = "exact"
+    RECONSTRUCTED = "reconstructed"
+    UNSUPPORTED = "unsupported"
+
+
+class BranchRandomnessPolicy(str, Enum):
+    CLONED_STATE = "cloned_state"
+
+
+def _freeze_mapping(value: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Copy a shallow JSON-like mapping before exposing it publicly."""
+    return MappingProxyType(dict(value))
+
+
+@dataclass(frozen=True)
+class Snapshot:
+    snapshot_id: str
+    parent_run_id: str
+    source_branch_id: str
+    simulation_time: float
+    source_step_count: int
+    environment_version: str
+    upstream_revision: str
+    random_state_metadata: Mapping[str, Any]
+    state_format_version: str
+    state: ArtifactRef
+    checksum: str
+    fidelity: SnapshotFidelity
+    config: EnvironmentConfig
+    metadata: ArtifactRef
+
+    def __post_init__(self):
+        object.__setattr__(self, "random_state_metadata",
+                           _freeze_mapping(self.random_state_metadata))
+
+
+@dataclass(frozen=True)
+class Branch:
+    branch_id: str
+    parent_snapshot_id: str
+    random_state_policy: BranchRandomnessPolicy
+    created_at: str
+    intervention_schedule: tuple[Mapping[str, Any], ...] = ()
+
+    def __post_init__(self):
+        object.__setattr__(self, "intervention_schedule",
+                           tuple(_freeze_mapping(item)
+                                 for item in self.intervention_schedule))
+
+
+@dataclass(frozen=True)
+class ReplaySpec:
+    source_run_id: str
+    source_branch_id: str
+    snapshot: Snapshot
+    config: EnvironmentConfig
+    intervention_schedule: tuple[Mapping[str, Any], ...]
+    target_simulation_time: float
+    target_step_count: int
+    random_state_policy: BranchRandomnessPolicy
+    expected_observation_sha256: str
+
+    def __post_init__(self):
+        object.__setattr__(self, "intervention_schedule",
+                           tuple(_freeze_mapping(item)
+                                 for item in self.intervention_schedule))

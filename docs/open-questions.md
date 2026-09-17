@@ -2,17 +2,8 @@
 
 These items are intentionally unresolved. They should be closed through experiments/ADRs rather than hidden assumptions.
 
-## OQ-1 — Snapshot fidelity
-
-Can the vendored upstream simulator state be cloned exactly, including all internal integrator/controller/RNG state?
-
-Options:
-
-- exact in-memory/state serialization;
-- deterministic replay from a recorded checkpoint/config;
-- reconstructed approximation.
-
-Decision criterion: measured branch reproducibility and implementation complexity.
+Snapshot fidelity was resolved as exact for the pinned Python backend in
+[`ADR-001`](decisions/ADR-001-exact-python-snapshot-state.md).
 
 ## OQ-2 — Pinned DEXPI fixture
 
