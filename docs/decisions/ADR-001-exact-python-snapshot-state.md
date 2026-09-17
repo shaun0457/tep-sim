@@ -1,7 +1,7 @@
 # ADR-001: Exact snapshot state for the pinned Python backend
 
-Status: accepted  
-Date: 2026-09-17  
+Status: accepted
+Date: 2026-09-17
 Owning spec: `docs/specs/snapshot-fork-replay-v0.md`
 
 ## Context

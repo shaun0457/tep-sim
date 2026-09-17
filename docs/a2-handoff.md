@@ -1,7 +1,7 @@
 # A2 snapshot / fork / replay handoff
 
-Task: A2. Branch: `feat/snapshot-fork-v0`.  
-Base: A1 commit `d1374aa`.  
+Task: A2. Branch: `feat/snapshot-fork-v0`.
+Base: A1 commit `d1374aa`.
 Owning specification: `docs/specs/snapshot-fork-replay-v0.md`.
 
 ## Delivered
