@@ -1,87 +1,103 @@
-# Implementation batch 1 status — 2026-09-17
+# Implementation batch 1 status — 2026-09-19
 
-This status record applies the dependency-aware plan in
-`implementation-batch-1.md`. It does not change frozen public contracts.
+This record tracks the dependency-aware implementation plan. It records
+implementation evidence and does not itself change frozen public contracts.
 
 ## Dependency state
 
 ```text
 A1 environment API (complete) -> A2 snapshot/fork (complete)
 
-B1 explicit contracts/tracing (partial)
-    -> SPEC_CONFLICT: request/finish/completion wire fields
-    -> dispatcher/fake provider/reference loop stopped
-
-B1 pinned contract tranche -> C1 storage/records partial
-                           \-> C2 rule registry complete
-                           \-> C3 prediction/dedup partial
-                                      |
-                                      v
-                         lab integration/batch-1
+B1 runtime contracts/reference loop (complete)
+  -> C1 RCA state independent paths (implemented)
+  -> C2 rule registry (complete)
+  -> C3 hypothesis/experiment contracts (implemented)
+          |
+          +-> two narrow SPEC_CONFLICT paths stopped
+          |
+          v
+     lab integration/batch-1
 ```
 
 ## Handoffs
 
 | Task | Branch / commit | Verification | Status |
 | --- | --- | --- | --- |
-| A1 | `feat/environment-api-v0` / `d1374aa7485ad162f75dbc8e92025539b461909f` | 75 passed against actual pinned Python upstream | Complete; A2/A3/A4 excluded |
-| B1 contracts tranche | `feat/contracts-runtime-v0` / `98413477f5294e60f67035de8d4342cd90e8fbd7` | 15 passed, compileall | Partial; no execution loop |
-| C1 independent | `feat/investigation-state-v0` / `2076e22` | 14 passed with exact runtime pin | Partial; storage and Engineering Records only |
-| C2 | `feat/rule-registry-v0` / `7455fe8cc5095925345528220b0c054eb2055e13` | 12 passed | Complete for C2 v0 metadata registry; real gate adapter deferred |
-| C3 independent | `feat/hypothesis-experiment-v0` / `e70440e` | 19 branch tests (11 C3 + 8 inherited regression) | Partial; prediction comparison/dedup only |
-| Lab integration | `integration/batch-1` / `5aad2e2` | runtime pin verified; 37 passed; compileall; wheels installed/imported | Reviewable integrated partial batch |
-| A2 | `feat/snapshot-fork-v0` / `313effa79c24328f0ec2f8687aa76737f08d2aa1` | 82 passed; compileall; wheel built | Complete; pinned Python fidelity EXACT, cloned-state error 0.0 |
+| A1 | `feat/environment-api-v0` / `d1374aa7485ad162f75dbc8e92025539b461909f` | 75 passed against pinned Python upstream | Complete |
+| A2 | `feat/snapshot-fork-v0` / `313effa79c24328f0ec2f8687aa76737f08d2aa1` | 82 passed; wheel and compile checks | Complete; fidelity EXACT, cloned-state error 0.0 |
+| B1 | `integration/batch-1` / `dc1845fa930683364abd04a8d0d4b910168eb3d8` | 52 passed; compile and wheel build | Complete for B1; B2/B3/B4 capabilities fail closed |
+| C1 | `feat/investigation-state-v0-resume` / `59f82f8` | 63 lab tests with B1 pin; 13 C1 tests | Independent paths implemented; two dependent contract paths stopped |
+| C2 | `feat/rule-registry-v0` / `7455fe8cc5095925345528220b0c054eb2055e13` | 12 focused tests plus integration regression | Complete for C2 v0 metadata registry |
+| C3 | integrated source `17790ab5c4f35ffcb7a012985fb9da268735d2b9` | 21 focused experiment tests plus integration regression | Typed/data/dedup paths implemented; execution waits for C4/A2/B2 |
+| Lab integration | `integration/batch-1` / `989336c` | exact runtime pin verified; 63 passed; compileall | Reviewable integrated batch |
 
-All completed worktrees were checked for boundary violations: `tep-sim` imports no
-runtime/lab/agent package; runtime imports no domain/provider/LangGraph/MCP package;
-lab imports generic refs only from the exact pinned runtime commit and does not copy
-simulator physics.
+Boundary checks found no responsibility movement: `tep-sim` imports no runtime
+or lab package; runtime imports no TEP/domain/provider-framework package; lab
+imports generic contracts from the exact runtime pin and does not copy simulator
+physics or runtime scheduling.
 
-## SPEC_CONFLICT — B1
+## Resolved contract conflict — D-034
 
-Affected owning specs:
-
-- runtime `docs/specs/runtime-v0.md` (`ToolCallRequest`, `FinishProposal`);
-- runtime `docs/specs/hybrid-orchestration-v0.md` (`completion_policy`).
-
-Observed evidence and conflicting assumptions:
-
-- `ToolCallRequest` is named but has no field contract, so G0/dispatch cannot know
-  the tool identity and arguments without inventing a public wire format;
-- `FinishProposal` is routed and verified but has no defined payload;
-- `WorkBatch.completion_policy` is required but has no allowed values or behavior.
-
-Smallest proposed contract change, not yet applied:
+The previously reported B1 public wire gaps were explicitly approved and are
+now closed in both owning specs and blueprint copies:
 
 ```text
-ToolCallRequest
-  request_id
-  tool_name
-  arguments
-
-FinishProposal
-  structured_output
-  information_refs[]
-  artifact_refs[]
-
-WorkBatch completion_policy v0
-  ALL_SETTLED only; unknown values fail closed
+ToolCallRequest = request_id + tool_name + arguments
+FinishProposal = structured_output + information_refs[] + artifact_refs[]
+WorkBatch completion_policy v0 = ALL_SETTLED
 ```
 
-Dependent implementation remains stopped until explicit adjudication updates the
-owning specs/decision register. Existing failure and dependency semantics are not
-otherwise changed.
+Decision Register entry D-034 records the adjudication. Runtime spec commit is
+`83b8645d1e80fdfb426f137b39be02498ea8a4ad`; program/blueprint commit is
+`13ed126683a8d0a1a152055e5fdb3ff94bf21dd5`.
 
-## Verification limitations
+## SPEC_CONFLICT — lifecycle persistence seam
 
-The A1 upstream `test_python_backend.py` file was not collected because SciPy is not
-installed; all A1 acceptance cases execute the actual upstream Python backend, and
-the 62 available upstream constants/controllers/simulator regressions pass.
-The first sandbox rerun could not create pytest files in the user temp directory;
-rerunning with a workspace-owned `--basetemp` produced the recorded 75/75 pass.
+Affected specs:
 
-A2 reused the already initialized A1 copy of the same pinned upstream submodule
-because the isolated worktree could not clone through the restricted network. Its
-combined A1/A2/upstream run produced 82/82 passes. Snapshot state deserialization
-requires an explicit trusted artifact root; checksums detect corruption but do not
-authenticate an imported artifact producer.
+- runtime `docs/specs/runtime-v0.md` (`TaskStateStore` protocol);
+- lab `docs/specs/investigation-state-v0.md` (`generic_status`,
+  `SET_GENERIC_STATUS`).
+
+Observed evidence: the lab spec requires Finish, hard-stop, failure,
+cancellation, and exhaustion transitions to update the runtime-owned generic
+status in `RcaState`. The generic protocol exposes only
+`revision/status/project/apply_batch`; the Coordinator has no domain-independent
+lifecycle transition call. Naming the lab-owned `SET_GENERIC_STATUS` operation
+inside runtime would violate the repository boundary.
+
+Smallest proposed change: add a runtime-owned typed lifecycle transition method
+or delta to `TaskStateStore`, and have the Coordinator invoke it on terminal
+paths. C1 currently validates trusted `RUNTIME` status deltas but does not invent
+the missing invocation contract.
+
+## SPEC_CONFLICT — interpretation/working-explanation shape
+
+Affected specs:
+
+- lab `docs/specs/hypothesis-experiment-v0.md` (Interpretation mapping);
+- lab `docs/specs/investigation-state-v0.md` (`WorkingExplanation`).
+
+Observed evidence: C3 maps `conclusion_summary` and `residual_uncertainty` to
+`UPDATE_WORKING_EXPLANATION`, while C1 requires a canonical object containing a
+leading hypothesis, rank/score summary, positive/counterevidence refs, remaining
+uncertainties, and last revision. No owning spec defines a deterministic mapping
+between those shapes.
+
+Smallest proposed change: define one typed `UPDATE_WORKING_EXPLANATION` payload
+and its deterministic materialization in the owning specs, then use that shared
+shape in C3 mapping and C1 validation. The current integration fails closed on
+the incompatible patch.
+
+## Verification limitations and deferred work
+
+The A1 upstream SciPy-only test file remains uncollected because SciPy is not
+installed; the 62 available upstream regressions and all A1/A2 acceptance tests
+pass. A2 reused the initialized pinned upstream copy because network access is
+restricted. Snapshot deserialization remains limited to an explicit trusted
+artifact root.
+
+B2 full deterministic gates/resource reservation, B3 full verifier policy, B4
+subtask execution, and C4 experiment/scenario execution remain downstream work.
+No HAZOP, Recovery, AutoProcessResearch, learned memory, or knowledge-promotion
+implementation was added.
