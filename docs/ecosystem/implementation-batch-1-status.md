@@ -9,11 +9,9 @@ implementation evidence and does not itself change frozen public contracts.
 A1 environment API (complete) -> A2 snapshot/fork (complete)
 
 B1 runtime contracts/reference loop (complete)
-  -> C1 RCA state independent paths (implemented)
+  -> C1 RCA state (implemented)
   -> C2 rule registry (complete)
   -> C3 hypothesis/experiment contracts (implemented)
-          |
-          +-> two narrow SPEC_CONFLICT paths stopped
           |
           v
      lab integration/batch-1
@@ -25,11 +23,11 @@ B1 runtime contracts/reference loop (complete)
 | --- | --- | --- | --- |
 | A1 | `feat/environment-api-v0` / `d1374aa7485ad162f75dbc8e92025539b461909f` | 75 passed against pinned Python upstream | Complete |
 | A2 | `feat/snapshot-fork-v0` / `313effa79c24328f0ec2f8687aa76737f08d2aa1` | 82 passed; wheel and compile checks | Complete; fidelity EXACT, cloned-state error 0.0 |
-| B1 | `integration/batch-1` / `dc1845fa930683364abd04a8d0d4b910168eb3d8` | 52 passed; compile and wheel build | Complete for B1; B2/B3/B4 capabilities fail closed |
-| C1 | `feat/investigation-state-v0-resume` / `59f82f8` | 63 lab tests with B1 pin; 13 C1 tests | Independent paths implemented; two dependent contract paths stopped |
+| B1 | `integration/batch-1` / `6c8a8d222a7dbf2bd6ed4b9162e3c6b7424d8ec7` | 62 passed; compile and wheel build | Complete for B1; terminal lifecycle persistence included; B2/B3/B4 capabilities fail closed |
+| C1 | `feat/investigation-state-v0-resume` / `ae3cc40` | 66 lab tests with B1 pin; 16 C1 tests | Complete for scheduled C1 v0 scope |
 | C2 | `feat/rule-registry-v0` / `7455fe8cc5095925345528220b0c054eb2055e13` | 12 focused tests plus integration regression | Complete for C2 v0 metadata registry |
 | C3 | integrated source `17790ab5c4f35ffcb7a012985fb9da268735d2b9` | 21 focused experiment tests plus integration regression | Typed/data/dedup paths implemented; execution waits for C4/A2/B2 |
-| Lab integration | `integration/batch-1` / `989336c` | exact runtime pin verified; 63 passed; compileall | Reviewable integrated batch |
+| Lab integration | `integration/batch-1` / `e583495` | exact runtime pin verified; 66 passed; compileall | Reviewable integrated batch; no unresolved contract conflict |
 
 Boundary checks found no responsibility movement: `tep-sim` imports no runtime
 or lab package; runtime imports no TEP/domain/provider-framework package; lab
@@ -51,43 +49,25 @@ Decision Register entry D-034 records the adjudication. Runtime spec commit is
 `83b8645d1e80fdfb426f137b39be02498ea8a4ad`; program/blueprint commit is
 `13ed126683a8d0a1a152055e5fdb3ff94bf21dd5`.
 
-## SPEC_CONFLICT — lifecycle persistence seam
+## Resolved contract conflicts — D-035
 
-Affected specs:
+The approved minimum corrections close both implementation seams in owning specs,
+blueprint copies, and code:
 
-- runtime `docs/specs/runtime-v0.md` (`TaskStateStore` protocol);
-- lab `docs/specs/investigation-state-v0.md` (`generic_status`,
-  `SET_GENERIC_STATUS`).
+1. Runtime `TaskStateStore.transition_status(status, expected_revision)` now
+   persists Coordinator-owned terminal status without naming a lab operation.
+   DONE, FAILED, EXHAUSTED, and CANCELLED are revision-bound; same-terminal calls
+   are idempotent and different terminal overwrites reject.
+2. Lab `WorkingExplanationUpdate` is a shared revision-free C1/C3 payload.
+   Interpretation maps conclusion/uncertainty into it, and C1 materializes
+   `last_updated_revision` from the accepted resulting state revision.
 
-Observed evidence: the lab spec requires Finish, hard-stop, failure,
-cancellation, and exhaustion transitions to update the runtime-owned generic
-status in `RcaState`. The generic protocol exposes only
-`revision/status/project/apply_batch`; the Coordinator has no domain-independent
-lifecycle transition call. Naming the lab-owned `SET_GENERIC_STATUS` operation
-inside runtime would violate the repository boundary.
+Runtime implementation/spec commit is `6c8a8d2`; lab contract implementation is
+`74d3d60`, integrated as `2c2d99c`. The cross-repo test proves two lexical
+WorkBatch ingestions at `0->1` and `1->2`, followed by verified Finish persisting
+DONE at `2->3`.
 
-Smallest proposed change: add a runtime-owned typed lifecycle transition method
-or delta to `TaskStateStore`, and have the Coordinator invoke it on terminal
-paths. C1 currently validates trusted `RUNTIME` status deltas but does not invent
-the missing invocation contract.
-
-## SPEC_CONFLICT — interpretation/working-explanation shape
-
-Affected specs:
-
-- lab `docs/specs/hypothesis-experiment-v0.md` (Interpretation mapping);
-- lab `docs/specs/investigation-state-v0.md` (`WorkingExplanation`).
-
-Observed evidence: C3 maps `conclusion_summary` and `residual_uncertainty` to
-`UPDATE_WORKING_EXPLANATION`, while C1 requires a canonical object containing a
-leading hypothesis, rank/score summary, positive/counterevidence refs, remaining
-uncertainties, and last revision. No owning spec defines a deterministic mapping
-between those shapes.
-
-Smallest proposed change: define one typed `UPDATE_WORKING_EXPLANATION` payload
-and its deterministic materialization in the owning specs, then use that shared
-shape in C3 mapping and C1 validation. The current integration fails closed on
-the incompatible patch.
+No B1/C1/C3 `SPEC_CONFLICT` remains.
 
 ## Verification limitations and deferred work
 
