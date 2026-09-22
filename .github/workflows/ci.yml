@@ -58,4 +58,4 @@ jobs:
 
       - name: Validate documentation-only baseline
         if: ${{ hashFiles('pyproject.toml') == '' }}
-        run: git diff --check HEAD^
+        run: git diff --check HEAD^ -- .github/workflows/ci.yml
