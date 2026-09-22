@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - architecture/hybrid-agent-runtime
+      - feat/environment-api-v0
+      - feat/snapshot-fork-v0
+      - docs/implementation-batch-1
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package and test dependencies
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest numpy
+          python -m pip install --no-deps -e .
+
+      - name: Run A1/A2 acceptance and pinned upstream regression tests
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        env:
+          PYTHONPATH: src:vendor/tep-sim-upstream/src
+        run: >-
+          python -m pytest -c pyproject.toml -q
+          tests
+          vendor/tep-sim-upstream/tests/test_constants.py
+          vendor/tep-sim-upstream/tests/test_controllers.py
+          vendor/tep-sim-upstream/tests/test_simulator.py
+
+      - name: Compile Python sources
+        if: ${{ hashFiles('pyproject.toml') != '' }}
+        run: python -m compileall -q src tests
+
+      - name: Validate documentation-only baseline
+        if: ${{ hashFiles('pyproject.toml') == '' }}
+        run: git diff --check HEAD^
