@@ -366,3 +366,18 @@ def test_graph_queries_are_unaffected_by_simulation(graph, tmp_path):
     env.close()
     assert graph.project_local("reactor") == before
     assert load_process_graph().provenance == graph.provenance
+
+
+def test_xmeas22_known_nomenclature_disagreement_stays_pending_review(graph):
+    """XMEAS(22) is a recorded source disagreement, not a silent re-binding.
+
+    Upstream/Fortran names it "Separator Cooling Water Outlet Temp"; the curated
+    topology attaches it to the condenser cooling-water outlet per the TEP
+    flowsheet. Any human-verified correction must ship as a new fixture version.
+    """
+    assert REGISTRY["XMEAS(22)"].name == "Separator Cooling Water Outlet Temp"
+    binding = graph.binding("XMEAS(22)")
+    assert binding.attached_to == "condenser_cooling_water_out"
+    assert binding.provenance.method.value == "CURATED_MAPPING"
+    assert graph.provenance.review_status == "PENDING_HUMAN_REVIEW"
+    assert graph.provenance.fixture_version == "0.1.0" and graph.provenance.pinned

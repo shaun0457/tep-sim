@@ -155,3 +155,21 @@ Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bin
   be wrapped as an Agent-visible tool. The visible graph rejects any `DISTURBS`
   binding or `IDV(n)` reference at load time.
 - Process-control loops are not modeled in v0; no traversal library is added.
+
+### Known source/nomenclature disagreement: XMEAS(22)
+
+- Upstream/Fortran (vendored `REGISTRY`) names XMEAS(22)
+  `Separator Cooling Water Outlet Temp`.
+- The curated v0 topology attaches it to `condenser_cooling_water_out`
+  (`condenser_cooling.outlet_temperature`) based on the TEP flowsheet.
+- This is a recorded source/nomenclature disagreement, not an error that is
+  corrected by renaming. The binding is deliberately **not** changed to match the
+  upstream variable name and remains `CURATED_MAPPING` / `PENDING_HUMAN_REVIEW`.
+- A3 development may proceed on the curated graph. **D0 benchmark freeze requires a
+  human review** of the curated topology and all bindings, including XMEAS(22).
+- A human-verified mapping must be published as a **new fixture version with its own
+  provenance and pin** (`HUMAN_VERIFIED_MAPPING`, updated `review_status`). The
+  pinned `tep-process-graph` 0.1.0 content must never be silently modified; its
+  pinned hash rejects in-place edits.
+- `tests/test_process_graph.py::test_xmeas22_known_nomenclature_disagreement_stays_pending_review`
+  locks the current state so any re-binding is an explicit, reviewed change.

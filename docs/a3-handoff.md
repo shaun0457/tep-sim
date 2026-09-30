@@ -47,8 +47,14 @@ upstream). CI runs 3.11 and 3.13.
 
 - The fixture is a curated equivalent, not the official DEXPI XML; the bindings
   still need human review (`PENDING_HUMAN_REVIEW`).
-- XMEAS(22) is named "Separator Cooling Water Outlet Temp" upstream; it is bound
-  to the condenser cooling-water outlet per the Downs & Vogel flowsheet.
+- XMEAS(22) is a known source/nomenclature disagreement: upstream/Fortran names it
+  "Separator Cooling Water Outlet Temp"; the curated topology binds it to the
+  condenser cooling-water outlet per the TEP flowsheet. It is intentionally not
+  renamed and stays `PENDING_HUMAN_REVIEW` (see the spec's "Known
+  source/nomenclature disagreement" section).
+- A3 development may proceed, but **D0 benchmark freeze requires human review** of
+  the curated topology/bindings. A human-verified mapping must ship under a new
+  fixture version/provenance, never by editing the pinned 0.1.0 fixture.
 - Which evaluator bindings a disclosed non-blind condition may expose is a
   `tep-agent-lab` C4/D0 policy decision; `tep-sim` does not decide it.
 

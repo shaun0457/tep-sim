@@ -12,3 +12,5 @@ dist/
 artifacts/
 # 上游 meson build 殘留
 vendor/tep-sim-upstream/build/
+# Windows crash dumps
+*.stackdump
