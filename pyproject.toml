@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 dependencies = ["numpy>=1.20", "tep==2.5.0"]
 
 [tool.setuptools.package-data]
-tep_sim = ["upstream_hashes.json"]
+tep_sim = ["upstream_hashes.json", "fixtures/*.json"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -128,3 +128,30 @@ A projection returned for a node should contain only relevant local topology and
 - Which exact DEXPI representation/version becomes the pinned v0 fixture?
 - Do process-control-loop concepts live directly in `ProcessGraph` v0 or in a later extension?
 - Which topology traversal library, if any, is worth adding versus a small internal graph representation?
+
+## A3 implementation notes (v0)
+
+Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bindings`.
+
+- Pinned v0 fixture: `src/tep_sim/fixtures/tep_process_graph_v0.json`. It is a
+  curated equivalent graph (`CURATED_EQUIVALENT_GRAPH`) derived from Downs & Vogel
+  (1993) and the vendored upstream constants, not the official DEXPI
+  `TennesseeEastman.xml`. `review_status` stays `PENDING_HUMAN_REVIEW` and bindings
+  use method `CURATED_MAPPING` until a human reviewer upgrades them to
+  `HUMAN_VERIFIED_MAPPING` under a new fixture version.
+- Versioning: every fixture carries `fixture_id`, `fixture_version`,
+  `upstream_revision`, and declared sources. A canonical content hash
+  (independent of whitespace, key order, and array order) is recorded in
+  provenance. Pinned `(fixture_id, fixture_version)` pairs reject content drift.
+- Query-name mapping: `nodes/node/edges/edge`, `neighbors`, `upstream`,
+  `downstream` (bounded or transitive, cycle-safe), `trace_stream(edge_id)`,
+  `measurements`, `actuators`, `binding(runtime id | semantic entity id)`, and
+  `project_local(node_id)` for the compact Agent projection.
+- `get_related_disturbances` is **not** part of `ProcessGraph` or its projection.
+  Per D-014 and the design-review adjudication ("Blind tools hide canonical
+  candidate bindings by default"), IDV bindings live only in the separate
+  `EVALUATOR_ONLY` registry (`load_evaluator_disturbance_bindings`), which is bound
+  to one exact graph content hash, is not re-exported from `tep_sim`, and must not
+  be wrapped as an Agent-visible tool. The visible graph rejects any `DISTURBS`
+  binding or `IDV(n)` reference at load time.
+- Process-control loops are not modeled in v0; no traversal library is added.

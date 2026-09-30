@@ -5,7 +5,13 @@ from .contracts import (EnvironmentConfig, ControlMode, Observation, Disturbance
                         ReplaySpec)
 from .environment import TEPEnvironment
 from .registry import REGISTRY, UPSTREAM_REVISION
+from .bindings import BindingMethod, BindingProvenance, BindingRelation, VariableBinding
+from .process import (EdgeKind, GraphProvenance, NodeKind, ProcessEdge, ProcessGraph,
+                      ProcessNode, StreamTrace, TopologyProjection, build_process_graph,
+                      load_process_graph)
 from .snapshot import load_snapshot, load_replay_spec
 from .errors import (InvalidIntervention, UnknownVariable, UnsupportedCapability,
                      IncompatibleControlMode, InvalidEnvironmentState, SimulationFailure,
-                     SnapshotFailure)
+                     SnapshotFailure, ProcessGraphValidationError, UnknownProcessEntity)
+# Evaluator-only disturbance bindings are deliberately not re-exported here; see
+# tep_sim.evaluator_bindings.
