@@ -59,3 +59,10 @@ upstream). CI runs 3.11 and 3.13.
   `tep-agent-lab` C4/D0 policy decision; `tep-sim` does not decide it.
 
 No `SPEC_CONFLICT`.
+
+## Batch-2 review closure
+
+The program Decision Register (this repo, `docs/ecosystem/decision-register.md`)
+also records the B2 runtime adjudications D-036–D-038 (GatePolicy vs Task, dynamic
+budget draws, two revision domains); their owning spec is
+`industrial-agent-runtime/docs/specs/deterministic-gates-v0.md`.
