@@ -33,7 +33,9 @@ PINNED_FIXTURES = MappingProxyType({
 })
 
 _ID = re.compile(r"^[a-z][a-z0-9_]*$")
-_DISTURBANCE_REF = re.compile(r"\bIDV\s*\(\s*\d+\s*\)", re.IGNORECASE)
+# Any spelling of a disturbance id (IDV(4), IDV6, idv_1, IDV-3, ...), even inside a
+# larger token; the visible graph never needs one.
+_DISTURBANCE_REF = re.compile(r"(?<![A-Za-z])IDV[\s_\-(]*\d+", re.IGNORECASE)
 _SCALAR = (str, int, float, bool, type(None))
 _TOP_KEYS = {"schema_version", "fixture_id", "fixture_version", "upstream_revision", "source",
              "sources", "expected_runtime_variables", "nodes", "edges", "bindings",
@@ -468,7 +470,8 @@ def check_header(data, schema_version, issues):
         issues.append(ValidationIssue("UNNORMALIZABLE_ENTITY", "<root>",
                                       "fixture is not JSON-serializable"))
         content_sha256 = ""
-    pinned = PINNED_FIXTURES.get((fixture_id, version))
+    pinned = (PINNED_FIXTURES.get((fixture_id, version))
+              if isinstance(fixture_id, str) and isinstance(version, str) else None)
     if pinned is not None and pinned != content_sha256:
         issues.append(ValidationIssue(
             "PINNED_CONTENT_MISMATCH", f"{fixture_id}@{version}",

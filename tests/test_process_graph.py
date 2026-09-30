@@ -249,6 +249,28 @@ def test_corrupted_fixture_is_rejected(mutate, code):
     assert code in codes(excinfo)
 
 
+@pytest.mark.parametrize("spelling", ["see IDV(4)", "affected by IDV6", "IDV 3", "idv-3",
+                                      "idv_1", "Idv14", "IDV_(12)"])
+def test_disturbance_spellings_are_rejected_in_visible_graph(spelling):
+    data = unpinned(raw_graph())
+    _find(data["nodes"], "node_id", "reactor")["attributes"] = {"note": spelling}
+    with pytest.raises(ProcessGraphValidationError) as excinfo:
+        build_process_graph(data)
+    assert codes(excinfo) == {"DISTURBANCE_REFERENCE_IN_VISIBLE_GRAPH"}
+
+
+@pytest.mark.parametrize("field", ["fixture_id", "fixture_version"])
+@pytest.mark.parametrize("value", [["x"], {"x": 1}, 3])
+def test_non_string_fixture_identity_is_a_validation_error(field, value):
+    for data, build in ((raw_graph(), build_process_graph),
+                        (raw_evaluator(), lambda d: build_evaluator_disturbance_bindings(
+                            d, load_process_graph()))):
+        data[field] = value
+        with pytest.raises(ProcessGraphValidationError) as excinfo:
+            build(data)
+        assert "UNNORMALIZABLE_ENTITY" in codes(excinfo)
+
+
 def test_pinned_version_content_drift_is_rejected():
     data = raw_graph()
     _find(data["nodes"], "node_id", "reactor")["name"] = "Renamed reactor"
@@ -288,6 +310,10 @@ def test_validation_reports_all_issues_and_unreadable_sources(tmp_path):
     (lambda d: d["bindings"][1].update(runtime_variable_id="IDV(1)"), "CONFLICTING_BINDING"),
     (lambda d: d["unbound_runtime_variables"].append(
         {"runtime_variable_id": "IDV(4)", "reason": "x"}), "CONFLICTING_BINDING"),
+    (lambda d: d["unbound_runtime_variables"].append(
+        {"runtime_variable_id": "XMEAS(1)", "reason": "x"}), "UNNORMALIZABLE_ENTITY"),
+    (lambda d: d["unbound_runtime_variables"].append(
+        {"runtime_variable_id": ["IDV(16)"], "reason": "x"}), "UNNORMALIZABLE_ENTITY"),
 ])
 def test_corrupted_evaluator_bindings_are_rejected(graph, mutate, code):
     data = unpinned(raw_evaluator())

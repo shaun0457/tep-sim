@@ -118,11 +118,13 @@ def build_evaluator_disturbance_bindings(
                                       "must be a list"))
         raw_unbound = []
     for index, raw in enumerate(raw_unbound):
-        if (not isinstance(raw, Mapping) or raw.get("runtime_variable_id") not in REGISTRY
+        runtime_id = raw.get("runtime_variable_id") if isinstance(raw, Mapping) else None
+        if (not isinstance(runtime_id, str) or not runtime_id.startswith("IDV(")
+                or runtime_id not in REGISTRY
                 or not isinstance(raw.get("reason"), str) or not raw.get("reason")):
             issues.append(ValidationIssue("UNNORMALIZABLE_ENTITY",
                                           f"unbound_runtime_variables[{index}]",
-                                          "requires a known runtime_variable_id and reason"))
+                                          "requires a known IDV runtime_variable_id and reason"))
             continue
         unbound[raw["runtime_variable_id"]] = raw["reason"]
     bound = {b.runtime_variable_id for b in bindings}
