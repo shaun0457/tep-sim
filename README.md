@@ -30,6 +30,43 @@ Out of scope:
 
 See [`docs/ecosystem/README.md`](docs/ecosystem/README.md) for the three-repository program boundary.
 
+## Running the A1 environment
+
+Python 3.11+ and the pinned submodule are required. Install the upstream package
+from its checkout, followed by this adapter:
+
+```powershell
+git submodule update --init
+py -3.13 -m pip install ./vendor/tep-sim-upstream
+py -3.13 -m pip install -e .
+py -3.13 -m pytest -c pyproject.toml -q
+```
+
+```python
+from tep_sim import TEPEnvironment, EnvironmentConfig, ControlMode, UPSTREAM_REVISION
+
+env = TEPEnvironment(EnvironmentConfig(
+    seed=12345, backend="python", control_mode=ControlMode.CLOSED_LOOP,
+    record_interval=1, upstream_revision=UPSTREAM_REVISION,
+))
+env.reset()
+result = env.rollout(horizon=10 / 3600)  # ten seconds, horizon/time expressed in hours
+env.close()
+```
+
+A1 supports the pinned Python backend; imported source hashes are checked before
+construction. `record_interval` is a positive integer number of one-second steps.
+Horizons must cover integral seconds. Same config/seed/schedule on this backend
+is tested for exact equality; cross-platform/backend bitwise equality is not promised.
+Direct MV operations require `MANUAL`; bounds use upstream's 0–100 percent range.
+`MVConstraint` rejects future out-of-bound writes and requires the current setpoint
+to satisfy new bounds (it never silently clips a setpoint).
+
+Telemetry is streamed to JSONL and rollout metadata references immutable, checksummed
+artifacts. Each reset creates a new run; `close` persists termination. A1 reports
+upstream shutdown truth, while `safety_margins` is empty and its capability is false
+pending A4. Snapshot/fork/topology are deferred to their owning phases.
+
 ## Simulator
 
 The process model is vendored as `vendor/tep-sim-upstream` from `jkitchin/tennessee-eastman-profbraatz`.

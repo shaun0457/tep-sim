@@ -4,5 +4,10 @@ data/raw/
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+artifacts/
 # 上游 meson build 殘留
 vendor/tep-sim-upstream/build/
