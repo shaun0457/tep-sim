@@ -77,6 +77,37 @@ Owns TEP-specific agent research:
 - capability/orchestration ablations;
 - reports/evaluation.
 
+## Application / Playground Plane
+
+The program also has a logical **Application / Playground Plane** outside the three core ownership layers:
+
+```text
+User / Researcher
+       |
+       v
+Playground Application Plane
+run lifecycle / manifest / canonical context / read projections / artifacts
+       |
+       v
+industrial-agent-runtime
+       |
+       v
+tep-agent-lab
+       |
+       v
+tep-sim
+```
+
+This plane is **not a fourth core repository in v0**. Its first implementation belongs in `tep-agent-lab` because it assembles runtime + lab + world components for a TEP playground run.
+
+The Application/UI API and the Agent Tool Surface are distinct authority surfaces. UI/backend calls do not grant the Agent execution authority and must not bypass:
+
+```text
+ToolSpec -> deterministic gates -> consumer validation -> Executor -> post-execution verification
+```
+
+Blind-playground read projections expose only Agent-visible information by default. Evaluator/debug projections are explicit trusted views and must never silently enter Agent context or tool results.
+
 ## Information Plane
 
 The program uses a logical Information Plane rather than chat history as canonical state.
@@ -99,6 +130,43 @@ TEP Simulation / World Plane
 
 This is an ownership/reference/provenance architecture layer, not a fourth repository and not five mandatory database services.
 
+## Canonical long-term context
+
+Durable engineering/research truth is version-controlled in repository-owned sources and materialized locally at exact revisions for reproducible runs.
+
+Examples include:
+
+- ProcessGraph and variable metadata;
+- reviewed entity/runtime bindings;
+- safety limits and capability/scenario mappings;
+- reviewed engineering rules/provenance;
+- benchmark manifests and visibility/scoring policy;
+- evaluator ground-truth records.
+
+The local checkout is a **persistent context substrate**, not the model context itself:
+
+```text
+Git repository canonical source
+        |
+        | exact revision / local checkout
+        v
+CanonicalContextRegistry
+        |
+ visibility + authority + provenance
+        |
+        v
+bounded ContextProjection
+        |
+        v
+Agent
+```
+
+Local availability does not imply Agent visibility. Evaluator-only records may be materialized on the same machine while remaining inaccessible to Agent projections/tools.
+
+Run-specific mutable state is not promoted to Git-backed canonical knowledge. Current hypotheses, observations, evidence links, simulation branches, budgets, traces, and temporary telemetry remain owned by their existing runtime/lab/world stores.
+
+The whole repository is never automatically injected into model context; `ContextProjection` remains bounded, task-specific, revision-aware, and visibility-aware.
+
 ## Optional existing service
 
 `manufacturing-kg-agent` may provide read-only process/document evidence after clean no-KG/no-memory baselines exist.
@@ -116,7 +184,9 @@ The active program does not include:
 - unrestricted recursive swarms;
 - arbitrary Agent Python/shell/package installation as the normal analysis interface;
 - a global cross-project learned-memory platform;
-- LangGraph/MCP as required v0 infrastructure.
+- LangGraph/MCP as required v0 infrastructure;
+- mandatory microservice/Kafka/Redis/Kubernetes infrastructure for the first Playground backend;
+- automatic vector/RAG indexing as the definition of canonical context.
 
 ## Research task families
 
@@ -242,6 +312,8 @@ MCP may later be one external provider protocol, not a core safety/runtime depen
 13. Unsupported physics must be explicit rather than hallucinated.
 14. Strong deterministic baselines are not weakened to make Agent results look better.
 15. Numeric optimization should use deterministic/seeded search tools where appropriate rather than repeated LLM floating-point guessing.
+16. Application/UI projections are derived views and do not replace runtime/lab/world canonical state.
+17. Version-controlled canonical context is materialized by exact source revision; local materialization never overrides visibility policy.
 
 ## Success criteria for first meaningful v1 research slice
 
@@ -275,12 +347,15 @@ HAZOP, Recovery, and AutoProcessResearch are later research slices and do not bl
 
 **Phase 0 Design Freeze is complete.** See `design-freeze-record.md`.
 
-Implementation may proceed according to `implementation-plan.md`:
+Implementation proceeds according to `implementation-plan.md`. Implementation evidence has added an Application/Playground layer and sequencing refinements without reopening the accepted World/Control/Information/Investigation contracts.
 
-- `tep-sim` A1–A4: GO;
-- runtime B1–B5: GO in dependency order;
-- lab C1–C5: GO in dependency order;
-- benchmark D0 begins once its upstream contracts/features exist.
+Current direction:
+
+- `tep-sim` A1–A4: implemented; A3 semantic fixture still requires human verification before D0 benchmark freeze;
+- runtime B1–B3: implemented; focused B2.1 request-bound reservation is required before D0; B5 real provider may proceed independently of B4 after core contracts;
+- lab C1–C4: implemented; C5 minimal Tool Bridge remains;
+- P0 Playground Backend is required before D0 benchmark freeze;
+- B4 bounded subagents are required for the later O5/D2 orchestration condition, not for the first single-Agent D1 run.
 
 Coding agents may work in parallel only through spec-scoped branches/worktrees and explicit dependency contracts in `development-agent-orchestration.md`.
 
