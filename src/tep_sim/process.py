@@ -5,6 +5,7 @@ simulation, and never carries disturbance (IDV) bindings: those live in the
 evaluator-scope registry in ``evaluator_bindings`` so a blind Agent-visible
 projection cannot enumerate the injected-fault candidate space.
 """
+import datetime
 import hashlib
 import json
 import re
@@ -16,13 +17,19 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
-from .bindings import (VISIBLE_RELATIONS, BindingRelation, ValidationIssue, VariableBinding,
-                       check_unique_bindings, parse_binding, runtime_kind)
+from .bindings import (VISIBLE_RELATIONS, BindingMethod, BindingRelation, ValidationIssue,
+                       VariableBinding, check_unique_bindings, parse_binding, runtime_kind)
 from .errors import ProcessGraphValidationError, UnknownProcessEntity
 from .registry import REGISTRY, UPSTREAM_REVISION
 
 GRAPH_SCHEMA_VERSION = "tep-sim.process-graph/v0"
-PACKAGED_GRAPH_FIXTURE = "tep_process_graph_v0.json"
+# fixture_version -> packaged file. 0.1.0 keeps its original file name as immutable
+# history; the loader default is the human-verified version.
+PACKAGED_GRAPH_FIXTURES = MappingProxyType({
+    "0.1.0": "tep_process_graph_v0.json",
+    "0.2.0": "tep_process_graph_v0_2_0.json",
+})
+PACKAGED_GRAPH_FIXTURE = PACKAGED_GRAPH_FIXTURES["0.2.0"]
 # (fixture_id, fixture_version) -> canonical content sha256. A pinned version whose
 # content changes is rejected: new content requires a new fixture version.
 PINNED_FIXTURES = MappingProxyType({
@@ -30,16 +37,29 @@ PINNED_FIXTURES = MappingProxyType({
         "2b4adf9406674fd7c91f3ee48a6a96ef23992d682036059dcb6706e825d01f2b",
     ("tep-evaluator-disturbance-bindings", "0.1.0"):
         "b497fdca4c4e436ba084bd120b989fe51e0b33a449164fe553be1f0c6b9b6a22",
+    ("tep-process-graph", "0.2.0"):
+        "cc8ccc81e9f421238863457438465877850b19d9760740279e54a52468fe9a87",
+    ("tep-evaluator-disturbance-bindings", "0.2.0"):
+        "25e4c60885d273c4abb3214411bf1d99a392ebe2d540f9d716624205b13a9cb5",
 })
+# source.review_status values (docs/specs/dexpi-binding-v0.md)
+PENDING_HUMAN_REVIEW = "PENDING_HUMAN_REVIEW"
+HUMAN_VERIFIED = "HUMAN_VERIFIED"
+REVIEW_STATUSES = frozenset({PENDING_HUMAN_REVIEW, HUMAN_VERIFIED})
 
 _ID = re.compile(r"^[a-z][a-z0-9_]*$")
+_SHA256 = re.compile(r"[0-9a-f]{64}")  # always used with fullmatch
 # Any spelling of a disturbance id (IDV(4), IDV6, idv_1, IDV-3, ...), even inside a
 # larger token; the visible graph never needs one.
 _DISTURBANCE_REF = re.compile(r"(?<![A-Za-z])IDV[\s_\-(]*\d+", re.IGNORECASE)
 _SCALAR = (str, int, float, bool, type(None))
 _TOP_KEYS = {"schema_version", "fixture_id", "fixture_version", "upstream_revision", "source",
-             "sources", "expected_runtime_variables", "nodes", "edges", "bindings",
-             "unbound_entities"}
+             "review_record", "sources", "expected_runtime_variables", "nodes", "edges",
+             "bindings", "unbound_entities"}
+_SOURCE_KEYS = {"title", "locator", "revision", "sha256"}
+_GRAPH_SOURCE_KEYS = {"kind", "description", "review_status"}
+_REVIEW_RECORD_KEYS = ("review_package_id", "review_package_version", "reviewer", "signed_on",
+                       "locator", "signed_record_sha256")
 _NODE_KEYS = {"node_id", "kind", "name", "tag", "attributes", "source_refs"}
 _EDGE_KEYS = {"edge_id", "kind", "source_node", "target_node", "name", "stream_number",
               "attributes", "source_refs"}
@@ -91,6 +111,18 @@ class SourceRef:
     title: str
     locator: str
     revision: str | None
+    sha256: str | None = None  # optional content pin, e.g. for papers (no revision)
+
+
+@dataclass(frozen=True)
+class ReviewRecordRef:
+    """Pointer to the signed human review record a verified fixture implements."""
+    review_package_id: str
+    review_package_version: str
+    reviewer: str
+    signed_on: str
+    locator: str
+    signed_record_sha256: str
 
 
 @dataclass(frozen=True)
@@ -104,6 +136,7 @@ class GraphProvenance:
     content_sha256: str
     pinned: bool
     sources: tuple[SourceRef, ...]
+    review_record: ReviewRecordRef | None = None
 
 
 @dataclass(frozen=True)
@@ -446,9 +479,63 @@ def parse_sources(data, issues):
             issues.append(ValidationIssue("MISSING_PROVENANCE", f"sources.{source_id}",
                                           "source requires title and locator"))
             continue
+        extra, sha256 = sorted(set(item) - _SOURCE_KEYS), item.get("sha256")
+        if extra:
+            issues.append(ValidationIssue("MISSING_PROVENANCE", f"sources.{source_id}",
+                                          f"unknown source fields {extra}"))
+            continue
+        if sha256 is not None and not (isinstance(sha256, str) and _SHA256.fullmatch(sha256)):
+            issues.append(ValidationIssue("MISSING_PROVENANCE", f"sources.{source_id}.sha256",
+                                          "sha256 must be 64 lowercase hex characters"))
+            continue
         sources[source_id] = SourceRef(source_id, item["title"], item["locator"],
-                                       item.get("revision"))
+                                       item.get("revision"), sha256)
     return sources
+
+
+def _parse_review_record(data, issues):
+    if "review_record" not in data:
+        return None
+    raw = data["review_record"]
+    if (not isinstance(raw, Mapping) or set(raw) != set(_REVIEW_RECORD_KEYS)
+            or not all(isinstance(raw[key], str) and raw[key] for key in _REVIEW_RECORD_KEYS)
+            or not _SHA256.fullmatch(raw["signed_record_sha256"])):
+        issues.append(ValidationIssue(
+            "MISSING_PROVENANCE", "review_record",
+            f"review_record requires exactly the non-empty strings {_REVIEW_RECORD_KEYS}"
+            " and a lowercase hex signed_record_sha256"))
+        return None
+    try:
+        # round trip: only the YYYY-MM-DD form (fromisoformat also takes 20261001 etc.)
+        valid_date = datetime.date.fromisoformat(raw["signed_on"]).isoformat() == raw["signed_on"]
+    except ValueError:
+        valid_date = False
+    if not valid_date:
+        issues.append(ValidationIssue("MISSING_PROVENANCE", "review_record.signed_on",
+                                      "signed_on must be a YYYY-MM-DD date"))
+        return None
+    return ReviewRecordRef(*(raw[key] for key in _REVIEW_RECORD_KEYS))
+
+
+def _check_review_status(review_status, has_record, record_key_present, bindings, issues):
+    """Status, review record and binding methods are all verified or all not verified."""
+    if review_status not in REVIEW_STATUSES:
+        issues.append(ValidationIssue("REVIEW_STATUS_MISMATCH", "source.review_status",
+                                      f"review_status must be one of {sorted(REVIEW_STATUSES)}"))
+        return
+    verified = review_status == HUMAN_VERIFIED
+    # an invalid review_record was already reported by _parse_review_record
+    if verified and not record_key_present:
+        issues.append(ValidationIssue("MISSING_PROVENANCE", "review_record",
+                                      "a HUMAN_VERIFIED graph requires a review_record"))
+    if not verified and has_record:
+        issues.append(ValidationIssue("REVIEW_STATUS_MISMATCH", "review_record",
+                                      "a review_record requires review_status HUMAN_VERIFIED"))
+    for binding in bindings:
+        if (binding.provenance.method is BindingMethod.HUMAN_VERIFIED_MAPPING) != verified:
+            issues.append(ValidationIssue(
+                "REVIEW_STATUS_MISMATCH", binding.semantic_entity_id,
+                "HUMAN_VERIFIED_MAPPING bindings occur exactly in a HUMAN_VERIFIED graph"))
 
 
 def check_header(data, schema_version, issues):
@@ -494,6 +581,12 @@ def build_process_graph(data: Mapping[str, Any]) -> ProcessGraph:
     if not isinstance(source, Mapping) or not isinstance(source.get("kind"), str):
         issues.append(ValidationIssue("MISSING_PROVENANCE", "source", "source.kind is required"))
         source = {}
+    extra = sorted(set(source) - _GRAPH_SOURCE_KEYS)
+    if extra:
+        issues.append(ValidationIssue("MISSING_PROVENANCE", "source",
+                                      f"unknown source fields {extra}"))
+    review_status = source.get("review_status")
+    review_record = _parse_review_record(data, issues)
     for text in _strings({k: v for k, v in data.items() if k != "sources"}):
         if _DISTURBANCE_REF.search(text):
             issues.append(ValidationIssue(
@@ -540,6 +633,8 @@ def build_process_graph(data: Mapping[str, Any]) -> ProcessGraph:
                                           f"attached to unknown entity {binding.attached_to!r}"))
         bindings.append(binding)
     check_unique_bindings(bindings, issues)
+    _check_review_status(review_status, review_record is not None, "review_record" in data,
+                         bindings, issues)
 
     bound_runtime = {b.runtime_variable_id for b in bindings}
     expected = _list(data, "expected_runtime_variables", issues)
@@ -581,8 +676,8 @@ def build_process_graph(data: Mapping[str, Any]) -> ProcessGraph:
         raise ProcessGraphValidationError(issues)
     provenance = GraphProvenance(
         GRAPH_SCHEMA_VERSION, fixture_id, version, UPSTREAM_REVISION, source["kind"],
-        str(source.get("review_status", "UNSPECIFIED")), content_sha256, pinned,
-        tuple(sources[key] for key in sorted(sources)))
+        review_status, content_sha256, pinned,
+        tuple(sources[key] for key in sorted(sources)), review_record)
     return ProcessGraph(provenance, nodes, edges, bindings, warnings)
 
 
@@ -609,5 +704,9 @@ def read_fixture(path: str | Path | None, packaged_name: str) -> Any:
 
 
 def load_process_graph(path: str | Path | None = None) -> ProcessGraph:
-    """Load the pinned packaged TEP graph, or an explicit structured fixture file."""
+    """Load the pinned packaged TEP graph, or an explicit structured fixture file.
+
+    The default is the canonical human-verified version (``PACKAGED_GRAPH_FIXTURE``).
+    Historical versions stay packaged; pass their file (``PACKAGED_GRAPH_FIXTURES``).
+    """
     return build_process_graph(read_fixture(path, PACKAGED_GRAPH_FIXTURE))

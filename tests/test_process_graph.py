@@ -11,21 +11,21 @@ import tep_sim
 from tep_sim import (REGISTRY, UPSTREAM_REVISION, BindingRelation, EdgeKind, NodeKind,
                      ProcessGraphValidationError, UnknownProcessEntity, build_process_graph,
                      load_process_graph)
-from tep_sim.evaluator_bindings import (build_evaluator_disturbance_bindings,
+from tep_sim.evaluator_bindings import (PACKAGED_EVALUATOR_FIXTURE,
+                                        build_evaluator_disturbance_bindings,
                                         load_evaluator_disturbance_bindings)
-from tep_sim.process import canonical_sha256
+from tep_sim.process import PACKAGED_GRAPH_FIXTURE, canonical_sha256
 
 FIXTURES = Path(tep_sim.__file__).with_name("fixtures")
 SRC = Path(tep_sim.__file__).parent
 
 
 def raw_graph():
-    return json.loads((FIXTURES / "tep_process_graph_v0.json").read_text(encoding="utf-8"))
+    return json.loads((FIXTURES / PACKAGED_GRAPH_FIXTURE).read_text(encoding="utf-8"))
 
 
 def raw_evaluator():
-    return json.loads((FIXTURES / "tep_evaluator_disturbance_bindings_v0.json")
-                      .read_text(encoding="utf-8"))
+    return json.loads((FIXTURES / PACKAGED_EVALUATOR_FIXTURE).read_text(encoding="utf-8"))
 
 
 def unpinned(data):
@@ -45,12 +45,14 @@ def graph():
 # -- acceptance 1: load the pinned structured representation -----------------------------
 def test_load_pinned_graph_with_provenance(graph):
     prov = graph.provenance
-    assert (prov.fixture_id, prov.fixture_version) == ("tep-process-graph", "0.1.0")
+    assert (prov.fixture_id, prov.fixture_version) == ("tep-process-graph", "0.2.0")
     assert prov.pinned and prov.upstream_revision == UPSTREAM_REVISION
     assert prov.content_sha256 == canonical_sha256(raw_graph())
     assert prov.source_kind == "CURATED_EQUIVALENT_GRAPH"
-    assert prov.review_status == "PENDING_HUMAN_REVIEW"
-    assert {s.source_id for s in prov.sources} == {"downs_vogel_1993", "upstream_constants"}
+    assert prov.review_status == "HUMAN_VERIFIED" and prov.review_record is not None
+    assert {s.source_id for s in prov.sources} == {
+        "downs_vogel_1993", "upstream_constants", "sim_python_backend", "sim_fortran",
+        "bathelt_ricker_jelali_2015"}
     assert len(graph.nodes()) == 17 and len(graph.edges()) == 18
     stream_numbers = sorted(e.stream_number for e in graph.edges() if e.stream_number)
     assert stream_numbers == list(range(1, 12))
@@ -240,6 +242,27 @@ def _find(items, key, value):
      "UNKNOWN_SOURCE_REF"),
     (lambda d: d["bindings"][0].pop("provenance"), "MISSING_PROVENANCE"),
     (lambda d: d.pop("sources"), "MISSING_PROVENANCE"),
+    (lambda d: d["sources"]["downs_vogel_1993"].update(note="free text"), "MISSING_PROVENANCE"),
+    (lambda d: d["sources"]["downs_vogel_1993"].update(sha256="ABC"), "MISSING_PROVENANCE"),
+    (lambda d: d.pop("review_record"), "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(notes="free text"), "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(signed_record_sha256="0" * 63), "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(signed_record_sha256="a" * 64 + "\n"),
+     "MISSING_PROVENANCE"),
+    (lambda d: d["sources"]["downs_vogel_1993"].update(sha256="a" * 64 + "\n"),
+     "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(signed_on="Oct 1"), "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(signed_on="20261001"), "MISSING_PROVENANCE"),
+    (lambda d: d["source"].update(review_status="VERIFIED"), "REVIEW_STATUS_MISMATCH"),
+    (lambda d: d["source"].pop("review_status"), "REVIEW_STATUS_MISMATCH"),
+    (lambda d: d["source"].update(review_status="PENDING_HUMAN_REVIEW"),
+     "REVIEW_STATUS_MISMATCH"),
+    (lambda d: d["source"].update(notes="free text"), "MISSING_PROVENANCE"),
+    (lambda d: d["bindings"][0]["provenance"].update(review_notes="free text"),
+     "MISSING_PROVENANCE"),
+    (lambda d: d["review_record"].update(reviewer=""), "MISSING_PROVENANCE"),
+    (lambda d: d["bindings"][0]["provenance"].update(method="CURATED_MAPPING"),
+     "REVIEW_STATUS_MISMATCH"),
 ])
 def test_corrupted_fixture_is_rejected(mutate, code):
     data = unpinned(raw_graph())
@@ -269,6 +292,15 @@ def test_non_string_fixture_identity_is_a_validation_error(field, value):
         with pytest.raises(ProcessGraphValidationError) as excinfo:
             build(data)
         assert "UNNORMALIZABLE_ENTITY" in codes(excinfo)
+
+
+def test_invalid_review_record_is_reported_once_not_as_a_status_mismatch():
+    baseline = json.loads((FIXTURES / "tep_process_graph_v0.json").read_text(encoding="utf-8"))
+    for data in (unpinned(raw_graph()), unpinned(baseline)):
+        data["review_record"] = None
+        with pytest.raises(ProcessGraphValidationError) as excinfo:
+            build_process_graph(data)
+        assert [i.code for i in excinfo.value.issues] == ["MISSING_PROVENANCE"]
 
 
 def test_pinned_version_content_drift_is_rejected():
@@ -368,16 +400,21 @@ def test_graph_queries_are_unaffected_by_simulation(graph, tmp_path):
     assert load_process_graph().provenance == graph.provenance
 
 
-def test_xmeas22_known_nomenclature_disagreement_stays_pending_review(graph):
+def test_xmeas22_known_nomenclature_disagreement_is_verified_without_renaming(graph):
     """XMEAS(22) is a recorded source disagreement, not a silent re-binding.
 
-    Upstream/Fortran names it "Separator Cooling Water Outlet Temp"; the curated
-    topology attaches it to the condenser cooling-water outlet per the TEP
-    flowsheet. Any human-verified correction must ship as a new fixture version.
+    Upstream/Fortran names it "Separator Cooling Water Outlet Temp"; the topology
+    attaches it to the condenser cooling-water outlet per the TEP flowsheet. The
+    human reviewer kept that attachment (Q1) in the new 0.2.0 version; 0.1.0 stays
+    the curated, pending baseline.
     """
     assert REGISTRY["XMEAS(22)"].name == "Separator Cooling Water Outlet Temp"
     binding = graph.binding("XMEAS(22)")
     assert binding.attached_to == "condenser_cooling_water_out"
-    assert binding.provenance.method.value == "CURATED_MAPPING"
-    assert graph.provenance.review_status == "PENDING_HUMAN_REVIEW"
-    assert graph.provenance.fixture_version == "0.1.0" and graph.provenance.pinned
+    assert binding.provenance.method.value == "HUMAN_VERIFIED_MAPPING"
+    assert graph.provenance.review_status == "HUMAN_VERIFIED"
+    assert graph.provenance.fixture_version == "0.2.0" and graph.provenance.pinned
+    baseline = load_process_graph(FIXTURES / "tep_process_graph_v0.json")
+    assert baseline.binding("XMEAS(22)").attached_to == binding.attached_to
+    assert baseline.binding("XMEAS(22)").provenance.method.value == "CURATED_MAPPING"
+    assert baseline.provenance.review_status == "PENDING_HUMAN_REVIEW"

@@ -19,7 +19,12 @@ from .process import ProcessGraph, check_header, parse_sources, read_fixture
 from .registry import REGISTRY, UPSTREAM_REVISION
 
 EVALUATOR_SCHEMA_VERSION = "tep-sim.evaluator-disturbance-bindings/v0"
-PACKAGED_EVALUATOR_FIXTURE = "tep_evaluator_disturbance_bindings_v0.json"
+# fixture_version -> packaged file; each version is bound to the same-numbered graph.
+PACKAGED_EVALUATOR_FIXTURES = MappingProxyType({
+    "0.1.0": "tep_evaluator_disturbance_bindings_v0.json",
+    "0.2.0": "tep_evaluator_disturbance_bindings_v0_2_0.json",
+})
+PACKAGED_EVALUATOR_FIXTURE = PACKAGED_EVALUATOR_FIXTURES["0.2.0"]
 EVALUATOR_ONLY = "EVALUATOR_ONLY"
 _KEYS = {"schema_version", "fixture_id", "fixture_version", "visibility", "upstream_revision",
          "graph_fixture_id", "graph_fixture_version", "graph_content_sha256", "source",
@@ -145,6 +150,10 @@ def build_evaluator_disturbance_bindings(
 
 def load_evaluator_disturbance_bindings(
         graph: ProcessGraph, path: str | Path | None = None) -> EvaluatorDisturbanceBindings:
-    """Evaluator/C0 use only. Never register the result behind an Agent-visible tool."""
-    return build_evaluator_disturbance_bindings(
-        read_fixture(path, PACKAGED_EVALUATOR_FIXTURE), graph)
+    """Evaluator/C0 use only. Never register the result behind an Agent-visible tool.
+
+    Without ``path`` the packaged evaluator matching ``graph``'s fixture version is used.
+    """
+    packaged = PACKAGED_EVALUATOR_FIXTURES.get(graph.provenance.fixture_version,
+                                               PACKAGED_EVALUATOR_FIXTURE)
+    return build_evaluator_disturbance_bindings(read_fixture(path, packaged), graph)

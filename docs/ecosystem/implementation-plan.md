@@ -10,7 +10,7 @@ Implementation evidence may still reopen a contract through `SPEC_CONFLICT`; cod
 
 As of Program Re-baseline v1:
 
-- `tep-sim` A1–A4 are implemented; A3's curated ProcessGraph/bindings remain `PENDING_HUMAN_REVIEW` until explicit human verification before D0 benchmark freeze;
+- `tep-sim` A1–A4 are implemented; A3's ProcessGraph/bindings are human verified: `tep-process-graph` 0.2.0 (`HUMAN_VERIFIED`) is the canonical graph for D0, and the curated 0.1.0 baseline stays immutable;
 - `industrial-agent-runtime` B1–B3 are implemented;
 - `tep-agent-lab` C1–C4 are implemented;
 - C4 exposed the need for focused B2.1 request-bound reservation before D0;
@@ -58,15 +58,17 @@ Spec: `docs/specs/environment-api-v0.md`
 
 Spec: `docs/specs/snapshot-fork-replay-v0.md`
 
-## A3 — DEXPI / ProcessGraph binding — IMPLEMENTED, HUMAN REVIEW PENDING
+## A3 — DEXPI / ProcessGraph binding — COMPLETE, HUMAN VERIFIED
 
 Spec: `docs/specs/dexpi-binding-v0.md`
 
-Before D0 benchmark freeze:
+Done before D0 benchmark freeze (handoff: `docs/a3-promotion-handoff.md`):
 
-- human-review curated topology/bindings;
-- resolve/record the known XMEAS(22) nomenclature/source discrepancy;
-- publish any approved mapping as a new fixture version/provenance, never silent mutation of the pinned fixture.
+- human review of the curated topology/bindings: signed record `a3-process-graph-human-verification` 0.2.0, 88/88 ACCEPT;
+- the XMEAS(22) nomenclature/source discrepancy is resolved and recorded (Q1, Option A; runtime name not renamed);
+- the approved mapping is published as the new pinned fixture version `tep-process-graph` 0.2.0 plus evaluator fixture 0.2.0; the pinned 0.1.0 fixtures are unchanged.
+
+Remaining non-blocking item: the F-11 paper-file rename (separate provenance-hygiene change).
 
 ## A4 — Capability / hard environment truth — COMPLETE
 
@@ -223,7 +225,7 @@ Prerequisites for benchmark freeze:
 
 - B2.1 request-bound reservation;
 - C5 minimal Tool Bridge;
-- A3 human-reviewed ProcessGraph/bindings;
+- A3 human-reviewed ProcessGraph/bindings (done: `tep-process-graph` 0.2.0);
 - P0 reproducible run/context/projection path.
 
 **B5 is not a D0 prerequisite.** D0/C0 can remain deterministic/fake-provider where appropriate.
@@ -346,7 +348,7 @@ A1-A4 complete          B1-B3 complete          C1-C4 complete
                               |
              +----------------+----------------+
              |                |                |
-           B2.1              C5        A3 human review
+           B2.1              C5     A3 human review (done)
              |                |                |
              +----------------+----------------+
                               |
