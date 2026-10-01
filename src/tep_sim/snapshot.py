@@ -15,7 +15,7 @@ from .errors import SnapshotFailure
 from .registry import UPSTREAM_REVISION
 
 
-ENVIRONMENT_VERSION = "0.1.0"
+ENVIRONMENT_VERSION = "0.2.0"  # A4: observations carry safety margins
 STATE_FORMAT_VERSION = "tep-python-pickle-v1"
 RANDOMNESS_POLICY = BranchRandomnessPolicy.CLONED_STATE
 

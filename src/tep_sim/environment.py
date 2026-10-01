@@ -96,12 +96,18 @@ class TEPEnvironment:
         return build_capability_registry(self.config.backend)
 
     def compile_scenario(self, request):
-        """Deterministically compile a semantic request for this config. No mutation."""
-        return compile_scenario(request, self.config.control_mode)
+        """Deterministically compile a semantic request for this config. No mutation.
+
+        When the environment is live, state preconditions are checked against the
+        current observation; otherwise they are reported as unchecked.
+        """
+        live = not self._closed and self._sim is not None
+        return compile_scenario(request, self.config.control_mode,
+                                self.observe() if live else None)
 
     def apply_scenario(self, request):
         """Compile, validate every intervention, then apply. Rejections never mutate."""
-        result = self.compile_scenario(request)
+        result = compile_scenario(request, self.config.control_mode, self.observe())
         if isinstance(result, UnsupportedScenario):
             raise UnsupportedScenarioError(result)
         if isinstance(result, AmbiguousScenario):
@@ -109,9 +115,17 @@ class TEPEnvironment:
         if not isinstance(result, SupportedScenario):
             raise InvalidScenarioError(result if isinstance(result, InvalidScenario)
                                        else InvalidScenario("compilation failed"))
-        plans = [self._validate(intervention) for intervention in result.interventions]
+        planned = {"constraints": {}, "mv": {}}
+        plans = []
+        for intervention in result.interventions:
+            plan = self._validate(intervention, planned)
+            if isinstance(intervention, MVConstraint):
+                planned["constraints"][intervention.target] = plan[1:]
+            elif isinstance(intervention, MVIntervention):
+                planned["mv"][intervention.target] = intervention.value
+            plans.append(plan)
         for intervention, plan in zip(result.interventions, plans):
-            self._commit(intervention, plan)
+            self._commit(intervention, plan, persist=False)
         self._scenarios.append({"time": self._sim.time, "step_count": self._sim.step_count,
                                 **dict(result.provenance)})
         self._events.append(EnvironmentEvent("scenario", self._sim.time, result.scenario_id))
@@ -170,8 +184,13 @@ class TEPEnvironment:
     def apply(self, intervention):
         self._commit(intervention, self._validate(intervention))
 
-    def _validate(self, intervention):
-        """All checks for one intervention; returns a commit plan without mutating."""
+    def _validate(self, intervention, planned=None):
+        """All checks for one intervention; returns a commit plan without mutating.
+
+        ``planned`` overlays constraints/MV setpoints from earlier interventions of
+        the same not-yet-committed scenario so each is checked against its effects.
+        """
+        planned = planned if planned is not None else {"constraints": {}, "mv": {}}
         # Required ordering: schema -> identity -> capability -> bounds -> mode -> preconditions.
         if type(intervention) not in (DisturbanceIntervention, MVIntervention, MVConstraint):
             raise InvalidIntervention("typed intervention required")
@@ -203,16 +222,19 @@ class TEPEnvironment:
         self._ready(advancing=True)
         index = REGISTRY[intervention.target].index
         if constraint:
-            current = self.observe().manipulated_variables[intervention.target]
+            current = planned["mv"].get(intervention.target)
+            if current is None:
+                current = self.observe().manipulated_variables[intervention.target]
             if not lo <= current <= hi:
                 raise InvalidIntervention("current setpoint violates proposed constraint")
         elif not disturbance:
-            low, high = self._constraints.get(intervention.target, (0, 100))
+            low, high = planned["constraints"].get(
+                intervention.target, self._constraints.get(intervention.target, (0, 100)))
             if not low <= intervention.value <= high:
                 raise InvalidIntervention("setpoint violates active constraint")
         return (index, lo, hi) if constraint else (index, None, None)
 
-    def _commit(self, intervention, plan):
+    def _commit(self, intervention, plan, persist=True):
         index, lo, hi = plan
         constraint = isinstance(intervention, MVConstraint)
         disturbance = isinstance(intervention, DisturbanceIntervention)
@@ -232,7 +254,8 @@ class TEPEnvironment:
                                "type": type(intervention).__name__,
                                **asdict(intervention)})
         self._events.append(EnvironmentEvent("intervention", self._sim.time, repr(intervention)))
-        self._persist(None)
+        if persist:
+            self._persist(None)
 
     def step(self):
         self._ready(advancing=True)

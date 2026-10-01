@@ -151,3 +151,16 @@ and `evaluate_safety()`. No LLM, agent-authorization, RCA, or recovery logic is 
 - Provenance now records `capability_version`, `scenario_mapping_version`, and
   `safety_limits_version`. The A3 `ProcessGraph` fixture and its
   `PENDING_HUMAN_REVIEW` status are unchanged.
+- **Review hardening.** Thresholds are read from the vendored
+  `tep.constants.SAFETY_LIMITS`; only the XMEAS unit conversions are local.
+  Multi-intervention scenarios are validated against the planned effects of earlier
+  interventions in the same scenario before anything commits. Scenario mappings may
+  carry a state precondition (the flow reduction must close XMV(10) below its
+  current position); `compile_scenario` without an observation records it as
+  unchecked, and `apply_scenario` always checks it. Disturbances already active at
+  rollout start are reported as `disturbance_active`. `ENVIRONMENT_VERSION` is now
+  `0.2.0` because observations hash `safety_margins`, so pre-A4 snapshots/replay
+  specs fail the version check instead of a misleading replay mismatch.
+- Replay reproduces the individual interventions; scenario provenance stays in the
+  source branch's provenance (`scenarios`), reachable via `replay_of_branch_id`.
+  The A2 replay format is unchanged.

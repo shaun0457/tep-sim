@@ -62,6 +62,8 @@ class ScenarioMapping:
     control_modes: frozenset
     parameters: Mapping[str, tuple[float, float, str]]
     build: Callable[[Mapping[str, float]], tuple]
+    # (description, check(values, observation) -> violation reason | None)
+    state_precondition: tuple[str, Callable] | None = None
 
 
 def _idv(index):
@@ -87,7 +89,11 @@ _SCENARIOS = (
         f"vendored MANIPULATED_VAR_NAMES XMV(10): {REGISTRY['XMV(10)'].name}",
         frozenset({ControlMode.MANUAL}),
         {"valve_position_percent": (0.0, 100.0, "%")},
-        lambda p: (MVIntervention("XMV(10)", float(p["valve_position_percent"])),)),
+        lambda p: (MVIntervention("XMV(10)", float(p["valve_position_percent"])),),
+        ("valve_position_percent < current XMV(10)",
+         lambda p, obs: None if p["valve_position_percent"]
+         < obs.manipulated_variables["XMV(10)"]
+         else "a reduction must close XMV(10) below its current position")),
     ScenarioMapping(
         "condenser_cooling_water_inlet_temperature_step",
         "Step increase of the condenser cooling-water inlet temperature",
@@ -114,8 +120,12 @@ def ambiguous_terms() -> Mapping[str, tuple[str, ...]]:
     return _AMBIGUOUS
 
 
-def compile_scenario(request: Any, control_mode: ControlMode):
-    """Total, deterministic compilation. Never raises for malformed input."""
+def compile_scenario(request: Any, control_mode: ControlMode, observation=None):
+    """Total, deterministic compilation. Never raises for malformed input.
+
+    ``observation`` (the current environment state) enables state preconditions;
+    without it they are recorded as unchecked in provenance.
+    """
     if not isinstance(request, ScenarioRequest):
         return InvalidScenario("ScenarioRequest required")
     scenario_id = request.scenario_id
@@ -155,8 +165,16 @@ def compile_scenario(request: Any, control_mode: ControlMode):
         return UnsupportedScenario(
             scenario_id, f"requires control mode {modes}; configured {control_mode.value}",
             f"control_mode:{modes}")
+    precondition = None
+    if mapping.state_precondition is not None:
+        description, check = mapping.state_precondition
+        precondition = {"condition": description, "checked": observation is not None}
+        if observation is not None:
+            violation = check(values, observation)
+            if violation:
+                return InvalidScenario(violation, scenario_id)
     return SupportedScenario(scenario_id, mapping.build(values), {
         "scenario_id": scenario_id, "mapping_version": SCENARIO_MAPPING_VERSION,
         "capability_version": CAPABILITY_VERSION, "upstream_revision": UPSTREAM_REVISION,
         "control_mode": control_mode.value, "parameters": dict(sorted(values.items())),
-        "source": mapping.source})
+        "state_precondition": precondition, "source": mapping.source})

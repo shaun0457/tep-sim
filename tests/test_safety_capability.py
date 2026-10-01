@@ -331,3 +331,55 @@ def test_a4_modules_have_no_agent_runtime_or_model_imports():
             modules = ([a.name for a in node.names] if isinstance(node, ast.Import)
                        else [node.module or ""] if isinstance(node, ast.ImportFrom) else [])
             assert not any(m.split(".")[0] in banned for m in modules), (name, modules)
+
+
+# -- review hardening ----------------------------------------------------------------
+def test_planned_constraint_is_enforced_within_one_scenario(tmp_path, monkeypatch):
+    def mapping(value):
+        return scenario_module.ScenarioMapping(
+            "fixture_guarded", "fixture", "test", frozenset(ControlMode), {},
+            lambda _: (tep_sim.MVConstraint("XMV(10)", 30.0, 60.0),
+                       MVIntervention("XMV(10)", value)))
+    env = TEPEnvironment(make_config(tmp_path, ControlMode.MANUAL))
+    env.reset()
+    before = state(env)
+    monkeypatch.setattr(scenario_module, "_BY_ID", {"fixture_guarded": mapping(70.0)})
+    with pytest.raises(tep_sim.InvalidIntervention, match="active constraint"):
+        env.apply_scenario(ScenarioRequest("fixture_guarded"))
+    assert state(env) == before
+    monkeypatch.setattr(scenario_module, "_BY_ID", {"fixture_guarded": mapping(35.0)})
+    env.apply_scenario(ScenarioRequest("fixture_guarded"))
+    assert env.observe().manipulated_variables["XMV(10)"] == 35.0
+    assert env._constraints["XMV(10)"] == (30.0, 60.0)
+
+
+def test_flow_reduction_must_actually_reduce_the_current_valve_position(tmp_path):
+    pure = compile_scenario(ScenarioRequest("reactor_cooling_water_flow_reduction",
+                                            {"valve_position_percent": 95}), ControlMode.MANUAL)
+    assert pure.provenance["state_precondition"]["checked"] is False
+    env = TEPEnvironment(make_config(tmp_path, ControlMode.MANUAL))
+    env.reset()
+    before = state(env)
+    request = ScenarioRequest("reactor_cooling_water_flow_reduction",
+                              {"valve_position_percent": 95})
+    assert isinstance(env.compile_scenario(request), InvalidScenario)
+    with pytest.raises(InvalidScenarioError):
+        env.apply_scenario(request)
+    assert state(env) == before
+    applied = env.apply_scenario(COOLING_LOSS)
+    assert applied.provenance["state_precondition"]["checked"] is True
+
+
+def test_disturbances_active_at_rollout_start_are_reported(tmp_path):
+    env = TEPEnvironment(make_config(tmp_path))
+    env.reset()
+    env.apply_scenario(ScenarioRequest("reactor_cooling_water_inlet_temperature_step"))
+    events = env.evaluate_safety(env.rollout(0.01)).relevant_process_events
+    assert events[0].kind == "disturbance_active" and events[0].subject == "IDV(4)"
+
+
+def test_limit_values_come_from_vendored_upstream_constants():
+    from tep.constants import SAFETY_LIMITS as upstream
+    limits = {limit.limit_id: limit for limit in SAFETY_LIMITS}
+    assert limits["reactor_pressure_high"].threshold == upstream.reactor_pressure_max
+    assert limits["reactor_temperature_high"].threshold == upstream.reactor_temp_max

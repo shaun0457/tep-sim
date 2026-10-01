@@ -17,6 +17,8 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping
 
+from tep.constants import SAFETY_LIMITS as _UPSTREAM
+
 from .capability import CAPABILITY_VERSION, UNSUPPORTED_CONSEQUENCE_DOMAINS
 from .contracts import ArtifactRef, RolloutResult
 from .errors import InvalidEnvironmentState
@@ -24,6 +26,8 @@ from .registry import UPSTREAM_REVISION
 
 SAFETY_LIMITS_VERSION = "tep-sim.safety-limits/v0"
 SAFETY_EVALUATION_VERSION = "tep-sim.safety-evaluation/v0"
+# Unit conversions copied from the pinned python_backend XMEAS formulas; the limit
+# values themselves come from the vendored tep.constants.SAFETY_LIMITS.
 _FT3_PER_M3 = 35.3145
 _SOURCE = f"tep/python_backend.py shutdown check @ {UPSTREAM_REVISION}"
 
@@ -51,22 +55,28 @@ def _level(volume_m3, offset_ft3, span_ft3):
 
 
 SAFETY_LIMITS = (
-    SafetyLimit("reactor_pressure_high", "XMEAS(7)", "max", 3000.0, "kPa gauge",
-                "reactor pressure above the shutdown limit"),
-    SafetyLimit("reactor_temperature_high", "XMEAS(9)", "max", 175.0, "deg C",
-                "reactor temperature above the shutdown limit"),
-    SafetyLimit("reactor_level_high", "XMEAS(8)", "max", _level(24.0, 84.6, 666.7), "%",
-                "reactor liquid volume above 24 m3"),
-    SafetyLimit("reactor_level_low", "XMEAS(8)", "min", _level(2.0, 84.6, 666.7), "%",
-                "reactor liquid volume below 2 m3"),
-    SafetyLimit("separator_level_high", "XMEAS(12)", "max", _level(12.0, 27.5, 290.0), "%",
-                "separator liquid volume above 12 m3"),
-    SafetyLimit("separator_level_low", "XMEAS(12)", "min", _level(1.0, 27.5, 290.0), "%",
-                "separator liquid volume below 1 m3"),
-    SafetyLimit("stripper_level_high", "XMEAS(15)", "max", _level(8.0, 78.25, 156.5), "%",
-                "stripper liquid volume above 8 m3"),
-    SafetyLimit("stripper_level_low", "XMEAS(15)", "min", _level(1.0, 78.25, 156.5), "%",
-                "stripper liquid volume below 1 m3"),
+    SafetyLimit("reactor_pressure_high", "XMEAS(7)", "max", _UPSTREAM.reactor_pressure_max,
+                "kPa gauge", "reactor pressure above the shutdown limit"),
+    SafetyLimit("reactor_temperature_high", "XMEAS(9)", "max", _UPSTREAM.reactor_temp_max,
+                "deg C", "reactor temperature above the shutdown limit"),
+    SafetyLimit("reactor_level_high", "XMEAS(8)", "max",
+                _level(_UPSTREAM.reactor_level_max, 84.6, 666.7), "%",
+                f"reactor liquid volume above {_UPSTREAM.reactor_level_max} m3"),
+    SafetyLimit("reactor_level_low", "XMEAS(8)", "min",
+                _level(_UPSTREAM.reactor_level_min, 84.6, 666.7), "%",
+                f"reactor liquid volume below {_UPSTREAM.reactor_level_min} m3"),
+    SafetyLimit("separator_level_high", "XMEAS(12)", "max",
+                _level(_UPSTREAM.separator_level_max, 27.5, 290.0), "%",
+                f"separator liquid volume above {_UPSTREAM.separator_level_max} m3"),
+    SafetyLimit("separator_level_low", "XMEAS(12)", "min",
+                _level(_UPSTREAM.separator_level_min, 27.5, 290.0), "%",
+                f"separator liquid volume below {_UPSTREAM.separator_level_min} m3"),
+    SafetyLimit("stripper_level_high", "XMEAS(15)", "max",
+                _level(_UPSTREAM.stripper_level_max, 78.25, 156.5), "%",
+                f"stripper liquid volume above {_UPSTREAM.stripper_level_max} m3"),
+    SafetyLimit("stripper_level_low", "XMEAS(15)", "min",
+                _level(_UPSTREAM.stripper_level_min, 78.25, 156.5), "%",
+                f"stripper liquid volume below {_UPSTREAM.stripper_level_min} m3"),
 )
 
 
@@ -161,6 +171,9 @@ def evaluate_safety(rollout: RolloutResult) -> SafetyEvaluation:
     minima: dict[str, MinimumMargin] = {}
     open_since: dict[str, tuple[float, float]] = {}
     previous_disturbances: set[str] = set(records[0].get("active_disturbances", ()))
+    # Disturbances already active when the rollout starts are reported once up front.
+    events += [ProcessEvent("disturbance_active", float(records[0]["simulation_time"]), d)
+               for d in sorted(previous_disturbances)]
     shutdown_time = None
     shutdown_limits: tuple[str, ...] = ()
     for position, record in enumerate(records):
