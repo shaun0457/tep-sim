@@ -185,7 +185,6 @@ Summary:
 | D&V Table 4 (p. 249) | XMEAS(22) | **"Separator cooling water outlet temperature"**, base 77.297 °C (the simulator gives 77.29 °C) |
 | D&V Fig. 1 (p. 246) | condenser | CWS → condenser → line **13** with TI and control valve → CWR. No separator cooling loop is drawn |
 | Bathelt et al. 2015 Fig. 3 (p. 311) | condenser | original (black) measurement **TI 1202** on condenser CW return line 13. The text defines the first two tag digits: 11 reactor, **12 condenser**, 13 separator |
-| Reinartz et al. 2021 disturbance table (p. 4) | naming | uses "condenser cooling" and "separator" for the same cooling-water loop in adjacent rows. In the literature the two words are interchangeable for this loop |
 | Ricker 1996 (p. 10, loop 19) | control text | "Control of reactor liquid level relies on control of the temperature in the separator. If the condenser coolant valve saturates…": the separator temperature is controlled with the condenser coolant |
 
 ### 5.3 Causal probe (runtime, mechanical)
@@ -316,7 +315,7 @@ Checks performed. Automated consistency is necessary but not sufficient:
 |---|---|---|---|
 | F-01 | review item | XMEAS(22) label "Separator…" vs condenser attachment (§5) | human chooses Option A/B/C |
 | F-02 | review item | XMEAS(16) "Stripper pressure" is computed from `PTV` (`python_backend.py:1150`, `teprob.f:694`), the pressure of the compressor-discharge/reactor-feed vapor zone. The model has no stripper pressure state. D&V Fig. 1 draws the PI on stripper overhead line 5; Bathelt shows PI 1501 at the stripper | human decides: keep `stripper` (nomenclature) or attach to `stream_5`/`reactor_feed_mixer` (runtime state) |
-| F-03 | review item | XMV(10)/XMV(11) are attached to `*_cooling_water_in`. Both figures place the CW control valves on the **return** lines 12/13 (V-1101, V-1201). The flow is the same along the single-path loop | human decides whether the inlet-edge attachment is acceptable. Any attachment change also requires re-publishing the hash-bound evaluator-only fixture (see the evaluator-only note) |
+| F-03 | review item | XMV(10)/XMV(11) are attached to `*_cooling_water_in`. Both figures place the CW control valves on the **return** lines 12/13 (V-1101, V-1201). The flow is the same along the single-path loop | human decides whether the inlet-edge attachment is acceptable |
 | F-04 | metadata | CW return lines are numbered 12 and 13 in D&V Fig. 1 and Bathelt Fig. 3, but the fixture has `stream_number: null`. D&V Table 1 lists only process streams 1–11 | human decides whether figure line numbers belong in `stream_number` |
 | F-05 | info | The condenser has no runtime holdup. Its duty is lumped into the separator energy balance | accept as a static-topology abstraction |
 | F-06 | info | `reactor_feed_mixer` is a modeled vapor zone (`VTV` "Compressor volume", `PTV`). D&V draws only a header | accept; the name is descriptive, no tag |
@@ -350,7 +349,7 @@ Checks performed. Automated consistency is necessary but not sufficient:
 
 If the reviewer requests changes, they go into a NEW fixture version (e.g.
 `tep-process-graph` 0.2.0 with its own pin). Because the evaluator fixture is
-hash-bound to graph 0.1.0, it must be re-published with it. Bindings stay
+hash-bound to the graph's canonical content hash, **any** graph content change (Q2, Q3, Q4 or Q5, not only F-03) requires re-publishing it as a new version bound to the new hash. Bindings stay
 `HUMAN_VERIFIED_MAPPING` only for the rows the human accepted.
 
 ## 9. Questions requiring human sign-off
