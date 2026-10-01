@@ -43,3 +43,10 @@ Which scenarios an Agent may request is a runtime/lab decision.
 - A3 `ProcessGraph` remains `PENDING_HUMAN_REVIEW`; this blocks D0 freeze, not A4.
 
 No `SPEC_CONFLICT`.
+
+## Batch-3 review closure
+
+- Deep immutability for capability and scenario data (see spec notes).
+- Replay decision recorded as D-043. The register also records the B3
+  adjudications D-039–D-042 (owning spec:
+  `industrial-agent-runtime/docs/specs/hybrid-orchestration-v0.md`).

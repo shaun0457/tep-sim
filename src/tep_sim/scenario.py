@@ -11,6 +11,7 @@ from typing import Any, Callable, Mapping
 
 from .capability import CAPABILITY_VERSION, UNSUPPORTED_CONSEQUENCE_DOMAINS
 from .contracts import ControlMode, DisturbanceIntervention, MVIntervention
+from .frozen import deep_freeze
 from .registry import REGISTRY, UPSTREAM_REVISION
 
 SCENARIO_MAPPING_VERSION = "tep-sim.scenarios/v0"
@@ -31,7 +32,7 @@ class SupportedScenario:
 
     def __post_init__(self):
         object.__setattr__(self, "interventions", tuple(self.interventions))
-        object.__setattr__(self, "provenance", MappingProxyType(dict(self.provenance)))
+        object.__setattr__(self, "provenance", deep_freeze(dict(self.provenance)))
 
 
 @dataclass(frozen=True)

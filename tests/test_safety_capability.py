@@ -383,3 +383,52 @@ def test_limit_values_come_from_vendored_upstream_constants():
     limits = {limit.limit_id: limit for limit in SAFETY_LIMITS}
     assert limits["reactor_pressure_high"].threshold == upstream.reactor_pressure_max
     assert limits["reactor_temperature_high"].threshold == upstream.reactor_temp_max
+
+
+# -- Batch-3 closure: deep immutability ----------------------------------------------
+def test_capability_registry_and_nested_metadata_reject_caller_mutation():
+    registry = build_capability_registry()
+    before = registry.to_json()
+    with pytest.raises(AttributeError):
+        registry.version = "forged"
+    with pytest.raises(AttributeError):
+        registry._index = {}
+    scenario = registry.entry("scenario:reactor_cooling_water_flow_reduction")
+    bounds = scenario.details["parameters"]["valve_position_percent"]
+    with pytest.raises(TypeError):
+        bounds["maximum"] = 1000.0
+    with pytest.raises(TypeError):
+        scenario.details["parameters"]["new"] = {}
+    with pytest.raises((TypeError, AttributeError)):
+        scenario.preconditions["control_mode"].append("closed_loop")
+    with pytest.raises(TypeError):
+        registry.entry("disturbance:IDV(4)").details["values"][0] = 7
+    exported = registry.to_json()
+    exported["supported_disturbances"].clear()  # an export is the caller's own copy
+    assert registry.to_json() == before == build_capability_registry().to_json()
+
+
+def test_supported_scenario_provenance_is_deeply_immutable(tmp_path):
+    env = TEPEnvironment(make_config(tmp_path, ControlMode.MANUAL))
+    env.reset()
+    result = env.apply_scenario(COOLING_LOSS)
+    from operator import setitem
+    for target, key, value in ((result.provenance["parameters"], "valve_position_percent", 99),
+                               (result.provenance["state_precondition"], "checked", False),
+                               (result.provenance, "scenario_id", "forged")):
+        with pytest.raises(TypeError):
+            setitem(target, key, value)
+    persisted = state(env)[5][0]
+    assert persisted["parameters"] == {"valve_position_percent": 0.0}
+    assert persisted["state_precondition"]["checked"] is True
+    again = compile_scenario(COOLING_LOSS, ControlMode.MANUAL)
+    assert again.provenance["parameters"] == {"valve_position_percent": 0.0}
+
+
+def test_request_parameters_mutated_after_compile_do_not_leak(tmp_path):
+    parameters = {"valve_position_percent": 5.0}
+    result = compile_scenario(ScenarioRequest("reactor_cooling_water_flow_reduction",
+                                              parameters), ControlMode.MANUAL)
+    parameters["valve_position_percent"] = 80.0
+    assert result.provenance["parameters"] == {"valve_position_percent": 5.0}
+    assert result.interventions == (MVIntervention("XMV(10)", 5.0),)

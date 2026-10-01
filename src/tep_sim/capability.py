@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping
 
+from .frozen import deep_freeze, thaw
 from .registry import REGISTRY, UPSTREAM_REVISION
 
 CAPABILITY_VERSION = "tep-sim.capabilities/v0"
@@ -45,36 +46,38 @@ class CapabilityEntry:
     details: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
-        object.__setattr__(self, "preconditions", MappingProxyType(dict(self.preconditions)))
-        object.__setattr__(self, "details", MappingProxyType(dict(self.details)))
+        object.__setattr__(self, "preconditions", deep_freeze(dict(self.preconditions)))
+        object.__setattr__(self, "details", deep_freeze(dict(self.details)))
 
     def to_json(self) -> dict:
         return {"capability_id": self.capability_id, "domain": self.domain,
                 "supported": self.supported, "description": self.description,
-                "source": self.source, "preconditions": _plain(self.preconditions),
-                "details": _plain(self.details)}
-
-
-def _plain(value):
-    if isinstance(value, Mapping):
-        return {key: _plain(item) for key, item in value.items()}
-    if isinstance(value, (tuple, list)):
-        return [_plain(item) for item in value]
-    return value
+                "source": self.source, "preconditions": thaw(self.preconditions),
+                "details": thaw(self.details)}
 
 
 class CapabilityRegistry:
     """Immutable, versioned capability entries grouped by domain."""
 
+    __slots__ = ("version", "upstream_revision", "backend", "_domains", "_index")
+
     def __init__(self, backend: str, entries):
-        self.version = CAPABILITY_VERSION
-        self.upstream_revision = UPSTREAM_REVISION
-        self.backend = backend
+        entries = tuple(entries)
         groups = {domain: [] for domain in DOMAINS}
         for entry in entries:
             groups[entry.domain].append(entry)
-        self._domains = MappingProxyType({d: tuple(e) for d, e in groups.items()})
-        self._index = MappingProxyType({e.capability_id: e for e in entries})
+        for name, value in (
+                ("version", CAPABILITY_VERSION), ("upstream_revision", UPSTREAM_REVISION),
+                ("backend", backend),
+                ("_domains", MappingProxyType({d: tuple(e) for d, e in groups.items()})),
+                ("_index", MappingProxyType({e.capability_id: e for e in entries}))):
+            object.__setattr__(self, name, value)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("CapabilityRegistry is immutable")
+
+    def __delattr__(self, name):
+        raise AttributeError("CapabilityRegistry is immutable")
 
     def domain(self, name: str) -> tuple[CapabilityEntry, ...]:
         if name not in self._domains:

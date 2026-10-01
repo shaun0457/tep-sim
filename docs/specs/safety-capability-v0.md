@@ -164,3 +164,14 @@ and `evaluate_safety()`. No LLM, agent-authorization, RCA, or recovery logic is 
 - Replay reproduces the individual interventions; scenario provenance stays in the
   source branch's provenance (`scenarios`), reachable via `replay_of_branch_id`.
   The A2 replay format is unchanged.
+- **Batch-3 closure (D-043).** ReplaySpec v0 reproduces the physical intervention
+  trajectory; semantic scenario identity/mapping provenance remains in the source
+  run/experiment provenance (`scenarios`). The A2 ReplaySpec format is unchanged.
+  D0 benchmark records must retain a source provenance ref/checksum whenever
+  semantic-scenario provenance matters.
+- **Deep immutability.** `CapabilityRegistry` rejects attribute assignment;
+  `CapabilityEntry.preconditions/details` (including nested scenario parameter
+  metadata) and `SupportedScenario.provenance` (including `parameters` and
+  `state_precondition`) are recursively frozen (`tep_sim.frozen.deep_freeze`).
+  `to_json()` and persisted run provenance use thawed, JSON-safe copies, so caller
+  mutation can neither alter later results nor persisted provenance.

@@ -19,6 +19,7 @@ from .errors import (InvalidIntervention, UnknownVariable, UnsupportedCapability
                      SimulationFailure, SnapshotFailure, UnsupportedScenarioError,
                      AmbiguousScenarioError, InvalidScenarioError)
 from .capability import CAPABILITY_VERSION, build_capability_registry
+from .frozen import thaw
 from .registry import REGISTRY, UPSTREAM_REVISION
 from .safety import SAFETY_LIMITS_VERSION, evaluate_safety, safety_margins
 from .scenario import (SCENARIO_MAPPING_VERSION, AmbiguousScenario, InvalidScenario,
@@ -127,7 +128,7 @@ class TEPEnvironment:
         for intervention, plan in zip(result.interventions, plans):
             self._commit(intervention, plan, persist=False)
         self._scenarios.append({"time": self._sim.time, "step_count": self._sim.step_count,
-                                **dict(result.provenance)})
+                                **thaw(result.provenance)})
         self._events.append(EnvironmentEvent("scenario", self._sim.time, result.scenario_id))
         self._persist(None)
         return result
