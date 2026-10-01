@@ -1,0 +1,259 @@
+{
+  "schema_version": "tep-sim.evaluator-disturbance-bindings/v0",
+  "fixture_id": "tep-evaluator-disturbance-bindings",
+  "fixture_version": "0.2.0",
+  "visibility": "EVALUATOR_ONLY",
+  "upstream_revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005",
+  "graph_fixture_id": "tep-process-graph",
+  "graph_fixture_version": "0.2.0",
+  "graph_content_sha256": "cc8ccc81e9f421238863457438465877850b19d9760740279e54a52468fe9a87",
+  "source": {
+    "kind": "CURATED_MAPPING",
+    "review_status": "PENDING_HUMAN_REVIEW"
+  },
+  "sources": {
+    "downs_vogel_1993": {
+      "title": "Downs & Vogel (1993), A plant-wide industrial process control problem, Fig. 1 and Tables 1-8",
+      "locator": "docs/papers/Downs1993_TEP.pdf"
+    },
+    "upstream_constants": {
+      "title": "Vendored simulator variable metadata",
+      "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    }
+  },
+  "bindings": [
+    {
+      "semantic_entity_id": "stream_4.ac_ratio_disturbance",
+      "attached_to": "stream_4",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(1)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.b_composition_disturbance",
+      "attached_to": "stream_4",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(2)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_2.temperature_step_disturbance",
+      "attached_to": "stream_2",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(3)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor_cooling.inlet_temperature_step_disturbance",
+      "attached_to": "reactor_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(4)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "condenser_cooling.inlet_temperature_step_disturbance",
+      "attached_to": "condenser_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(5)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_1.feed_loss_disturbance",
+      "attached_to": "stream_1",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(6)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.header_pressure_loss_disturbance",
+      "attached_to": "stream_4",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(7)",
+      "quantity": "pressure",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.composition_random_disturbance",
+      "attached_to": "stream_4",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(8)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_2.temperature_random_disturbance",
+      "attached_to": "stream_2",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(9)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.temperature_random_disturbance",
+      "attached_to": "stream_4",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(10)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor_cooling.inlet_temperature_random_disturbance",
+      "attached_to": "reactor_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(11)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "condenser_cooling.inlet_temperature_random_disturbance",
+      "attached_to": "condenser_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(12)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor.kinetics_drift_disturbance",
+      "attached_to": "reactor",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(13)",
+      "quantity": "reaction_kinetics",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor_cooling.valve_sticking_disturbance",
+      "attached_to": "reactor_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(14)",
+      "quantity": "valve_position",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "condenser_cooling.valve_sticking_disturbance",
+      "attached_to": "condenser_cooling_water_in",
+      "relation": "DISTURBS",
+      "runtime_variable_id": "IDV(15)",
+      "quantity": "valve_position",
+      "provenance": {
+        "method": "CURATED_MAPPING",
+        "source_refs": [
+          "downs_vogel_1993",
+          "upstream_constants"
+        ]
+      }
+    }
+  ],
+  "unbound_runtime_variables": [
+    {
+      "runtime_variable_id": "IDV(16)",
+      "reason": "upstream labels this disturbance Unknown; no verified process location"
+    },
+    {
+      "runtime_variable_id": "IDV(17)",
+      "reason": "upstream labels this disturbance Unknown; no verified process location"
+    },
+    {
+      "runtime_variable_id": "IDV(18)",
+      "reason": "upstream labels this disturbance Unknown; no verified process location"
+    },
+    {
+      "runtime_variable_id": "IDV(19)",
+      "reason": "upstream labels this disturbance Unknown; no verified process location"
+    },
+    {
+      "runtime_variable_id": "IDV(20)",
+      "reason": "upstream labels this disturbance Unknown; no verified process location"
+    }
+  ]
+}

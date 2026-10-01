@@ -45,6 +45,10 @@ upstream). CI runs 3.11 and 3.13.
 
 ## Unresolved
 
+> **Resolved later.** The human review items below were closed by the signed record
+> and the `tep-process-graph` 0.2.0 promotion. See `docs/a3-promotion-handoff.md`.
+> This section records the state at A3 delivery.
+
 - The fixture is a curated equivalent, not the official DEXPI XML; the bindings
   still need human review (`PENDING_HUMAN_REVIEW`).
 - XMEAS(22) is a known source/nomenclature disagreement: upstream/Fortran names it

@@ -44,7 +44,8 @@ def package():
 
 @pytest.fixture(scope="module")
 def graph():
-    return load_process_graph()
+    # the review subject is the curated 0.1.0 baseline, not the promoted default
+    return load_process_graph(GRAPH_FIXTURE)
 
 
 def signed_record_sha256(package):
@@ -239,15 +240,17 @@ def test_pinned_fixtures_are_byte_and_content_immutable(package, graph):
         PINNED_FIXTURES[("tep-process-graph", "0.1.0")] == graph.provenance.content_sha256
     assert PINNED_FIXTURES[("tep-evaluator-disturbance-bindings", "0.1.0")] == \
         evaluator_subject["pinned_sha256"]
-    # This package proposes no candidate graph/evaluator version. A promoted version is a
-    # deliberate, human-signed-off change that updates this assertion (review doc §8, §10).
+    # The package itself proposes no fixture. The only later version is the 0.2.0
+    # promotion of this signed record (tests/test_a3_promotion.py); any other version is
+    # a deliberate change that updates this assertion (review doc §8, §10).
     subject_ids = {"tep-process-graph", "tep-evaluator-disturbance-bindings"}
-    assert {key for key in PINNED_FIXTURES if key[0] in subject_ids} == \
-        {(fixture_id, "0.1.0") for fixture_id in subject_ids}
+    versions = {(fixture_id, version) for fixture_id in subject_ids
+                for version in ("0.1.0", "0.2.0")}
+    assert {key for key in PINNED_FIXTURES if key[0] in subject_ids} == versions
     for path in FIXTURES.glob("*.json"):
-        if path.name not in (GRAPH_FIXTURE.name, "tep_evaluator_disturbance_bindings_v0.json"):
-            data = json.loads(path.read_text(encoding="utf-8"))
-            assert data.get("fixture_id") not in subject_ids, path.name
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("fixture_id") in subject_ids:
+            assert (data["fixture_id"], data["fixture_version"]) in versions, path.name
 
 
 def test_signoff_is_a_recorded_human_decision_not_a_fixture_promotion(package, graph):
@@ -275,11 +278,13 @@ def test_signoff_is_a_recorded_human_decision_not_a_fixture_promotion(package, g
                 assert item["visual_reading_confirmed_by"] == signoff["reviewer"]  # Q6
     # the signed record is pinned: any later edit to a decision, note or Q text fails
     assert signed_record_sha256(package) == SIGNED_RECORD_SHA256
-    # recording decisions does not promote anything: the 0.1.0 baseline stays curated
+    # recording decisions did not promote anything: the record stays as signed, and the
+    # 0.1.0 baseline stays curated (the promotion is the separate 0.2.0 fixture)
     assert signoff["fixture_promotion"].startswith("NOT_PERFORMED")
     assert graph.provenance.review_status == "PENDING_HUMAN_REVIEW"
     assert all(b.provenance.method.value == "CURATED_MAPPING" for b in graph.bindings())
-    for path in [*FIXTURES.glob("*.json"), MATRIX]:
+    for path in (GRAPH_FIXTURE, FIXTURES / "tep_evaluator_disturbance_bindings_v0.json",
+                 MATRIX):
         assert "HUMAN_VERIFIED" not in path.read_text(encoding="utf-8"), path.name
 
 

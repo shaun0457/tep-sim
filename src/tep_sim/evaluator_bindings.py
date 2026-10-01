@@ -19,7 +19,12 @@ from .process import ProcessGraph, check_header, parse_sources, read_fixture
 from .registry import REGISTRY, UPSTREAM_REVISION
 
 EVALUATOR_SCHEMA_VERSION = "tep-sim.evaluator-disturbance-bindings/v0"
-PACKAGED_EVALUATOR_FIXTURE = "tep_evaluator_disturbance_bindings_v0.json"
+# fixture_version -> packaged file; each version is bound to the same-numbered graph.
+PACKAGED_EVALUATOR_FIXTURES = MappingProxyType({
+    "0.1.0": "tep_evaluator_disturbance_bindings_v0.json",
+    "0.2.0": "tep_evaluator_disturbance_bindings_v0_2_0.json",
+})
+PACKAGED_EVALUATOR_FIXTURE = PACKAGED_EVALUATOR_FIXTURES["0.2.0"]
 EVALUATOR_ONLY = "EVALUATOR_ONLY"
 _KEYS = {"schema_version", "fixture_id", "fixture_version", "visibility", "upstream_revision",
          "graph_fixture_id", "graph_fixture_version", "graph_content_sha256", "source",

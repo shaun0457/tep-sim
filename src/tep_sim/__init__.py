@@ -7,8 +7,8 @@ from .environment import TEPEnvironment
 from .registry import REGISTRY, UPSTREAM_REVISION
 from .bindings import BindingMethod, BindingProvenance, BindingRelation, VariableBinding
 from .process import (EdgeKind, GraphProvenance, NodeKind, ProcessEdge, ProcessGraph,
-                      ProcessNode, StreamTrace, TopologyProjection, build_process_graph,
-                      load_process_graph)
+                      ProcessNode, ReviewRecordRef, SourceRef, StreamTrace, TopologyProjection,
+                      build_process_graph, load_process_graph)
 from .snapshot import load_snapshot, load_replay_spec
 from .capability import (CAPABILITY_VERSION, CapabilityEntry, CapabilityRegistry,
                          build_capability_registry)

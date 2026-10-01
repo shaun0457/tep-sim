@@ -1,0 +1,1499 @@
+{
+  "schema_version": "tep-sim.process-graph/v0",
+  "fixture_id": "tep-process-graph",
+  "fixture_version": "0.2.0",
+  "upstream_revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005",
+  "source": {
+    "kind": "CURATED_EQUIVALENT_GRAPH",
+    "description": "Human-verified curated equivalent of the TEP flowsheet; not an OCR product and not the official DEXPI TennesseeEastman.xml.",
+    "review_status": "HUMAN_VERIFIED"
+  },
+  "review_record": {
+    "review_package_id": "a3-process-graph-human-verification",
+    "review_package_version": "0.2.0",
+    "reviewer": "chengting",
+    "signed_on": "2026-10-01",
+    "locator": "docs/reviews/a3-process-graph-binding-review-v0.json",
+    "signed_record_sha256": "f76210a9a59db110b50b57c147e5596e1f46d5fa7cd8fcb88ec1851484a00a7a"
+  },
+  "sources": {
+    "bathelt_ricker_jelali_2015": {
+      "title": "Bathelt, Ricker & Jelali (2015), Revision of the Tennessee Eastman Process Model, IFAC ADCHEM 2015 (Fig. 3 P&ID with unit-coded tags)",
+      "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
+      "sha256": "3e1d75ea1772ae42cbb08331cdfff22715c84921e2457787da9c4cc5a3f7d864"
+    },
+    "downs_vogel_1993": {
+      "title": "Downs & Vogel (1993), A plant-wide industrial process control problem, Comput. Chem. Eng. 17(3):245-255",
+      "locator": "docs/papers/Downs1993_TEP.pdf",
+      "sha256": "5f19b0bf7f0e5c052335943fff263769a28757066582c3166e16ac163e0e9538"
+    },
+    "sim_fortran": {
+      "title": "Vendored original TEP Fortran model teprob.f (comments + equations)",
+      "locator": "vendor/tep-sim-upstream/teprob.f",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    },
+    "sim_python_backend": {
+      "title": "Vendored upstream pure-Python TEP backend (the backend tep-sim executes)",
+      "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    },
+    "upstream_constants": {
+      "title": "Vendored simulator variable metadata (names/units)",
+      "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    }
+  },
+  "expected_runtime_variables": [
+    "XMEAS(1)",
+    "XMEAS(2)",
+    "XMEAS(3)",
+    "XMEAS(4)",
+    "XMEAS(5)",
+    "XMEAS(6)",
+    "XMEAS(7)",
+    "XMEAS(8)",
+    "XMEAS(9)",
+    "XMEAS(10)",
+    "XMEAS(11)",
+    "XMEAS(12)",
+    "XMEAS(13)",
+    "XMEAS(14)",
+    "XMEAS(15)",
+    "XMEAS(16)",
+    "XMEAS(17)",
+    "XMEAS(18)",
+    "XMEAS(19)",
+    "XMEAS(20)",
+    "XMEAS(21)",
+    "XMEAS(22)",
+    "XMEAS(23)",
+    "XMEAS(24)",
+    "XMEAS(25)",
+    "XMEAS(26)",
+    "XMEAS(27)",
+    "XMEAS(28)",
+    "XMEAS(29)",
+    "XMEAS(30)",
+    "XMEAS(31)",
+    "XMEAS(32)",
+    "XMEAS(33)",
+    "XMEAS(34)",
+    "XMEAS(35)",
+    "XMEAS(36)",
+    "XMEAS(37)",
+    "XMEAS(38)",
+    "XMEAS(39)",
+    "XMEAS(40)",
+    "XMEAS(41)",
+    "XMV(1)",
+    "XMV(2)",
+    "XMV(3)",
+    "XMV(4)",
+    "XMV(5)",
+    "XMV(6)",
+    "XMV(7)",
+    "XMV(8)",
+    "XMV(9)",
+    "XMV(10)",
+    "XMV(11)",
+    "XMV(12)"
+  ],
+  "nodes": [
+    {
+      "node_id": "feed_a_supply",
+      "kind": "FEED_SOURCE",
+      "name": "A feed supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "feed_d_supply",
+      "kind": "FEED_SOURCE",
+      "name": "D feed supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "feed_e_supply",
+      "kind": "FEED_SOURCE",
+      "name": "E feed supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "feed_ac_supply",
+      "kind": "FEED_SOURCE",
+      "name": "A and C feed supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "reactor_feed_mixer",
+      "kind": "MIXER",
+      "name": "Reactor feed mixing zone",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "node_id": "reactor",
+      "kind": "REACTOR",
+      "name": "Reactor",
+      "tag": "R",
+      "attributes": {
+        "agitated": true,
+        "phase": "vapor-liquid"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "node_id": "condenser",
+      "kind": "CONDENSER",
+      "name": "Product condenser",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "separator",
+      "kind": "SEPARATOR",
+      "name": "Vapor-liquid separator",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "node_id": "compressor",
+      "kind": "COMPRESSOR",
+      "name": "Recycle compressor",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "stripper",
+      "kind": "STRIPPER",
+      "name": "Product stripper",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "node_id": "purge_outlet",
+      "kind": "PRODUCT_SINK",
+      "name": "Purge outlet",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "product_outlet",
+      "kind": "PRODUCT_SINK",
+      "name": "Product outlet",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "reactor_cooling_water_supply",
+      "kind": "UTILITY_SOURCE",
+      "name": "Reactor cooling water supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "reactor_cooling_water_return",
+      "kind": "UTILITY_SINK",
+      "name": "Reactor cooling water return",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "condenser_cooling_water_supply",
+      "kind": "UTILITY_SOURCE",
+      "name": "Condenser cooling water supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "condenser_cooling_water_return",
+      "kind": "UTILITY_SINK",
+      "name": "Condenser cooling water return",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    },
+    {
+      "node_id": "stripper_steam_supply",
+      "kind": "UTILITY_SOURCE",
+      "name": "Stripper steam supply",
+      "tag": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "stream_1",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "feed_a_supply",
+      "target_node": "reactor_feed_mixer",
+      "name": "A feed",
+      "stream_number": 1,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_2",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "feed_d_supply",
+      "target_node": "reactor_feed_mixer",
+      "name": "D feed",
+      "stream_number": 2,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_3",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "feed_e_supply",
+      "target_node": "reactor_feed_mixer",
+      "name": "E feed",
+      "stream_number": 3,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_4",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "feed_ac_supply",
+      "target_node": "stripper",
+      "name": "A and C feed",
+      "stream_number": 4,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_5",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "stripper",
+      "target_node": "reactor_feed_mixer",
+      "name": "Stripper overhead",
+      "stream_number": 5,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_6",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "reactor_feed_mixer",
+      "target_node": "reactor",
+      "name": "Reactor feed",
+      "stream_number": 6,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_7",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "reactor",
+      "target_node": "condenser",
+      "name": "Reactor product",
+      "stream_number": 7,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "condenser_outlet",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "condenser",
+      "target_node": "separator",
+      "name": "Condensed reactor product",
+      "stream_number": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "separator_vapor",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "separator",
+      "target_node": "compressor",
+      "name": "Separator vapor to recycle",
+      "stream_number": null,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_8",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "compressor",
+      "target_node": "reactor_feed_mixer",
+      "name": "Recycle",
+      "stream_number": 8,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_9",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "separator",
+      "target_node": "purge_outlet",
+      "name": "Purge",
+      "stream_number": 9,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_10",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "separator",
+      "target_node": "stripper",
+      "name": "Separator underflow",
+      "stream_number": 10,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stream_11",
+      "kind": "MATERIAL_STREAM",
+      "source_node": "stripper",
+      "target_node": "product_outlet",
+      "name": "Product",
+      "stream_number": 11,
+      "attributes": {},
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "reactor_cooling_water_in",
+      "kind": "UTILITY_STREAM",
+      "source_node": "reactor_cooling_water_supply",
+      "target_node": "reactor",
+      "name": "Reactor cooling water inlet",
+      "stream_number": null,
+      "attributes": {
+        "medium": "cooling_water"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "reactor_cooling_water_out",
+      "kind": "UTILITY_STREAM",
+      "source_node": "reactor",
+      "target_node": "reactor_cooling_water_return",
+      "name": "Reactor cooling water outlet",
+      "stream_number": null,
+      "attributes": {
+        "medium": "cooling_water"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "condenser_cooling_water_in",
+      "kind": "UTILITY_STREAM",
+      "source_node": "condenser_cooling_water_supply",
+      "target_node": "condenser",
+      "name": "Condenser cooling water inlet",
+      "stream_number": null,
+      "attributes": {
+        "medium": "cooling_water"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "condenser_cooling_water_out",
+      "kind": "UTILITY_STREAM",
+      "source_node": "condenser",
+      "target_node": "condenser_cooling_water_return",
+      "name": "Condenser cooling water outlet",
+      "stream_number": null,
+      "attributes": {
+        "medium": "cooling_water"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    },
+    {
+      "edge_id": "stripper_steam",
+      "kind": "UTILITY_STREAM",
+      "source_node": "stripper_steam_supply",
+      "target_node": "stripper",
+      "name": "Stripper steam",
+      "stream_number": null,
+      "attributes": {
+        "medium": "steam"
+      },
+      "source_refs": [
+        "downs_vogel_1993",
+        "sim_fortran"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "semantic_entity_id": "stream_1.flow_measurement",
+      "attached_to": "stream_1",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(1)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_2.flow_measurement",
+      "attached_to": "stream_2",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(2)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_3.flow_measurement",
+      "attached_to": "stream_3",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(3)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.flow_measurement",
+      "attached_to": "stream_4",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(4)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_8.flow_measurement",
+      "attached_to": "stream_8",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(5)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.flow_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(6)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor.pressure_measurement",
+      "attached_to": "reactor",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(7)",
+      "quantity": "pressure",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor.level_measurement",
+      "attached_to": "reactor",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(8)",
+      "quantity": "level",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor.temperature_measurement",
+      "attached_to": "reactor",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(9)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.flow_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(10)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "separator.temperature_measurement",
+      "attached_to": "separator",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(11)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "separator.level_measurement",
+      "attached_to": "separator",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(12)",
+      "quantity": "level",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "separator.pressure_measurement",
+      "attached_to": "separator",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(13)",
+      "quantity": "pressure",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_10.flow_measurement",
+      "attached_to": "stream_10",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(14)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stripper.level_measurement",
+      "attached_to": "stripper",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(15)",
+      "quantity": "level",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stripper.pressure_measurement",
+      "attached_to": "stripper",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(16)",
+      "quantity": "pressure",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.flow_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(17)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stripper.temperature_measurement",
+      "attached_to": "stripper",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(18)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stripper_steam.flow_measurement",
+      "attached_to": "stripper_steam",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(19)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "compressor.work_measurement",
+      "attached_to": "compressor",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(20)",
+      "quantity": "power",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor_cooling.outlet_temperature",
+      "attached_to": "reactor_cooling_water_out",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(21)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "condenser_cooling.outlet_temperature",
+      "attached_to": "condenser_cooling_water_out",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(22)",
+      "quantity": "temperature",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_a_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(23)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_b_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(24)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_c_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(25)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_d_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(26)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_e_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(27)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_6.composition_f_measurement",
+      "attached_to": "stream_6",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(28)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_a_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(29)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_b_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(30)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_c_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(31)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_d_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(32)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_e_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(33)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_f_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(34)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_g_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(35)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.composition_h_measurement",
+      "attached_to": "stream_9",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(36)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.composition_d_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(37)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.composition_e_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(38)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.composition_f_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(39)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.composition_g_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(40)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.composition_h_measurement",
+      "attached_to": "stream_11",
+      "relation": "MEASURES",
+      "runtime_variable_id": "XMEAS(41)",
+      "quantity": "composition",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_2.flow_actuator",
+      "attached_to": "stream_2",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(1)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_3.flow_actuator",
+      "attached_to": "stream_3",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(2)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_1.flow_actuator",
+      "attached_to": "stream_1",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(3)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_4.flow_actuator",
+      "attached_to": "stream_4",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(4)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "compressor.recycle_valve_actuator",
+      "attached_to": "compressor",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(5)",
+      "quantity": "valve_position",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_9.purge_valve_actuator",
+      "attached_to": "stream_9",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(6)",
+      "quantity": "valve_position",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_10.flow_actuator",
+      "attached_to": "stream_10",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(7)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stream_11.flow_actuator",
+      "attached_to": "stream_11",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(8)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "stripper_steam.valve_actuator",
+      "attached_to": "stripper_steam",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(9)",
+      "quantity": "valve_position",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor_cooling.flow_actuator",
+      "attached_to": "reactor_cooling_water_in",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(10)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "condenser_cooling.flow_actuator",
+      "attached_to": "condenser_cooling_water_in",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(11)",
+      "quantity": "flow",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    },
+    {
+      "semantic_entity_id": "reactor.agitator_speed_actuator",
+      "attached_to": "reactor",
+      "relation": "ACTUATES",
+      "runtime_variable_id": "XMV(12)",
+      "quantity": "speed",
+      "provenance": {
+        "method": "HUMAN_VERIFIED_MAPPING",
+        "source_refs": [
+          "bathelt_ricker_jelali_2015",
+          "downs_vogel_1993",
+          "sim_fortran",
+          "sim_python_backend",
+          "upstream_constants"
+        ]
+      }
+    }
+  ],
+  "unbound_entities": [
+    {
+      "entity_id": "condenser",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "condenser_cooling_water_return",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "condenser_cooling_water_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "condenser_outlet",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "feed_a_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "feed_ac_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "feed_d_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "feed_e_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "product_outlet",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "purge_outlet",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "reactor_cooling_water_return",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "reactor_cooling_water_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "reactor_feed_mixer",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "separator_vapor",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "stream_5",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "stream_7",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    },
+    {
+      "entity_id": "stripper_steam_supply",
+      "reason": "no XMEAS/XMV instrument at this entity in TEP"
+    }
+  ]
+}

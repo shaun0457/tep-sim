@@ -133,12 +133,14 @@ A projection returned for a node should contain only relevant local topology and
 
 Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bindings`.
 
-- Pinned v0 fixture: `src/tep_sim/fixtures/tep_process_graph_v0.json`. It is a
-  curated equivalent graph (`CURATED_EQUIVALENT_GRAPH`) derived from Downs & Vogel
-  (1993) and the vendored upstream constants, not the official DEXPI
-  `TennesseeEastman.xml`. `review_status` stays `PENDING_HUMAN_REVIEW` and bindings
-  use method `CURATED_MAPPING` until a human reviewer upgrades them to
-  `HUMAN_VERIFIED_MAPPING` under a new fixture version.
+- Pinned fixtures. Both are curated equivalent graphs (`CURATED_EQUIVALENT_GRAPH`),
+  not the official DEXPI `TennesseeEastman.xml`:
+  - `tep-process-graph` 0.1.0 (`src/tep_sim/fixtures/tep_process_graph_v0.json`):
+    the immutable curated baseline, `PENDING_HUMAN_REVIEW`, all bindings
+    `CURATED_MAPPING`.
+  - `tep-process-graph` 0.2.0 (`src/tep_sim/fixtures/tep_process_graph_v0_2_0.json`):
+    the canonical `HUMAN_VERIFIED` graph and the `load_process_graph()` default. See
+    "Human-verified fixture 0.2.0" below.
 - Versioning: every fixture carries `fixture_id`, `fixture_version`,
   `upstream_revision`, and declared sources. A canonical content hash
   (independent of whitespace, key order, and array order) is recorded in
@@ -164,17 +166,17 @@ Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bin
   (`condenser_cooling.outlet_temperature`) based on the TEP flowsheet.
 - This is a recorded source/nomenclature disagreement, not an error that is
   corrected by renaming. The binding is deliberately **not** changed to match the
-  upstream variable name and remains `CURATED_MAPPING` / `PENDING_HUMAN_REVIEW`.
-- A3 development may proceed on the curated graph. **D0 benchmark freeze requires a
-  human review** of the curated topology and all bindings, including XMEAS(22).
-- A human-verified mapping must be published as a **new fixture version with its own
-  provenance and pin** (`HUMAN_VERIFIED_MAPPING`, updated `review_status`). The
-  pinned `tep-process-graph` 0.1.0 content must never be silently modified; its
-  pinned hash rejects in-place edits.
-- `tests/test_process_graph.py::test_xmeas22_known_nomenclature_disagreement_stays_pending_review`
-  locks the current state so any re-binding is an explicit, reviewed change.
+  upstream variable name.
+- The human reviewer retained the condenser attachment (Q1, Option A). It is
+  `HUMAN_VERIFIED_MAPPING` in `tep-process-graph` 0.2.0 and stays `CURATED_MAPPING`
+  in the immutable 0.1.0 baseline. The runtime name stays authoritative as a name.
+- A human-verified mapping is published only as a **new fixture version with its own
+  provenance and pin**. The pinned `tep-process-graph` 0.1.0 content must never be
+  silently modified; its pinned hash rejects in-place edits.
+- `tests/test_process_graph.py::test_xmeas22_known_nomenclature_disagreement_is_verified_without_renaming`
+  locks this state so any re-binding is an explicit, reviewed change.
 
-### Human-verification review package (status: HUMAN_SIGNOFF_RECORDED, promotion pending)
+### Human-verification review package (status: HUMAN_SIGNOFF_RECORDED, promoted to 0.2.0)
 
 The evidence package for the D0 human review lives in
 `docs/reviews/a3-process-graph-human-verification.md`, with the machine-readable
@@ -184,7 +186,119 @@ package. An automated agent prepared it. The decisions of human reviewer
 `chengting` (2026-10-01) are recorded there: 88/88 rows ACCEPT, and XMEAS(22)
 Option A.
 
-No verified fixture exists yet. The pinned 0.1.0 fixtures remain the curated
-baseline. A separate promotion change must publish a new verified fixture version
-plus the matching evaluator fixture version. `tests/test_a3_review_package.py` checks
-that the evidence and the decision record are complete and consistent.
+The signed package stays immutable historical decision evidence; its own text
+predates the promotion. `tests/test_a3_review_package.py` checks that the evidence
+and the decision record are complete and consistent. The promotion below implements
+the record without making any new decision.
+
+### Human-verified fixture 0.2.0 (frozen)
+
+**Status values.** `source.review_status` is required and takes exactly one of:
+
+- `PENDING_HUMAN_REVIEW`: curated, not yet signed off (0.1.0).
+- `HUMAN_VERIFIED`: every binding was explicitly accepted in a signed human review
+  record (0.2.0). A `HUMAN_VERIFIED` graph holds only `HUMAN_VERIFIED_MAPPING`
+  bindings and carries a `review_record`.
+
+Status, `review_record` and binding methods are either all verified or all not
+verified. The loader rejects any other combination (`REVIEW_STATUS_MISMATCH` /
+`MISSING_PROVENANCE`).
+
+**`review_record` contract.** A verified fixture points to the signed record. It
+does not copy the record's notes. `review_record` is an optional top-level object
+with exactly these non-empty string fields (`tep_sim.ReviewRecordRef`):
+
+| Field | Meaning |
+|---|---|
+| `review_package_id` | id of the signed review package |
+| `review_package_version` | version of the signed package |
+| `reviewer` | the human reviewer who signed |
+| `signed_on` | ISO date of the sign-off |
+| `locator` | repository path of the machine-readable record |
+| `signed_record_sha256` | `canonical_sha256` of `{status, version, signoff, missing_sources, rows}` |
+
+In that hash, `version` is `review_package_version`, and `rows` is the list of
+`(review_id, human_reviewer_decision, reviewer, review_notes)` over all binding,
+node and edge rows. It is the same hash that `tests/test_a3_review_package.py` pins.
+Each `HUMAN_VERIFIED_MAPPING` binding corresponds to the record row with the same
+`semantic_entity_id`. Free-text provenance fields are not allowed, either here or
+in `sources`.
+
+What the loader checks and what it does not:
+
+- The loader checks the shape of `review_record`: exact keys, a `YYYY-MM-DD` date,
+  and a 64-hex hash.
+- The loader does not read the record file, because the packaged library does not
+  ship `docs/`.
+- That the reference matches the record (hash and per-row correspondence) is
+  enforced by `tests/test_a3_promotion.py` and by the fixture's pinned content hash.
+- An unpinned fixture that claims `HUMAN_VERIFIED` is unverified; check
+  `provenance.pinned`.
+
+**Source identity (F-10).** A `sources` entry allows only `title`, `locator`,
+`revision` and an optional lowercase hex `sha256`. The `sha256` pins files that
+have no revision, such as papers. In 0.2.0, every node, edge and binding cites the
+`source_id`s of the evidence in its record row. Titles, locators, revisions and
+hashes are copied verbatim from the record's `sources`. The cited sources are:
+
+- `sim_python_backend`, `sim_fortran` and `upstream_constants` at the vendored
+  revision;
+- `downs_vogel_1993`;
+- `bathelt_ricker_jelali_2015`.
+
+The paper locators keep the record's (misnamed, F-11) file names. The `sha256` is
+the identity.
+
+**Semantic equivalence.** 0.2.0 has the same nodes, edges, bindings
+(entity, runtime id, relation, attachment, quantity), expected runtime variables
+and unbound declarations as 0.1.0. Only these differ:
+
+- `fixture_version`;
+- `source`;
+- `review_record`;
+- `sources`;
+- `source_refs`;
+- the binding method.
+
+**Semantic attachment vs runtime source (Q2).** A ProcessGraph semantic attachment
+identifies the engineering quantity/equipment relation exposed to the Agent. It does
+not require the simulator to maintain a distinct physical state variable at that
+exact graph node. For XMEAS(16):
+
+- the Agent semantic attachment is the stripper pressure measurement
+  (`stripper.pressure_measurement` on `stripper`);
+- the simulator numerical source is `PTV`, the modeled vapor-zone pressure;
+- this discrepancy is documented provenance (record row B-16, referenced through
+  `review_record`), not a reason to rebind the semantic entity to
+  `reactor_feed_mixer` or `stream_5`.
+
+**`ACTUATES` semantics (Q3).** `ACTUATES` v0 represents functional control of the
+associated process/utility path. It is not a geometric assertion about the exact
+valve symbol location in a P&ID. This is why XMV(10)/XMV(11) remain attached to the
+cooling-water inlet flow edges (`reactor_cooling_water_in`,
+`condenser_cooling_water_in`) even though the figures draw the valve symbols on the
+return side.
+
+**Other recorded decisions carried forward unchanged.**
+
+- Q4: `stream_number` holds only D&V process stream numbers 1–11. Figure utility
+  line numbers (cooling-water lines 12/13) stay `null`.
+- Q5: the stripper condensate return and the reboiler are not modeled in v0.
+- Q7: the reviewed curated equivalent graph is an accepted source form. The official
+  DEXPI XML is not a D0 requirement.
+
+**Evaluator binding.** `tep-evaluator-disturbance-bindings` 0.2.0 has the same
+mappings as 0.1.0. It is bound to the canonical hash of `tep-process-graph` 0.2.0,
+and evaluator version N is bound to graph version N. It stays `EVALUATOR_ONLY`. Its
+own mappings were outside the human review (boundary check only), so its
+`review_status` remains `PENDING_HUMAN_REVIEW`.
+
+**Loading.**
+
+- `load_process_graph()` and `load_evaluator_disturbance_bindings(graph)` default to
+  0.2.0.
+- 0.1.0 remains packaged and pinned. Load it with an explicit path:
+  `PACKAGED_GRAPH_FIXTURES["0.1.0"]` and `PACKAGED_EVALUATOR_FIXTURES["0.1.0"]` name
+  the files.
+- Later versions of a packaged fixture are named `<stem>_v<major>_<minor>_<patch>.json`.
+  The 0.1.0 files keep their original `_v0.json` names.
