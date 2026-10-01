@@ -222,7 +222,8 @@ In that hash, `version` is `review_package_version`, and `rows` is the list of
 node and edge rows. It is the same hash that `tests/test_a3_review_package.py` pins.
 Each `HUMAN_VERIFIED_MAPPING` binding corresponds to the record row with the same
 `semantic_entity_id`. Free-text provenance fields are not allowed, either here or
-in `sources`.
+in `sources`. The graph `source` object allows only `kind`, `description` and
+`review_status`. A binding `provenance` allows only `method` and `source_refs`.
 
 What the loader checks and what it does not:
 
@@ -295,8 +296,9 @@ own mappings were outside the human review (boundary check only), so its
 
 **Loading.**
 
-- `load_process_graph()` and `load_evaluator_disturbance_bindings(graph)` default to
-  0.2.0.
+- `load_process_graph()` defaults to 0.2.0.
+- `load_evaluator_disturbance_bindings(graph)` defaults to the packaged evaluator
+  whose version matches `graph`.
 - 0.1.0 remains packaged and pinned. Load it with an explicit path:
   `PACKAGED_GRAPH_FIXTURES["0.1.0"]` and `PACKAGED_EVALUATOR_FIXTURES["0.1.0"]` name
   the files.

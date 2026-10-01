@@ -150,6 +150,10 @@ def build_evaluator_disturbance_bindings(
 
 def load_evaluator_disturbance_bindings(
         graph: ProcessGraph, path: str | Path | None = None) -> EvaluatorDisturbanceBindings:
-    """Evaluator/C0 use only. Never register the result behind an Agent-visible tool."""
-    return build_evaluator_disturbance_bindings(
-        read_fixture(path, PACKAGED_EVALUATOR_FIXTURE), graph)
+    """Evaluator/C0 use only. Never register the result behind an Agent-visible tool.
+
+    Without ``path`` the packaged evaluator matching ``graph``'s fixture version is used.
+    """
+    packaged = PACKAGED_EVALUATOR_FIXTURES.get(graph.provenance.fixture_version,
+                                               PACKAGED_EVALUATOR_FIXTURE)
+    return build_evaluator_disturbance_bindings(read_fixture(path, packaged), graph)

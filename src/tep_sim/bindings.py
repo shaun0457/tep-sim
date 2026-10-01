@@ -96,6 +96,11 @@ def parse_binding(raw: Any, index: int, known_sources: Mapping[str, Any],
     if not isinstance(provenance, Mapping):
         issues.append(ValidationIssue("MISSING_PROVENANCE", ref, "binding has no provenance"))
         return None
+    extra = sorted(set(provenance) - {"method", "source_refs"})
+    if extra:
+        issues.append(ValidationIssue("MISSING_PROVENANCE", ref,
+                                      f"unknown provenance fields {extra}"))
+        return None
     try:
         method = BindingMethod(provenance.get("method"))
     except ValueError:

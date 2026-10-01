@@ -88,8 +88,8 @@ evaluator mappings is a `tep-agent-lab` policy question. It was not decided here
 ## Loader behavior (public change)
 
 - `load_process_graph()` now returns 0.2.0 (was 0.1.0).
-- `load_evaluator_disturbance_bindings(graph)` defaults to evaluator 0.2.0, so it
-  needs graph 0.2.0.
+- `load_evaluator_disturbance_bindings(graph)` defaults to the packaged evaluator
+  whose version matches the graph: 0.2.0 for graph 0.2.0, 0.1.0 for graph 0.1.0.
 - 0.1.0 stays packaged, pinned and loadable by explicit path:
   `PACKAGED_GRAPH_FIXTURES["0.1.0"]` and `PACKAGED_EVALUATOR_FIXTURES["0.1.0"]`.
 - New public types: `ReviewRecordRef`, and `SourceRef` (now exported, with an
@@ -102,18 +102,44 @@ evaluator mappings is a `tep-agent-lab` policy question. It was not decided here
   - status, `review_record` and binding methods must be all verified or all not
     verified;
   - `signed_on` must be `YYYY-MM-DD`, and hashes must be exactly 64 lowercase hex
-    characters.
+    characters;
+  - the graph `source` object accepts only `kind`, `description` and
+    `review_status`, and a binding `provenance` accepts only `method` and
+    `source_refs`.
 
 ## Verification
 
-Python 3.13 locally: 230 passed.
+Python 3.13 locally: 233 passed.
 
-- 168 `tests/`, of which:
+- 171 `tests/`, of which:
   - 15 new in `tests/test_a3_promotion.py`;
-  - 14 new loader negatives.
+  - 17 new loader negatives.
 - 62 pinned upstream tests.
 
 CI runs Python 3.11 and 3.13.
+
+## Downstream impact (action needed outside this repo)
+
+- `tep-agent-lab` `ReferenceWorld` uses the `load_process_graph()` default. Its
+  `tests/test_tool_surface.py:242` asserts `PENDING_HUMAN_REVIEW`. Once it moves to
+  this `tep-sim`, it will see `HUMAN_VERIFIED` and the new graph hash, and its
+  recorded world/tool-set versions change. That assertion must be updated in
+  `tep-agent-lab`; this PR does not edit sibling repos.
+- The `pyproject.toml` package version stays `0.1.0`. The downstream pin
+  `tep-sim==0.1.0` therefore cannot tell the two defaults apart. The graph
+  `content_sha256` in provenance does tell them apart. Bumping the package version
+  is a release decision and is left open here.
+
+## Review items not adopted
+
+- A `HUMAN_VERIFIED` fixture is not required to be pinned. The loader-negative tests
+  build unpinned copies of the verified graph. The spec says an unpinned
+  `HUMAN_VERIFIED` claim is unverified; consumers should also check
+  `provenance.pinned`.
+- Evaluator 0.2.0 keeps the 0.1.0 `sources` entries unchanged. F-10 applied to the
+  reviewed graph only.
+- There is no single version table yet. A test checks that the
+  `PACKAGED_*_FIXTURES` tables and the pins agree.
 
 ## Remaining (non-blocking)
 

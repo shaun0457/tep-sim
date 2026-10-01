@@ -257,6 +257,9 @@ def _find(items, key, value):
     (lambda d: d["source"].pop("review_status"), "REVIEW_STATUS_MISMATCH"),
     (lambda d: d["source"].update(review_status="PENDING_HUMAN_REVIEW"),
      "REVIEW_STATUS_MISMATCH"),
+    (lambda d: d["source"].update(notes="free text"), "MISSING_PROVENANCE"),
+    (lambda d: d["bindings"][0]["provenance"].update(review_notes="free text"),
+     "MISSING_PROVENANCE"),
     (lambda d: d["review_record"].update(reviewer=""), "MISSING_PROVENANCE"),
     (lambda d: d["bindings"][0]["provenance"].update(method="CURATED_MAPPING"),
      "REVIEW_STATUS_MISMATCH"),
@@ -289,6 +292,15 @@ def test_non_string_fixture_identity_is_a_validation_error(field, value):
         with pytest.raises(ProcessGraphValidationError) as excinfo:
             build(data)
         assert "UNNORMALIZABLE_ENTITY" in codes(excinfo)
+
+
+def test_invalid_review_record_is_reported_once_not_as_a_status_mismatch():
+    baseline = json.loads((FIXTURES / "tep_process_graph_v0.json").read_text(encoding="utf-8"))
+    for data in (unpinned(raw_graph()), unpinned(baseline)):
+        data["review_record"] = None
+        with pytest.raises(ProcessGraphValidationError) as excinfo:
+            build_process_graph(data)
+        assert [i.code for i in excinfo.value.issues] == ["MISSING_PROVENANCE"]
 
 
 def test_pinned_version_content_drift_is_rejected():

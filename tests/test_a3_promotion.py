@@ -27,9 +27,6 @@ OLD_EVALUATOR_SHA = "b497fdca4c4e436ba084bd120b989fe51e0b33a449164fe553be1f0c6b9
 NEW_GRAPH_SHA = "cc8ccc81e9f421238863457438465877850b19d9760740279e54a52468fe9a87"
 NEW_EVALUATOR_SHA = "25e4c60885d273c4abb3214411bf1d99a392ebe2d540f9d716624205b13a9cb5"
 SPEC = ROOT / "docs" / "specs" / "dexpi-binding-v0.md"
-# provenance-only fields: everything else must be identical between 0.1.0 and 0.2.0
-PROVENANCE_KEYS = {"fixture_version", "source", "review_record", "sources", "source_refs",
-                   "provenance"}
 F10_SOURCES = {"sim_python_backend", "sim_fortran", "bathelt_ricker_jelali_2015"}
 
 
@@ -37,12 +34,17 @@ def raw(name):
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
-def without_provenance(value):
-    if isinstance(value, dict):
-        return {k: without_provenance(v) for k, v in value.items() if k not in PROVENANCE_KEYS}
-    if isinstance(value, list):
-        return [without_provenance(item) for item in value]
-    return value
+def without_provenance(data):
+    """Drop exactly the fields a promotion may change; everything else must match."""
+    data = {k: v for k, v in data.items()
+            if k not in ("fixture_version", "review_record", "sources")}
+    data["source"] = {k: v for k, v in data["source"].items()
+                      if k not in ("description", "review_status")}
+    for key in ("nodes", "edges"):
+        data[key] = [{k: v for k, v in item.items() if k != "source_refs"}
+                     for item in data[key]]
+    data["bindings"] = [{**b, "provenance": sorted(b["provenance"])} for b in data["bindings"]]
+    return data
 
 
 @pytest.fixture(scope="module")
@@ -245,7 +247,8 @@ def test_promoted_evaluator_is_bound_to_graph_0_2_0_with_unchanged_mappings(old,
                                  for b in e.bindings())
     assert semantics(evaluator) == semantics(historical)
     assert dict(evaluator.unbound_disturbances) == dict(historical.unbound_disturbances)
-    # each evaluator version accepts only its own graph version
+    # the default evaluator follows the graph version; a mismatched pair is rejected
+    assert load_evaluator_disturbance_bindings(old).provenance == historical.provenance
     for graph, version in ((old, "0.2.0"), (new, "0.1.0")):
         with pytest.raises(ProcessGraphValidationError):
             load_evaluator_disturbance_bindings(

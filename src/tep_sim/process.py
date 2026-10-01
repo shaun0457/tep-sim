@@ -57,6 +57,7 @@ _TOP_KEYS = {"schema_version", "fixture_id", "fixture_version", "upstream_revisi
              "review_record", "sources", "expected_runtime_variables", "nodes", "edges",
              "bindings", "unbound_entities"}
 _SOURCE_KEYS = {"title", "locator", "revision", "sha256"}
+_GRAPH_SOURCE_KEYS = {"kind", "description", "review_status"}
 _REVIEW_RECORD_KEYS = ("review_package_id", "review_package_version", "reviewer", "signed_on",
                        "locator", "signed_record_sha256")
 _NODE_KEYS = {"node_id", "kind", "name", "tag", "attributes", "source_refs"}
@@ -516,14 +517,15 @@ def _parse_review_record(data, issues):
     return ReviewRecordRef(*(raw[key] for key in _REVIEW_RECORD_KEYS))
 
 
-def _check_review_status(review_status, has_record, bindings, issues):
+def _check_review_status(review_status, has_record, record_key_present, bindings, issues):
     """Status, review record and binding methods are all verified or all not verified."""
     if review_status not in REVIEW_STATUSES:
         issues.append(ValidationIssue("REVIEW_STATUS_MISMATCH", "source.review_status",
                                       f"review_status must be one of {sorted(REVIEW_STATUSES)}"))
         return
     verified = review_status == HUMAN_VERIFIED
-    if verified and not has_record:
+    # an invalid review_record was already reported by _parse_review_record
+    if verified and not record_key_present:
         issues.append(ValidationIssue("MISSING_PROVENANCE", "review_record",
                                       "a HUMAN_VERIFIED graph requires a review_record"))
     if not verified and has_record:
@@ -579,6 +581,10 @@ def build_process_graph(data: Mapping[str, Any]) -> ProcessGraph:
     if not isinstance(source, Mapping) or not isinstance(source.get("kind"), str):
         issues.append(ValidationIssue("MISSING_PROVENANCE", "source", "source.kind is required"))
         source = {}
+    extra = sorted(set(source) - _GRAPH_SOURCE_KEYS)
+    if extra:
+        issues.append(ValidationIssue("MISSING_PROVENANCE", "source",
+                                      f"unknown source fields {extra}"))
     review_status = source.get("review_status")
     review_record = _parse_review_record(data, issues)
     for text in _strings({k: v for k, v in data.items() if k != "sources"}):
@@ -627,8 +633,8 @@ def build_process_graph(data: Mapping[str, Any]) -> ProcessGraph:
                                           f"attached to unknown entity {binding.attached_to!r}"))
         bindings.append(binding)
     check_unique_bindings(bindings, issues)
-    # an invalid review_record was already reported; do not report it as absent too
-    _check_review_status(review_status, "review_record" in data, bindings, issues)
+    _check_review_status(review_status, review_record is not None, "review_record" in data,
+                         bindings, issues)
 
     bound_runtime = {b.runtime_variable_id for b in bindings}
     expected = _list(data, "expected_runtime_variables", issues)
