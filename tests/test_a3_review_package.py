@@ -28,13 +28,6 @@ HUMAN_DECISIONS = frozenset({"PENDING", "ACCEPT", "REJECT", "NEEDS_SOURCE"})
 DISTURBANCE_REF = re.compile(r"(?<![A-Za-z])IDV[\s_\-(]*\d+", re.IGNORECASE)
 BINDING_FIELDS = ("semantic_entity_id", "runtime_variable_id", "runtime_variable_kind",
                   "relation", "attached_to", "quantity")
-# markdown header label -> JSON field, compared cell by cell
-MIRRORED_COLUMNS = {
-    "Runtime var": "runtime_variable_id", "Fixture attachment": "attached_to",
-    "Nomen.": "nomenclature_agreement", "Topo.": "topology_agreement",
-    "Assessment": "evidence_assessment", "Node": "node_id", "Edge": "edge_id",
-    "Proposed disposition": "proposed_disposition", "Human decision": "human_reviewer_decision",
-}
 
 # cooling-water probe (0-based XMEAS indices into get_measurements())
 XMEAS21, XMEAS22 = 20, 21
@@ -54,6 +47,18 @@ def graph():
 
 def lf_sha256(path):
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def vendored_upstream_head():
+    """Commit actually checked out in the submodule (``.git`` file -> gitdir -> HEAD)."""
+    upstream = ROOT / "vendor" / "tep-sim-upstream"
+    git = upstream / ".git"
+    gitdir = git if git.is_dir() else (upstream / git.read_text(encoding="utf-8")
+                                       .split(":", 1)[1].strip()).resolve()
+    head = (gitdir / "HEAD").read_text(encoding="utf-8").strip()
+    if head.startswith("ref: "):
+        head = (gitdir / head[5:]).read_text(encoding="utf-8").strip()
+    return head
 
 
 def text_lines(path):
@@ -87,6 +92,35 @@ def markdown_tables(text):
             header = cells
         elif re.fullmatch(r"[BNE]-\d{2}", cells[0]):
             yield header, [cell.strip("`") for cell in cells]
+
+
+def expected_cells(row):
+    """Markdown cells (by header label) that must render this matrix row verbatim.
+
+    Only the compact ``Evidence`` summary column is not compared; the JSON keeps the
+    full, test-anchored evidence.
+    """
+    notes = f"{row['finding']}: {row['agent_notes']}" if row["finding"] else ""
+    common = {"Proposed disposition": row["proposed_disposition"],
+              "Human decision": row["human_reviewer_decision"],
+              "Human review notes": row["review_notes"]}
+    if row["review_id"].startswith("B-"):
+        return {**common, "Semantic entity": row["semantic_entity_id"],
+                "Runtime var": row["runtime_variable_id"], "Kind": row["runtime_variable_kind"],
+                "Relation": row["relation"], "Fixture attachment": row["attached_to"],
+                "Runtime name": row["runtime_variable_name"],
+                "Nomen.": row["nomenclature_agreement"], "Topo.": row["topology_agreement"],
+                "Assessment": row["evidence_assessment"], "Agent notes": notes}
+    notes = notes or row["agent_notes"]
+    if row["review_id"].startswith("N-"):
+        return {**common, "Node": row["node_id"], "Kind": row["kind"],
+                "Material upstream": ", ".join(row["material_upstream"]) or "—",
+                "Material downstream": ", ".join(row["material_downstream"]) or "—",
+                "Finding / notes": notes}
+    return {**common, "Edge": row["edge_id"], "Kind": row["kind"],
+            "Source → target": f"{row['source_node']} → {row['target_node']}",
+            "Stream #": str(row["stream_number"] or "—"),
+            "Direction": row["direction_check"], "Finding / notes": notes}
 
 
 def imported_modules(path):
@@ -144,23 +178,23 @@ def test_every_review_row_has_resolvable_independent_evidence(package):
         assert row["evidence"], row["review_id"]
         for item in row["evidence"]:
             source = sources[item["source_id"]]
-            assert item["locator"] == source["locator"], row["review_id"]
-            path = ROOT / item["locator"]
-            assert path.is_file(), item["locator"]
+            path = ROOT / source["locator"]
+            assert path.is_file(), source["locator"]
             # prior curated mapping is not independent evidence for itself
-            assert "fixtures" not in Path(item["locator"]).parts, row["review_id"]
-            if "anchor" in item:
+            assert "fixtures" not in Path(source["locator"]).parts, row["review_id"]
+            if source["kind"] == "VENDORED_SIMULATOR_SOURCE":
+                # vendored code evidence is always line-anchored
                 lines = text_lines(path)
                 assert 1 <= item["line"] <= len(lines), (row["review_id"], item)
                 assert item["anchor"] in lines[item["line"] - 1], (row["review_id"], item)
             else:
-                assert item["where"], row["review_id"]
+                assert "anchor" not in item and item["where"], row["review_id"]
+            if "Fig." in item.get("where", ""):
+                # figure readings were made by the automated agent; a human confirms them
+                assert item.get("visual_reading") is True, (row["review_id"], item)
     for row in package["bindings"]:
         kinds = {sources[item["source_id"]]["kind"] for item in row["evidence"]}
         assert {"VENDORED_SIMULATOR_SOURCE", "PRIMARY_LITERATURE"} <= kinds, row["review_id"]
-        figures = [item for item in row["evidence"] if "Fig." in item.get("where", "")]
-        assert figures and all(item.get("visual_reading") is True for item in figures), \
-            row["review_id"]
 
 
 def test_every_source_is_pinned(package):
@@ -170,9 +204,15 @@ def test_every_source_is_pinned(package):
             # binds the source id to the file content (some file names mislead; F-11)
             assert hashlib.sha256(path.read_bytes()).hexdigest() == source["sha256"], source_id
         elif source["kind"] == "VENDORED_SIMULATOR_SOURCE":
-            assert source["revision"] == package["upstream_revision"], source_id
+            assert source["revision"] == package["upstream_revision"] == \
+                vendored_upstream_head(), source_id
         elif source["kind"] == "CANONICAL_RUNTIME_REGISTRY":
-            assert UPSTREAM_REVISION in path.read_text(encoding="utf-8"), source_id
+            # the registry must still be derived verbatim from the vendored constants
+            from tep import constants
+            for prefix, names in (("XMEAS", constants.MEASUREMENT_NAMES),
+                                  ("XMV", constants.MANIPULATED_VAR_NAMES)):
+                for index, name in enumerate(names, 1):
+                    assert REGISTRY[f"{prefix}({index})"].name == name, source_id
         else:
             pytest.fail(f"unpinned source kind {source['kind']!r} for {source_id}")
 
@@ -188,12 +228,15 @@ def test_pinned_fixtures_are_byte_and_content_immutable(package, graph):
         PINNED_FIXTURES[("tep-process-graph", "0.1.0")] == graph.provenance.content_sha256
     assert PINNED_FIXTURES[("tep-evaluator-disturbance-bindings", "0.1.0")] == \
         evaluator_subject["pinned_sha256"]
-    # This package proposes no candidate fixture. A promoted version is a deliberate,
-    # human-signed-off change that updates this assertion (review doc §8, §10).
-    assert sorted(p.name for p in FIXTURES.glob("*.json")) == [
-        "tep_evaluator_disturbance_bindings_v0.json", "tep_process_graph_v0.json"]
-    assert set(PINNED_FIXTURES) == {("tep-process-graph", "0.1.0"),
-                                    ("tep-evaluator-disturbance-bindings", "0.1.0")}
+    # This package proposes no candidate graph/evaluator version. A promoted version is a
+    # deliberate, human-signed-off change that updates this assertion (review doc §8, §10).
+    subject_ids = {"tep-process-graph", "tep-evaluator-disturbance-bindings"}
+    assert {key for key in PINNED_FIXTURES if key[0] in subject_ids} == \
+        {(fixture_id, "0.1.0") for fixture_id in subject_ids}
+    for path in FIXTURES.glob("*.json"):
+        if path.name not in (GRAPH_FIXTURE.name, "tep_evaluator_disturbance_bindings_v0.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            assert data.get("fixture_id") not in subject_ids, path.name
 
 
 def test_package_stays_unsigned_until_a_human_signoff_change(package, graph):
@@ -213,16 +256,17 @@ def test_review_document_mirrors_the_matrix_column_by_column(package):
     rendered = {}
     for header, cells in markdown_tables(REVIEW_DOC.read_text(encoding="utf-8")):
         assert len(cells) == len(header), cells[0]
+        assert cells[0] not in rendered, f"duplicate review row {cells[0]}"
         rendered[cells[0]] = dict(zip(header, cells))
     rows = all_rows(package)
     assert set(rendered) == {r["review_id"] for r in rows}
     for row in rows:
         cells = rendered[row["review_id"]]
-        compared = [column for column in MIRRORED_COLUMNS if column in cells]
-        assert "Human decision" in compared and "Proposed disposition" in compared
-        for column in compared:
-            assert cells[column] == str(row[MIRRORED_COLUMNS[column]]), \
-                (row["review_id"], column)
+        expected = expected_cells(row)
+        assert set(expected) | {"ID", "Evidence", "Evidence (location)"} >= set(cells), \
+            row["review_id"]
+        for column, value in expected.items():
+            assert cells[column] == value, (row["review_id"], column)
 
 
 def test_xmeas22_adjudication_presents_all_three_options():
@@ -273,8 +317,9 @@ def _probe_measurements(mv_index=None):
         sim.set_mv(mv_index, sim.get_manipulated_vars()[mv_index - 1] + STEP_PCT)
     samples = []
     for _ in range(N_STEPS):
-        sim.step()
+        assert sim.step(), "simulator shut down during the probe"
         samples.append(sim.get_measurements().copy())
+    assert np.isfinite(samples).all()
     return np.mean(samples[-SETTLE_WINDOW:], axis=0)
 
 

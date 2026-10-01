@@ -119,41 +119,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 257,
           "anchor": "# XMEAS(1)",
           "supports": "runtime name of XMEAS(1)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1135,
           "anchor": "self._xmeas[0] = tp.ftm[2]",
           "supports": "runtime computation of XMEAS(1) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 679,
           "anchor": "XMEAS(1)=FTM(3)",
           "supports": "original Fortran definition of XMEAS(1)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: A feed (stream 1)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 1",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1001",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -183,41 +177,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 258,
           "anchor": "# XMEAS(2)",
           "supports": "runtime name of XMEAS(2)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1136,
           "anchor": "self._xmeas[1] = tp.ftm[0]",
           "supports": "runtime computation of XMEAS(2) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 680,
           "anchor": "XMEAS(2)=FTM(1)",
           "supports": "original Fortran definition of XMEAS(2)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: D feed (stream 2)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 2",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1002",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -247,41 +235,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 259,
           "anchor": "# XMEAS(3)",
           "supports": "runtime name of XMEAS(3)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1137,
           "anchor": "self._xmeas[2] = tp.ftm[1]",
           "supports": "runtime computation of XMEAS(3) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 681,
           "anchor": "XMEAS(3)=FTM(2)",
           "supports": "original Fortran definition of XMEAS(3)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: E feed (stream 3)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 3",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1003",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -311,41 +293,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 260,
           "anchor": "# XMEAS(4)",
           "supports": "runtime name of XMEAS(4)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1138,
           "anchor": "self._xmeas[3] = tp.ftm[3]",
           "supports": "runtime computation of XMEAS(4) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 682,
           "anchor": "XMEAS(4)=FTM(4)",
           "supports": "original Fortran definition of XMEAS(4)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: A and C feed (stream 4)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 4",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1004",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -375,41 +351,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 261,
           "anchor": "# XMEAS(5)",
           "supports": "runtime name of XMEAS(5)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1139,
           "anchor": "self._xmeas[4] = tp.ftm[8]",
           "supports": "runtime computation of XMEAS(5) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 683,
           "anchor": "XMEAS(5)=FTM(9)",
           "supports": "original Fortran definition of XMEAS(5)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Recycle flow (stream 8)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 8 (compressor discharge, downstream of recycle-valve spillback)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -439,41 +409,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 262,
           "anchor": "# XMEAS(6)",
           "supports": "runtime name of XMEAS(6)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1140,
           "anchor": "self._xmeas[5] = tp.ftm[5]",
           "supports": "runtime computation of XMEAS(6) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 684,
           "anchor": "XMEAS(6)=FTM(6)",
           "supports": "original Fortran definition of XMEAS(6)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Reactor feed rate (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 6",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -503,41 +467,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 263,
           "anchor": "# XMEAS(7)",
           "supports": "runtime name of XMEAS(7)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1141,
           "anchor": "self._xmeas[6] = (tp.ptr",
           "supports": "runtime computation of XMEAS(7) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 685,
           "anchor": "XMEAS(7)=(PTR",
           "supports": "original Fortran definition of XMEAS(7)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Reactor pressure",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): PI on reactor",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): PIAZ+ 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -567,41 +525,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 264,
           "anchor": "# XMEAS(8)",
           "supports": "runtime name of XMEAS(8)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1142,
           "anchor": "self._xmeas[7] = (tp.vlr",
           "supports": "runtime computation of XMEAS(8) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 686,
           "anchor": "XMEAS(8)=(VLR",
           "supports": "original Fortran definition of XMEAS(8)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Reactor level",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): LI on reactor",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): LIAZ+- 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -631,41 +583,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 265,
           "anchor": "# XMEAS(9)",
           "supports": "runtime name of XMEAS(9)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1143,
           "anchor": "self._xmeas[8] = tp.tcr",
           "supports": "runtime computation of XMEAS(9) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 687,
           "anchor": "XMEAS(9)=TCR",
           "supports": "original Fortran definition of XMEAS(9)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Reactor temperature",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): TI on reactor",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): TIAZ+ 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -695,41 +641,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 266,
           "anchor": "# XMEAS(10)",
           "supports": "runtime name of XMEAS(10)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1144,
           "anchor": "self._xmeas[9] = tp.ftm[9]",
           "supports": "runtime computation of XMEAS(10) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 688,
           "anchor": "XMEAS(10)=FTM(10)",
           "supports": "original Fortran definition of XMEAS(10)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Purge rate (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 9",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -759,41 +699,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 267,
           "anchor": "# XMEAS(11)",
           "supports": "runtime name of XMEAS(11)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1145,
           "anchor": "self._xmeas[10] = tp.tcs",
           "supports": "runtime computation of XMEAS(11) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 689,
           "anchor": "XMEAS(11)=TCS",
           "supports": "original Fortran definition of XMEAS(11)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Product separator temperature",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): TI on separator",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): TI 1301",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -823,41 +757,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 268,
           "anchor": "# XMEAS(12)",
           "supports": "runtime name of XMEAS(12)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1146,
           "anchor": "self._xmeas[11] = (tp.vls",
           "supports": "runtime computation of XMEAS(12) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 690,
           "anchor": "XMEAS(12)=(VLS",
           "supports": "original Fortran definition of XMEAS(12)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Product separator level",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): LI on separator",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): LIAZ+- 1301",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -887,41 +815,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 269,
           "anchor": "# XMEAS(13)",
           "supports": "runtime name of XMEAS(13)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1147,
           "anchor": "self._xmeas[12] = (tp.pts",
           "supports": "runtime computation of XMEAS(13) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 691,
           "anchor": "XMEAS(13)=(PTS",
           "supports": "original Fortran definition of XMEAS(13)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Product separator pressure",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): PI on separator",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): PI 1301",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -951,41 +873,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 270,
           "anchor": "# XMEAS(14)",
           "supports": "runtime name of XMEAS(14)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1148,
           "anchor": "self._xmeas[13] = tp.ftm[10]",
           "supports": "runtime computation of XMEAS(14) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 692,
           "anchor": "XMEAS(14)=FTM(11)",
           "supports": "original Fortran definition of XMEAS(14)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Product separator underflow (stream 10)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 10",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1301",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1015,41 +931,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 271,
           "anchor": "# XMEAS(15)",
           "supports": "runtime name of XMEAS(15)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1149,
           "anchor": "self._xmeas[14] = (tp.vlc",
           "supports": "runtime computation of XMEAS(15) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 693,
           "anchor": "XMEAS(15)=(VLC",
           "supports": "original Fortran definition of XMEAS(15)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Stripper level",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): LI on stripper",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): LIAZ+- 1501",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1079,41 +989,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 272,
           "anchor": "# XMEAS(16)",
           "supports": "runtime name of XMEAS(16)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1150,
           "anchor": "self._xmeas[15] = (tp.ptv",
           "supports": "runtime computation of XMEAS(16) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 694,
           "anchor": "XMEAS(16)=(PTV",
           "supports": "original Fortran definition of XMEAS(16)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Stripper pressure",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): PI drawn on stripper overhead line 5",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): PI 1501",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1143,41 +1047,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 273,
           "anchor": "# XMEAS(17)",
           "supports": "runtime name of XMEAS(17)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1151,
           "anchor": "self._xmeas[16] = tp.ftm[12]",
           "supports": "runtime computation of XMEAS(17) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 695,
           "anchor": "XMEAS(17)=FTM(13)",
           "supports": "original Fortran definition of XMEAS(17)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Stripper underflow (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on stream 11",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1502",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1207,41 +1105,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 274,
           "anchor": "# XMEAS(18)",
           "supports": "runtime name of XMEAS(18)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1152,
           "anchor": "self._xmeas[17] = tp.tcc",
           "supports": "runtime computation of XMEAS(18) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 696,
           "anchor": "XMEAS(18)=TCC",
           "supports": "original Fortran definition of XMEAS(18)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Stripper temperature",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): TI on stripper",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): TI 1501",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1271,41 +1163,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 275,
           "anchor": "# XMEAS(19)",
           "supports": "runtime name of XMEAS(19)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1153,
           "anchor": "self._xmeas[18] = tp.quc",
           "supports": "runtime computation of XMEAS(19) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 697,
           "anchor": "XMEAS(19)=QUC",
           "supports": "original Fortran definition of XMEAS(19)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Stripper steam flow",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): FI on steam supply line to stripper reboiler",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): FI 1501",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1335,41 +1221,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 276,
           "anchor": "# XMEAS(20)",
           "supports": "runtime name of XMEAS(20)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1154,
           "anchor": "self._xmeas[19] = tp.cpdh",
           "supports": "runtime computation of XMEAS(20) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 699,
           "anchor": "XMEAS(20)=CPDH*0.29307D3",
           "supports": "original Fortran definition of XMEAS(20)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Compressor work",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): JI on compressor",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): JI 1401",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1399,41 +1279,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 277,
           "anchor": "# XMEAS(21)",
           "supports": "runtime name of XMEAS(21)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1155,
           "anchor": "self._xmeas[20] = tp.twr",
           "supports": "runtime computation of XMEAS(21) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 700,
           "anchor": "XMEAS(21)=TWR",
           "supports": "original Fortran definition of XMEAS(21)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Reactor cooling water outlet temperature",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): TI on reactor cooling-water return line 12",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): TI 1103 (unit 11 = reactor)",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1463,41 +1337,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 278,
           "anchor": "# XMEAS(22)",
           "supports": "runtime name of XMEAS(22)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1156,
           "anchor": "self._xmeas[21] = tp.tws",
           "supports": "runtime computation of XMEAS(22) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 701,
           "anchor": "XMEAS(22)=TWS",
           "supports": "original Fortran definition of XMEAS(22)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 4: Separator cooling water outlet temperature",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): TI on condenser cooling-water return line 13",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): TI 1202 (unit 12 = condenser)",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1527,41 +1395,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 279,
           "anchor": "# XMEAS(23)",
           "supports": "runtime name of XMEAS(23)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1184,
           "anchor": "xcmp[22] = tp.xst[0, 6]",
           "supports": "runtime computation of XMEAS(23) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 717,
           "anchor": "XCMP(23)=XST(1,7)",
           "supports": "original Fortran definition of XMEAS(23)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1591,41 +1453,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 280,
           "anchor": "# XMEAS(24)",
           "supports": "runtime name of XMEAS(24)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1185,
           "anchor": "xcmp[23] = tp.xst[1, 6]",
           "supports": "runtime computation of XMEAS(24) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 718,
           "anchor": "XCMP(24)=XST(2,7)",
           "supports": "original Fortran definition of XMEAS(24)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1655,41 +1511,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 281,
           "anchor": "# XMEAS(25)",
           "supports": "runtime name of XMEAS(25)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1186,
           "anchor": "xcmp[24] = tp.xst[2, 6]",
           "supports": "runtime computation of XMEAS(25) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 719,
           "anchor": "XCMP(25)=XST(3,7)",
           "supports": "original Fortran definition of XMEAS(25)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1719,41 +1569,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 282,
           "anchor": "# XMEAS(26)",
           "supports": "runtime name of XMEAS(26)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1187,
           "anchor": "xcmp[25] = tp.xst[3, 6]",
           "supports": "runtime computation of XMEAS(26) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 720,
           "anchor": "XCMP(26)=XST(4,7)",
           "supports": "original Fortran definition of XMEAS(26)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1783,41 +1627,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 283,
           "anchor": "# XMEAS(27)",
           "supports": "runtime name of XMEAS(27)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1188,
           "anchor": "xcmp[26] = tp.xst[4, 6]",
           "supports": "runtime computation of XMEAS(27) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 721,
           "anchor": "XCMP(27)=XST(5,7)",
           "supports": "original Fortran definition of XMEAS(27)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1847,41 +1685,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 284,
           "anchor": "# XMEAS(28)",
           "supports": "runtime name of XMEAS(28)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1189,
           "anchor": "xcmp[27] = tp.xst[5, 6]",
           "supports": "runtime computation of XMEAS(28) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 722,
           "anchor": "XCMP(28)=XST(6,7)",
           "supports": "original Fortran definition of XMEAS(28)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Reactor feed analysis (stream 6)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1911,41 +1743,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 285,
           "anchor": "# XMEAS(29)",
           "supports": "runtime name of XMEAS(29)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1190,
           "anchor": "xcmp[28] = tp.xst[0, 9]",
           "supports": "runtime computation of XMEAS(29) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 723,
           "anchor": "XCMP(29)=XST(1,10)",
           "supports": "original Fortran definition of XMEAS(29)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -1975,41 +1801,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 286,
           "anchor": "# XMEAS(30)",
           "supports": "runtime name of XMEAS(30)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1191,
           "anchor": "xcmp[29] = tp.xst[1, 9]",
           "supports": "runtime computation of XMEAS(30) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 724,
           "anchor": "XCMP(30)=XST(2,10)",
           "supports": "original Fortran definition of XMEAS(30)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2039,41 +1859,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 287,
           "anchor": "# XMEAS(31)",
           "supports": "runtime name of XMEAS(31)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1192,
           "anchor": "xcmp[30] = tp.xst[2, 9]",
           "supports": "runtime computation of XMEAS(31) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 725,
           "anchor": "XCMP(31)=XST(3,10)",
           "supports": "original Fortran definition of XMEAS(31)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2103,41 +1917,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 288,
           "anchor": "# XMEAS(32)",
           "supports": "runtime name of XMEAS(32)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1193,
           "anchor": "xcmp[31] = tp.xst[3, 9]",
           "supports": "runtime computation of XMEAS(32) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 726,
           "anchor": "XCMP(32)=XST(4,10)",
           "supports": "original Fortran definition of XMEAS(32)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2167,41 +1975,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 289,
           "anchor": "# XMEAS(33)",
           "supports": "runtime name of XMEAS(33)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1194,
           "anchor": "xcmp[32] = tp.xst[4, 9]",
           "supports": "runtime computation of XMEAS(33) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 727,
           "anchor": "XCMP(33)=XST(5,10)",
           "supports": "original Fortran definition of XMEAS(33)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2231,41 +2033,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 290,
           "anchor": "# XMEAS(34)",
           "supports": "runtime name of XMEAS(34)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1195,
           "anchor": "xcmp[33] = tp.xst[5, 9]",
           "supports": "runtime computation of XMEAS(34) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 728,
           "anchor": "XCMP(34)=XST(6,10)",
           "supports": "original Fortran definition of XMEAS(34)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2295,41 +2091,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 291,
           "anchor": "# XMEAS(35)",
           "supports": "runtime name of XMEAS(35)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1196,
           "anchor": "xcmp[34] = tp.xst[6, 9]",
           "supports": "runtime computation of XMEAS(35) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 729,
           "anchor": "XCMP(35)=XST(7,10)",
           "supports": "original Fortran definition of XMEAS(35)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2359,41 +2149,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 292,
           "anchor": "# XMEAS(36)",
           "supports": "runtime name of XMEAS(36)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1197,
           "anchor": "xcmp[35] = tp.xst[7, 9]",
           "supports": "runtime computation of XMEAS(36) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 730,
           "anchor": "XCMP(36)=XST(8,10)",
           "supports": "original Fortran definition of XMEAS(36)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Purge gas analysis (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2423,41 +2207,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 293,
           "anchor": "# XMEAS(37)",
           "supports": "runtime name of XMEAS(37)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1198,
           "anchor": "xcmp[36] = tp.xst[3, 12]",
           "supports": "runtime computation of XMEAS(37) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 731,
           "anchor": "XCMP(37)=XST(4,13)",
           "supports": "original Fortran definition of XMEAS(37)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Product analysis (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2487,41 +2265,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 294,
           "anchor": "# XMEAS(38)",
           "supports": "runtime name of XMEAS(38)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1199,
           "anchor": "xcmp[37] = tp.xst[4, 12]",
           "supports": "runtime computation of XMEAS(38) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 732,
           "anchor": "XCMP(38)=XST(5,13)",
           "supports": "original Fortran definition of XMEAS(38)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Product analysis (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2551,41 +2323,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 295,
           "anchor": "# XMEAS(39)",
           "supports": "runtime name of XMEAS(39)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1200,
           "anchor": "xcmp[38] = tp.xst[5, 12]",
           "supports": "runtime computation of XMEAS(39) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 733,
           "anchor": "XCMP(39)=XST(6,13)",
           "supports": "original Fortran definition of XMEAS(39)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Product analysis (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2615,41 +2381,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 296,
           "anchor": "# XMEAS(40)",
           "supports": "runtime name of XMEAS(40)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1201,
           "anchor": "xcmp[39] = tp.xst[6, 12]",
           "supports": "runtime computation of XMEAS(40) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 734,
           "anchor": "XCMP(40)=XST(7,13)",
           "supports": "original Fortran definition of XMEAS(40)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Product analysis (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2679,41 +2439,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 297,
           "anchor": "# XMEAS(41)",
           "supports": "runtime name of XMEAS(41)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1202,
           "anchor": "xcmp[40] = tp.xst[7, 12]",
           "supports": "runtime computation of XMEAS(41) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 735,
           "anchor": "XCMP(41)=XST(8,13)",
           "supports": "original Fortran definition of XMEAS(41)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 5: Product analysis (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): XI 1006",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2743,41 +2497,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 313,
           "anchor": "# XMV(1)",
           "supports": "runtime name of XMV(1)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1000,
           "anchor": "tp.ftm[0] = vpos[0]",
           "supports": "runtime effect of XMV(1) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 96,
           "anchor": "C    XMV(1)",
           "supports": "original Fortran nomenclature of XMV(1)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: D feed flow (stream 2)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 2",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1002",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2807,41 +2555,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 314,
           "anchor": "# XMV(2)",
           "supports": "runtime name of XMV(2)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1001,
           "anchor": "tp.ftm[1] = vpos[1]",
           "supports": "runtime effect of XMV(2) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 97,
           "anchor": "C    XMV(2)",
           "supports": "original Fortran nomenclature of XMV(2)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: E feed flow (stream 3)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 3",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1003",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2871,41 +2613,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 315,
           "anchor": "# XMV(3)",
           "supports": "runtime name of XMV(3)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1002,
           "anchor": "tp.ftm[2] = vpos[2]",
           "supports": "runtime effect of XMV(3) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 98,
           "anchor": "C    XMV(3)",
           "supports": "original Fortran nomenclature of XMV(3)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: A feed flow (stream 1)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 1",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1001",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2935,41 +2671,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 316,
           "anchor": "# XMV(4)",
           "supports": "runtime name of XMV(4)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1003,
           "anchor": "tp.ftm[3] = vpos[3]",
           "supports": "runtime effect of XMV(4) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 99,
           "anchor": "C    XMV(4)",
           "supports": "original Fortran nomenclature of XMV(4)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: A and C feed flow (stream 4)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 4",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1004",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -2999,41 +2729,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 317,
           "anchor": "# XMV(5)",
           "supports": "runtime name of XMV(5)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1044,
           "anchor": "flms = flms - vpos[4]",
           "supports": "runtime effect of XMV(5) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 100,
           "anchor": "C    XMV(5)",
           "supports": "original Fortran nomenclature of XMV(5)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Compressor recycle valve",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): valve on spillback loop around the compressor",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1401",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3063,41 +2787,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 318,
           "anchor": "# XMV(6)",
           "supports": "runtime name of XMV(6)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1028,
           "anchor": "flms = vpos[5] * 0.151169",
           "supports": "runtime effect of XMV(6) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 101,
           "anchor": "C    XMV(6)",
           "supports": "original Fortran nomenclature of XMV(6)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Purge valve (stream 9)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 9",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1005",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3127,41 +2845,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 319,
           "anchor": "# XMV(7)",
           "supports": "runtime name of XMV(7)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1004,
           "anchor": "tp.ftm[10] = vpos[6]",
           "supports": "runtime effect of XMV(7) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 102,
           "anchor": "C    XMV(7)",
           "supports": "original Fortran nomenclature of XMV(7)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Separator pot liquid flow (stream 10)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 10",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1301",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3191,41 +2903,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 320,
           "anchor": "# XMV(8)",
           "supports": "runtime name of XMV(8)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1005,
           "anchor": "tp.ftm[12] = vpos[7]",
           "supports": "runtime effect of XMV(8) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 103,
           "anchor": "C    XMV(8)",
           "supports": "original Fortran nomenclature of XMV(8)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Stripper liquid product flow (stream 11)",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on stream 11",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1501",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3255,41 +2961,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 321,
           "anchor": "# XMV(9)",
           "supports": "runtime name of XMV(9)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1007,
           "anchor": "uac = vpos[8]",
           "supports": "runtime effect of XMV(9) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 104,
           "anchor": "C    XMV(9)",
           "supports": "original Fortran nomenclature of XMV(9)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Stripper steam valve",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on steam supply to stripper reboiler",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1502",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3319,41 +3019,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 322,
           "anchor": "# XMV(10)",
           "supports": "runtime name of XMV(10)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1008,
           "anchor": "tp.fwr = vpos[9]",
           "supports": "runtime effect of XMV(10) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 105,
           "anchor": "C    XMV(10)",
           "supports": "original Fortran nomenclature of XMV(10)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Reactor cooling water flow",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on reactor cooling-water RETURN line 12",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1101 (on line 12)",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3383,41 +3077,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 323,
           "anchor": "# XMV(11)",
           "supports": "runtime name of XMV(11)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1009,
           "anchor": "tp.fws = vpos[10]",
           "supports": "runtime effect of XMV(11) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 106,
           "anchor": "C    XMV(11)",
           "supports": "original Fortran nomenclature of XMV(11)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Condenser cooling water flow",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): control valve on condenser cooling-water RETURN line 13",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): V-1201 (on line 13)",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3447,41 +3135,35 @@
       "evidence": [
         {
           "source_id": "upstream_constants",
-          "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
           "line": 324,
           "anchor": "# XMV(12)",
           "supports": "runtime name of XMV(12)"
         },
         {
           "source_id": "sim_python_backend",
-          "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
           "line": 1010,
           "anchor": "tp.agsp = (vpos[11]",
           "supports": "runtime effect of XMV(12) in the executed backend"
         },
         {
           "source_id": "sim_fortran",
-          "locator": "vendor/tep-sim-upstream/teprob.f",
           "line": 107,
           "anchor": "C    XMV(12)",
           "supports": "original Fortran nomenclature of XMV(12)"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Table 3: Agitator speed",
           "supports": "nomenclature"
         },
         {
           "source_id": "downs_vogel_1993",
-          "locator": "docs/papers/Downs1993_TEP.pdf",
           "where": "Fig. 1 (p. 246): SC (speed controller) on reactor agitator",
           "supports": "instrument location (visual reading; human to confirm)",
           "visual_reading": true
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
-          "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
           "where": "Fig. 3 (p. 311): SC 1101",
           "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
           "visual_reading": true
@@ -3515,9 +3197,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3541,9 +3223,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": "F-05",
@@ -3563,9 +3245,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3585,9 +3267,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3609,9 +3291,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3633,9 +3315,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3657,9 +3339,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3681,9 +3363,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3705,9 +3387,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3729,9 +3411,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3755,13 +3437,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 771,
             "anchor": "      YP(9)=HST(7)*FTM(7)-",
             "supports": "runtime energy balance of this unit (in/out streams)"
@@ -3784,9 +3465,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3806,9 +3487,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3836,13 +3517,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 783,
             "anchor": "      YP(36)=HST(1)*FTM(1)+",
             "supports": "runtime energy balance of this unit (in/out streams)"
@@ -3871,13 +3551,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 773,
             "anchor": "      YP(18)=HST(8)*FTM(8)-",
             "supports": "runtime energy balance of this unit (in/out streams)"
@@ -3906,13 +3585,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 778,
             "anchor": "      YP(27)=HST(4)*FTM(4)+",
             "supports": "runtime energy balance of this unit (in/out streams)"
@@ -3935,9 +3613,9 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "equipment/terminal exists on flowsheet"
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
           }
         ],
         "finding": null,
@@ -3960,13 +3638,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 574,
             "anchor": "      FWS=VPOS(11)",
             "supports": "runtime flow/heat term for this connection"
@@ -3990,13 +3667,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 791,
             "anchor": "      YP(38)=(FWS*500.53*",
             "supports": "runtime flow/heat term for this connection"
@@ -4020,13 +3696,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 675,
             "anchor": "      QUS=UAS*(TWS-TST(8))",
             "supports": "runtime flow/heat term for this connection"
@@ -4050,13 +3725,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 573,
             "anchor": "      FWR=VPOS(10)",
             "supports": "runtime flow/heat term for this connection"
@@ -4080,13 +3754,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 789,
             "anchor": "      YP(37)=(FWR*500.53*",
             "supports": "runtime flow/heat term for this connection"
@@ -4110,13 +3783,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 594,
             "anchor": "      CPDH=FLMS*(TCS+273.15D0)",
             "supports": "runtime flow/heat term for this connection"
@@ -4140,13 +3812,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 1; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 567,
             "anchor": "      FTM(3)=VPOS(3)",
             "supports": "runtime flow/heat term for this connection"
@@ -4170,13 +3841,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 10; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 570,
             "anchor": "      FTM(11)=VPOS(7)",
             "supports": "runtime flow/heat term for this connection"
@@ -4200,13 +3870,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 11; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 571,
             "anchor": "      FTM(13)=VPOS(8)",
             "supports": "runtime flow/heat term for this connection"
@@ -4230,13 +3899,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 2; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 565,
             "anchor": "      FTM(1)=VPOS(1)",
             "supports": "runtime flow/heat term for this connection"
@@ -4260,13 +3928,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 3; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 566,
             "anchor": "      FTM(2)=VPOS(2)",
             "supports": "runtime flow/heat term for this connection"
@@ -4290,13 +3957,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 4; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 568,
             "anchor": "      FTM(4)=VPOS(4)",
             "supports": "runtime flow/heat term for this connection"
@@ -4320,13 +3986,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 5; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 649,
             "anchor": "      XST(I,5)=FCM(I,5)/FTM(5)",
             "supports": "runtime flow/heat term for this connection"
@@ -4350,13 +4015,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 6; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 579,
             "anchor": "      FTM(6)=FLMS/XMWS(6)",
             "supports": "runtime flow/heat term for this connection"
@@ -4380,13 +4044,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 7; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 584,
             "anchor": "      FTM(8)=FLMS/XMWS(8)",
             "supports": "runtime flow/heat term for this connection"
@@ -4410,13 +4073,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 8; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 600,
             "anchor": "      FTM(9)=FLMS/XMWS(9)",
             "supports": "runtime flow/heat term for this connection"
@@ -4440,13 +4102,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246) stream 9; Table 1 (p. 247)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 588,
             "anchor": "      FTM(10)=FLMS/XMWS(10)",
             "supports": "runtime flow/heat term for this connection"
@@ -4470,13 +4131,12 @@
         "evidence": [
           {
             "source_id": "downs_vogel_1993",
-            "locator": "docs/papers/Downs1993_TEP.pdf",
             "where": "Fig. 1 (p. 246)",
-            "supports": "connection and flow direction"
+            "supports": "connection and flow direction",
+            "visual_reading": true
           },
           {
             "source_id": "sim_fortran",
-            "locator": "vendor/tep-sim-upstream/teprob.f",
             "line": 572,
             "anchor": "      UAC=VPOS(9)",
             "supports": "runtime flow/heat term for this connection"
