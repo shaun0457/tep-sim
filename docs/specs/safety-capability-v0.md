@@ -96,3 +96,58 @@ It does not decide whether an agent is authorized to request an otherwise valid 
 4. Run a scenario that crosses a known process threshold and record deterministic safety events.
 5. Confirm that two identical rollouts return equivalent safety evaluation.
 6. Confirm capability rejection occurs before state mutation.
+
+## A4 implementation notes (v0)
+
+Implemented in `tep_sim.capability`, `tep_sim.scenario`, `tep_sim.safety`, and the
+`TEPEnvironment` methods `capabilities()`, `compile_scenario()`, `apply_scenario()`,
+and `evaluate_safety()`. No LLM, agent-authorization, RCA, or recovery logic is added.
+
+- **Capability registry** (`tep-sim.capabilities/v0`). `capabilities()` returns an
+  immutable `CapabilityRegistry` (replacing the A1/A2 flat mapping) with every spec
+  domain. Entries are derived from the vendored `REGISTRY` and pinned upstream:
+  73 runtime variables, IDV(1)-IDV(20) (IDV(16)-IDV(20) flagged
+  `semantics_documented: false`), 12 MV interventions and 12 MV constraints
+  (precondition `control_mode: manual`), the 8 shutdown limits, the tested scenario
+  catalog with parameter bounds and mode preconditions, snapshot fidelity
+  (`exact`/`cloned_state` for python), supported consequence domains
+  (`process_trajectory`, `process_shutdown`, `process_limit_margin`), and unsupported
+  domains (`pipe_rupture`, `fire`, `toxic_dispersion`, `blast_overpressure`,
+  `personnel_casualty`). `to_json()` is the machine-readable form.
+- **Scenario compilation** (`tep-sim.scenarios/v0`). `compile_scenario` is total and
+  deterministic. Order: request type/id -> unsupported consequence domain ->
+  ambiguous term -> unknown id (`UnsupportedScenario`, `scenario:<id>`) -> parameter
+  schema/bounds (`InvalidScenario`) -> control-mode precondition
+  (`UnsupportedScenario`, `control_mode:<modes>`) -> `SupportedScenario`.
+  Tested mappings: reactor cooling-water inlet temperature step (IDV(4)) and random
+  variation (IDV(11)), reactor cooling-water flow reduction (XMV(10), MANUAL only),
+  condenser cooling-water inlet temperature step (IDV(5)). `loss_of_cooling` and
+  `reactor_cooling_degradation` return `AmbiguousScenario` with candidate ids; the
+  caller chooses.
+- **Validation before mutation.** `apply_scenario` compiles, then validates every
+  compiled intervention (A1 order, including lifecycle state) before committing any.
+  Rejections raise `UnsupportedScenarioError` (an `UnsupportedCapability`),
+  `AmbiguousScenarioError` or `InvalidScenarioError` (both `InvalidIntervention`),
+  each carrying the compilation `result`. Applied scenarios are recorded in run
+  provenance (`scenarios`) beside the individual interventions used for replay.
+- **Safety limits** (`tep-sim.safety-limits/v0`). The 8 limits mirror the pinned
+  upstream ISD check: reactor pressure > 3000 kPa (XMEAS(7)), reactor temperature
+  > 175 deg C (XMEAS(9)), and reactor/separator/stripper liquid-volume limits
+  converted to XMEAS(8)/XMEAS(12)/XMEAS(15) percent with upstream's own linear
+  formulas. Strict comparisons match upstream. `Observation.safety_margins` is now
+  populated (positive = inside the limit).
+- **Safety evaluation** (`tep-sim.safety-evaluation/v0`). `evaluate_safety(rollout)`
+  is a pure function of the checksum-verified telemetry artifact and the rollout
+  termination reason. It reports `shutdown_occurred`, `shutdown_time`,
+  `termination_reason`, `shutdown_limit_ids`, `limit_crossings`,
+  `minimum_safety_margins`, `unsafe_intervals`, ordered `relevant_process_events`
+  (disturbance activation/deactivation, limit crossed/recovered, shutdown), and
+  `unsupported_consequence_domains`. A tampered telemetry checksum or a termination
+  reason that disagrees with the recorded shutdown state is rejected.
+- **Known resolution limits.** Margins and crossings use recorded measurements, so
+  they include upstream measurement noise and are only as fine as
+  `record_interval` (the shutdown record is always written). Shutdown occurrence is
+  the simulator's own state, not inferred from margins.
+- Provenance now records `capability_version`, `scenario_mapping_version`, and
+  `safety_limits_version`. The A3 `ProcessGraph` fixture and its
+  `PENDING_HUMAN_REVIEW` status are unchanged.

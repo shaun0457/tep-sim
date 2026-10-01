@@ -116,7 +116,7 @@ def test_lifecycle_capabilities_and_numerical_failure(config, monkeypatch):
     with pytest.raises(InvalidEnvironmentState):
         env.step()
     env.reset()
-    assert env.capabilities()["safety_margins"] is False
+    assert env.capabilities().supports("consequence:process_limit_margin")
     with pytest.raises(InvalidEnvironmentState):
         env.rollout(0.5 / 3600)
     monkeypatch.setattr(env._sim, "step", lambda: False)

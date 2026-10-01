@@ -225,9 +225,10 @@ def test_unsupported_fidelity_format_and_duplicate_ids_fail_explicitly(config):
     parent = TEPEnvironment(config)
     parent.reset()
     capabilities = parent.capabilities()
-    assert capabilities["snapshot"] is True
-    assert capabilities["snapshot_fidelity"] == "exact"
-    assert capabilities["fork_randomness_policy"] == "cloned_state"
+    fidelity = capabilities.entry("snapshot:python")
+    assert fidelity.supported is True
+    assert fidelity.details["fidelity"] == "exact"
+    assert fidelity.details["fork_randomness_policy"] == "cloned_state"
     snapshot = parent.snapshot("one")
     provenance = (Path(config.artifact_directory) / parent.run_id
                   / "provenance.json").read_bytes()

@@ -16,8 +16,13 @@ from .contracts import (EnvironmentConfig, ControlMode, Observation,
                         SnapshotFidelity)
 from .errors import (InvalidIntervention, UnknownVariable, UnsupportedCapability,
                      IncompatibleControlMode, InvalidEnvironmentState,
-                     SimulationFailure, SnapshotFailure)
+                     SimulationFailure, SnapshotFailure, UnsupportedScenarioError,
+                     AmbiguousScenarioError, InvalidScenarioError)
+from .capability import CAPABILITY_VERSION, build_capability_registry
 from .registry import REGISTRY, UPSTREAM_REVISION
+from .safety import SAFETY_LIMITS_VERSION, evaluate_safety, safety_margins
+from .scenario import (SCENARIO_MAPPING_VERSION, AmbiguousScenario, InvalidScenario,
+                       SupportedScenario, UnsupportedScenario, compile_scenario)
 from .snapshot import (ENVIRONMENT_VERSION, RANDOMNESS_POLICY, artifact_ref,
                        create_snapshot_artifacts, load_replay_spec,
                        load_snapshot, load_snapshot_payload, observation_sha256,
@@ -77,6 +82,7 @@ class TEPEnvironment:
         self._constraints = {}
         self._schedule = []
         self._events = []
+        self._scenarios = []
         self._artifacts = []
         self._snapshots = []
         self._parent_snapshot_id = None
@@ -86,11 +92,35 @@ class TEPEnvironment:
         self._replay_of_branch_id = None
 
     def capabilities(self):
-        return MappingProxyType({"disturbance": True, "manual_mv": True,
-                                 "manual_mv_constraint": True, "snapshot": True,
-                                 "snapshot_fidelity": SnapshotFidelity.EXACT.value,
-                                 "fork_randomness_policy": RANDOMNESS_POLICY.value,
-                                 "safety_margins": False, "backend": "python"})
+        """Versioned, machine-readable capability registry (no model inference)."""
+        return build_capability_registry(self.config.backend)
+
+    def compile_scenario(self, request):
+        """Deterministically compile a semantic request for this config. No mutation."""
+        return compile_scenario(request, self.config.control_mode)
+
+    def apply_scenario(self, request):
+        """Compile, validate every intervention, then apply. Rejections never mutate."""
+        result = self.compile_scenario(request)
+        if isinstance(result, UnsupportedScenario):
+            raise UnsupportedScenarioError(result)
+        if isinstance(result, AmbiguousScenario):
+            raise AmbiguousScenarioError(result)
+        if not isinstance(result, SupportedScenario):
+            raise InvalidScenarioError(result if isinstance(result, InvalidScenario)
+                                       else InvalidScenario("compilation failed"))
+        plans = [self._validate(intervention) for intervention in result.interventions]
+        for intervention, plan in zip(result.interventions, plans):
+            self._commit(intervention, plan)
+        self._scenarios.append({"time": self._sim.time, "step_count": self._sim.step_count,
+                                **dict(result.provenance)})
+        self._events.append(EnvironmentEvent("scenario", self._sim.time, result.scenario_id))
+        self._persist(None)
+        return result
+
+    def evaluate_safety(self, result):
+        """Deterministic safety evaluation of a rollout's checksummed telemetry."""
+        return evaluate_safety(result)
 
     def _ready(self, *, advancing=False):
         if self._closed or self._sim is None:
@@ -122,19 +152,26 @@ class TEPEnvironment:
         self._branch_randomness_policy = None
         self._origin_snapshot = None
         self._replay_of_branch_id = None
+        self._scenarios = []
         self._events = [EnvironmentEvent("reset", 0.0)]
         self._persist(None)
         return self.observe()
 
     def observe(self):
         self._ready()
-        return Observation(self._sim.time,
-            {f"XMEAS({i})": float(v) for i, v in enumerate(self._sim.get_measurements(), 1)},
+        measurements = {f"XMEAS({i})": float(v)
+                        for i, v in enumerate(self._sim.get_measurements(), 1)}
+        return Observation(self._sim.time, measurements,
             {f"XMV({i})": float(v) for i, v in enumerate(self._sim.get_manipulated_vars(), 1)},
             tuple(f"IDV({i})" for i in self._sim.get_active_disturbances()),
-            bool(self._sim.is_shutdown()))
+            bool(self._sim.is_shutdown()),
+            safety_margins(measurements))
 
     def apply(self, intervention):
+        self._commit(intervention, self._validate(intervention))
+
+    def _validate(self, intervention):
+        """All checks for one intervention; returns a commit plan without mutating."""
         # Required ordering: schema -> identity -> capability -> bounds -> mode -> preconditions.
         if type(intervention) not in (DisturbanceIntervention, MVIntervention, MVConstraint):
             raise InvalidIntervention("typed intervention required")
@@ -173,6 +210,12 @@ class TEPEnvironment:
             low, high = self._constraints.get(intervention.target, (0, 100))
             if not low <= intervention.value <= high:
                 raise InvalidIntervention("setpoint violates active constraint")
+        return (index, lo, hi) if constraint else (index, None, None)
+
+    def _commit(self, intervention, plan):
+        index, lo, hi = plan
+        constraint = isinstance(intervention, MVConstraint)
+        disturbance = isinstance(intervention, DisturbanceIntervention)
         try:
             if constraint:
                 self._constraints[intervention.target] = (lo, hi)
@@ -222,6 +265,10 @@ class TEPEnvironment:
         config["artifact_directory"] = str(config["artifact_directory"])
         data = {"environment_version": ENVIRONMENT_VERSION,
                 "upstream_revision": UPSTREAM_REVISION,
+                "capability_version": CAPABILITY_VERSION,
+                "scenario_mapping_version": SCENARIO_MAPPING_VERSION,
+                "safety_limits_version": SAFETY_LIMITS_VERSION,
+                "scenarios": self._scenarios,
                 "seed": self.config.seed, "config": config, "run_id": self.run_id,
                 "branch_id": self.branch_id, "intervention_schedule": self._schedule,
                 "termination_reason": reason, "events": [asdict(e) for e in self._events],
@@ -358,6 +405,7 @@ class TEPEnvironment:
         environment._terminated = payload["terminated"]
         environment._constraints = dict(payload["constraints"])
         environment._schedule = []
+        environment._scenarios = []
         environment._artifacts = []
         environment._snapshots = []
         environment._parent_snapshot_id = snapshot.snapshot_id
