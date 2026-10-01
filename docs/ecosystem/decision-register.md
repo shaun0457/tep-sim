@@ -47,6 +47,13 @@ This register summarizes current program decisions. Detailed rationale belongs i
 | D-041 | Physical artifact/content existence is consumer-owned (`verify_result`); the runtime adds no storage resolver hook. Runtime verifies ref structure, AGENT visibility, unique `ref_id`s per result/finish (exact duplicates rejected), id conflicts, exact embedded refs, and that result-ingestion `reason_ref`s exactly match a ref of the verified result or an already-known verified/context ref. | accepted | Multiple consumers duplicate the same existence logic. |
 | D-042 | Finish verification validates `Task.output_schema` with the same deterministic B2 JSON Schema subset; unsupported keywords fail closed. No second schema engine. | accepted | Real task schemas require keywords outside the subset. |
 | D-043 | `tep-sim` ReplaySpec v0 reproduces the physical intervention trajectory only; the A2 format is unchanged. Semantic scenario identity/mapping provenance stays in the source run/experiment provenance. D0 benchmark records must retain a source provenance ref/checksum whenever semantic-scenario provenance matters. | accepted | Replays must be self-describing without the source run. |
+| D-044 | Add a logical **Application / Playground Plane** outside the existing World/Control/Information/Domain ownership layers. The three core repos remain unchanged; initial P0 implementation belongs in `tep-agent-lab`. | accepted | The application layer gains multiple domain consumers and a stable responsibility that justifies extraction into a separate repo/service. |
+| D-045 | Application/UI APIs and the Agent Tool Surface are distinct authority surfaces. Application/UI code cannot bypass runtime gates/consumer validation/Executor/verifier to grant Agent execution authority. Blind Playground views default to AGENT-visible information; evaluator/debug views are explicit trusted projections. | accepted | A future product control path requires explicit higher-authority operator actions; it must define a separate audited contract rather than reusing Agent tools implicitly. |
+| D-046 | A minimal **P0 Playground Backend** is required before D0 benchmark freeze so benchmark, later UI, and post-run inspection share one reproducible run/lifecycle/context/projection path instead of growing separate persistence stacks. | accepted | D0 can demonstrate equivalent reproducibility without a shared run contract, or P0 proves to add more complexity than it removes. |
+| D-047 | P0 is local-first/single-process. Existing runtime/lab/world logs, state and artifacts remain canonical; application views are derived. No mandatory microservices, distributed scheduler, Postgres, Redis, Kafka, vector DB, RAG framework, or Kubernetes. | accepted | Scale/multi-user/remote-worker requirements become concrete and measured. |
+| D-048 | C4 SC-5 becomes focused runtime milestone **B2.1 request-bound reservation**. Preserve D-037: no expression DSL/eval. The owning runtime contract must define the exact trusted request-specific reservation hook/order and fail-closed checks before implementation. | accepted | A safer/simpler request-budget mechanism is demonstrated or max-only reservation proves sufficient. |
+| D-049 | B5 first real provider is independent of B4 after B1–B3. B5 blocks the first real-model D1 Blind RCA run; B4 blocks only orchestration conditions that actually require bounded SUBTASK work, such as D2/O5. B5 is not a D0 benchmark/C0 prerequisite. | accepted | Provider integration is found to depend on generic subtask contracts in a way not represented by B1–B3. |
+| D-050 | Versioned canonical engineering/research truth resides in repository-controlled sources and is materialized locally at exact revisions for reproducible runs. Local availability does not grant Agent visibility: resolution and `ContextProjection` remain bounded, governance/provenance-aware, and visibility-aware. Existing rule/policy authority semantics are carried only where the owning source contract defines them; non-rule sources are not forced into Rule Registry authority categories. Run-specific mutable runtime/investigation state is not Git-backed canonical knowledge. | accepted | A non-Git authoritative source becomes required, or a second domain demonstrates that repository-controlled source refs are insufficient. |
 
 ## Canonical supporting documents
 
@@ -67,7 +74,7 @@ Runtime:
 - `blueprints/industrial-agent-runtime/docs/specs/deterministic-gates-v0.md`
 - `blueprints/industrial-agent-runtime/docs/specs/subagents-v0.md`
 
-Lab:
+Lab design blueprints:
 
 - `blueprints/tep-agent-lab/docs/specs/investigation-state-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/knowledge-rule-registry-v0.md`
@@ -78,6 +85,10 @@ Lab:
 - `blueprints/tep-agent-lab/docs/specs/benchmark-design-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/evaluation-v0.md`
 - task-specific RCA/HAZOP/recovery/AutoResearch specs.
+
+Live Lab owning contract added by Program Re-baseline v1:
+
+- `shaun0457/tep-agent-lab:docs/specs/playground-backend-v0.md`
 
 Review records:
 
