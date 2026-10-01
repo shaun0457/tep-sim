@@ -20,46 +20,29 @@ As of Program Re-baseline v1:
 
 # Phase 0 — Design Review Closure — COMPLETE
 
-### Closed architecture/spec issues
+Closed contracts include pre/post execution separation, generic refs/state contracts, explicit ModelTurn/state-update routing, atomic revision-bound updates, Observation versus Evidence, WorkBatch, extensible budgets, typed experiment objects, blind-RCA leakage restrictions, strong C0 baselines, Engineering Records, canonical evaluation matrices, and removal of LangGraph/MCP from the v0 critical path.
 
-- pre-execution request validation vs post-execution result verification;
-- generic runtime `InformationRef`, `ContextProjection`, `TaskStateStore`;
-- explicit `ModelTurn` + `ModelStateUpdateProposal` path for internal investigation-state updates;
-- atomic revision-bound model state updates plus deterministic result-ingestion updates;
-- automatic ObservationRecord registration for successful agent-visible ToolResults;
-- dependency-aware `WorkBatch` replacing full Dynamic DAG as v0 infrastructure;
-- extensible Budget dimensions and compound Tool resource accounting;
-- `SubtaskResult` instead of runtime `EvidenceBundle`;
-- Observation versus Evidence lifecycle;
-- typed Prediction/ExperimentResult/Interpretation separation;
-- Rule `origin × validation × authority` model;
-- blind RCA candidate-binding restrictions;
-- mandatory strong deterministic C0 baseline;
-- Engineering Record archive contracts;
-- canonical/deconfounded evaluation matrices;
-- LangGraph/MCP removed from v0 critical path.
+Review evidence:
 
-### Review evidence
-
-- full review: `reviews/2026-09-15-independent-spec-review.md`;
-- adjudication: `design-review-adjudication.md`;
-- focused re-review: `reviews/2026-09-15-focused-re-review.md`;
-- final closure: `design-freeze-record.md`.
+- `reviews/2026-09-15-independent-spec-review.md`;
+- `design-review-adjudication.md`;
+- `reviews/2026-09-15-focused-re-review.md`;
+- `design-freeze-record.md`.
 
 ---
 
 # R0 — Program / Playground Re-baseline — DOCUMENTATION
 
-Purpose: add one reproducible Application / Playground hosting layer before benchmark work creates a separate run/persistence stack.
+Purpose: add one reproducible Application / Playground hosting layer before benchmark work creates a separate run/persistence/context stack.
 
 Deliver:
 
 - logical Application / Playground Plane while preserving three core repos;
-- Git-backed canonical-context architecture with exact revision, authority, visibility, and provenance;
+- repository-backed canonical-context architecture with exact revision, governance metadata where applicable, visibility, and provenance;
 - P0 backend contract in `tep-agent-lab`;
 - B2.1 request-bound reservation milestone;
 - B5 provider decoupled from B4 subagents;
-- updated dependency graph.
+- corrected dependency graph.
 
 P0 is local-first/single-process. No mandatory FastAPI, Postgres, Redis, Kafka, vector database, RAG framework, distributed workers, or Kubernetes.
 
@@ -78,14 +61,6 @@ Spec: `docs/specs/snapshot-fork-replay-v0.md`
 ## A3 — DEXPI / ProcessGraph binding — IMPLEMENTED, HUMAN REVIEW PENDING
 
 Spec: `docs/specs/dexpi-binding-v0.md`
-
-Implemented:
-
-- pinned TEP semantic fixture;
-- normalized ProcessGraph;
-- topology queries;
-- canonical variable/binding registry;
-- validation/leakage tests.
 
 Before D0 benchmark freeze:
 
@@ -133,33 +108,23 @@ Before coding, update the owning runtime spec with the exact hook/stage ordering
 Branch: `feat/subagents-v0`  
 Spec: `docs/specs/subagents-v0.md`
 
-Deliver when the O5 bounded-SUBTASK orchestration condition is ready:
+B4 does **not** block D0 or the first single-Agent D1 run. Implement it before the O5 bounded-SUBTASK orchestration condition.
 
-- bounded child tasks;
-- cumulative per-task child budget;
-- scoped context/tools;
-- `SubtaskResult`;
-- no child MUTATE;
-- no nested SUBTASK bypass at depth limit;
-- parent-child trace.
-
-B4 does **not** block D0 or the first single-Agent D1 run.
-
-## B5 — First real provider — REQUIRED BEFORE D1
+## B5 — First real provider — REQUIRED BEFORE D1, NOT D0
 
 Branch: `feat/provider-adapter-v0`
 
-B5 may proceed after B1–B3 independently of B4.
+B5 may proceed after B1–B3 independently of B4 and independently of D0 benchmark construction.
 
-Add one provider only after fake-provider contracts pass. Provider SDK types stay behind the internal model interface. B5 is a D1 blocker because the first Blind RCA capability study requires a real model; bounded subagents are evaluated later.
+Add one provider only after fake-provider contracts pass. Provider SDK types stay behind the internal model interface.
+
+B5 is a D1 blocker because the first Blind RCA capability study requires a real model; it is **not** a D0 benchmark/C0 prerequisite.
 
 ## Explicitly not scheduled in B v0
 
 - LangGraph adapter;
 - MCP runtime dependency;
 - general mutable Dynamic DAG engine.
-
-These require concrete later evidence/requirements.
 
 ---
 
@@ -210,20 +175,21 @@ C5 remains an adapter/provider layer; runtime retains authorization/budget/execu
 ## P0 — Minimal Playground Backend — REQUIRED BEFORE D0 FREEZE
 
 Owner repo: `tep-agent-lab`  
-Spec: `docs/specs/playground-backend-v0.md`
+Owning spec: `shaun0457/tep-agent-lab:docs/specs/playground-backend-v0.md`
 
 Deliver one local reproducible run path:
 
-- immutable `RunManifest`;
-- minimal run lifecycle and `RunManager`;
+- immutable `RunManifest` published at READY plus separate terminal `RunOutcome`;
+- minimal application `RunStatus` lifecycle and `RunManager` distinct from runtime `TaskStatus`;
 - `CanonicalContextRegistry` / `ContextSourceRef` resolver over exact repository revisions;
+- context-source inventory frozen at READY and not model-authored;
 - transport-neutral read/query projections;
 - ProcessGraph/P&ID-like process view;
 - telemetry / investigation / branch-tree / budget / event views;
 - exact-ref/checksum artifact access;
-- AGENT vs EVALUATOR visibility boundaries.
+- AGENT vs EVALUATOR projection boundaries.
 
-P0 does not create a second TaskStateStore, ProcessWorld, trace/evidence ontology, or tool authority path. Existing runtime/lab/world stores remain canonical; application views are derived projections.
+P0 does not create a second TaskStateStore, ProcessWorld, trace/evidence ontology, scheduler, or tool authority path. Existing runtime/lab/world stores remain canonical; application views are derived projections.
 
 P0 is intentionally local-first/single-process. HTTP/streaming adapters and polished UI are later consumers, not required P0 infrastructure.
 
@@ -259,6 +225,8 @@ Prerequisites for benchmark freeze:
 - C5 minimal Tool Bridge;
 - A3 human-reviewed ProcessGraph/bindings;
 - P0 reproducible run/context/projection path.
+
+**B5 is not a D0 prerequisite.** D0/C0 can remain deterministic/fake-provider where appropriate.
 
 Deliver before Agent superiority claims:
 
@@ -344,7 +312,7 @@ After clean no-KG/no-memory baselines:
 - add subsystem/fault families;
 - detector-triggered start.
 
-Canonical context does not imply automatic retrieval or learned memory: Git-backed reviewed truth and cross-run memory are separate concerns.
+Canonical context does not imply automatic retrieval or learned memory: repository-backed reviewed truth and cross-run memory are separate concerns.
 
 Lesson Learned/Runbook/manual promotion must be evaluated/authority-governed rather than automatically generated from one incident.
 
@@ -374,8 +342,7 @@ On spec conflict it reports `SPEC_CONFLICT`; it does not silently redesign archi
 ```text
 A1-A4 complete          B1-B3 complete          C1-C4 complete
       \                       |                       /
-       \                      |                      /
-        +------------- Program R0 -----------------+
+       +-------------- Program R0 ------------------+
                               |
              +----------------+----------------+
              |                |                |
@@ -383,24 +350,23 @@ A1-A4 complete          B1-B3 complete          C1-C4 complete
              |                |                |
              +----------------+----------------+
                               |
-                     +--------+--------+
-                     |                 |
-                    P0             B5 provider
-                     |                 |
-                     +--------+--------+
+                              v
+                             P0
                               |
-                         D0 benchmark/C0
-                              |
-                       +------+------+
-                       |             |
-                     P1 UI        D1 RCA
-                                     |
-                                     v
+                              v
+                        D0 benchmark/C0
+                         /           \
+                        v             v
+                     P1 UI          D1 RCA <------ B5 provider
+                                      |
+                                      v
                                  B4 + D2/O5
-                                     |
-                             E1/E2/E3 later
-                                     |
-                          F knowledge/memory studies
+                                      |
+                               E1/E2/E3 later
+                                      |
+                           F knowledge/memory studies
 ```
+
+B5 is independent of D0 and may be implemented in parallel any time after R0/B1–B3; it joins the dependency graph only at D1.
 
 Independent branches may run in parallel when their upstream frozen contracts are available and file/module ownership does not overlap. Completion race does not change integration order.
