@@ -269,6 +269,27 @@ def test_review_document_mirrors_the_matrix_column_by_column(package):
             assert cells[column] == value, (row["review_id"], column)
 
 
+def test_promotion_always_requires_a_new_human_authored_fixture_version():
+    """Spec: a human-verified mapping ships as a new fixture version, never in place.
+
+    Verification provenance alone is reason for a new version, even with unchanged
+    mappings; this package must not suggest otherwise or perform the promotion.
+    """
+    text = REVIEW_DOC.read_text(encoding="utf-8")
+    section = text.split("## 8. Fixture versions and verification promotion", 1)[1] \
+        .split("\n## 9.", 1)[0]
+    normalized = " ".join(section.split())
+    for rule in ("permanently represents the curated",
+                 "No automated component may create a human-verified fixture",
+                 "**MUST** publish a new verified fixture version",
+                 "**even if no topology or binding changes.**",
+                 "Verification provenance is itself versioned engineering truth",
+                 "only** for rows the human reviewer explicitly accepted",
+                 "corresponding new evaluator fixture version must be published"):
+        assert rule in normalized, rule
+    assert "pointless duplicate" not in text.lower()
+
+
 def test_xmeas22_adjudication_presents_all_three_options():
     text = REVIEW_DOC.read_text(encoding="utf-8")
     section = text.split("## 5. XMEAS(22) adjudication package", 1)[1].split("\n## 6.", 1)[0]

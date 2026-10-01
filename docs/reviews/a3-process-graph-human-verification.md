@@ -341,19 +341,51 @@ Checks performed. Automated consistency is necessary but not sufficient:
   The evaluator fixture is bound to graph hash `2b4adf94…`, and no Agent-visible
   path loads it.
 
-## 8. Candidate fixture
+## 8. Fixture versions and verification promotion
 
-**None created.** No mapping was shown to be *wrong* by the evidence:
+**No fixture is created or changed in this package.** The rules below follow the
+owning spec (`docs/specs/dexpi-binding-v0.md`). A human-verified mapping must be
+published as a new fixture version with its own provenance and pin.
+
+1. **Baseline stays immutable.** `tep-process-graph` 0.1.0 (canonical sha256
+   `2b4adf94…d01f2b`) and its evaluator fixture 0.1.0 are never edited. 0.1.0
+   permanently represents the curated, `PENDING_HUMAN_REVIEW`, `CURATED_MAPPING`
+   baseline.
+2. **This package stays unsigned.** It remains `PENDING_HUMAN_SIGNOFF`, and every row
+   is `PENDING`.
+3. **No automated promotion.** No automated component may create a human-verified
+   fixture, set `HUMAN_VERIFIED_MAPPING`, or change `review_status` to a verified
+   value. The tests enforce this for this package.
+4. **Promotion always means a new version.** After the human decisions are recorded
+   (§10), a separate human-authored promotion change **MUST** publish a new verified
+   fixture version (e.g. `tep-process-graph` 0.2.0 with its own pin). This applies
+   **even if no topology or binding changes.** Verification provenance is itself
+   versioned engineering truth, and that is sufficient reason for a new fixture
+   version.
+5. **Provenance per row.** The promoted fixture records the human review provenance:
+   - reviewer;
+   - date;
+   - this package id/version;
+   - the decision record.
+
+   It uses `HUMAN_VERIFIED_MAPPING` **only** for rows the human reviewer explicitly
+   accepted. Every other row keeps its curated method and status.
+6. **Semantic changes only in the new version.** If the reviewer rejects rows and
+   mappings change (e.g. Q2, Q3, Q4, Q5), those changes also appear only in the new
+   fixture version.
+7. **Evaluator follows the graph hash.** The evaluator fixture is bound to the
+   graph's canonical content hash. Whenever the promoted graph hash changes, a
+   corresponding new evaluator fixture version must be published, bound to that
+   hash. Promotion always changes the graph hash, because provenance/method/status
+   are part of the hashed content.
+
+The evidence does not show any current mapping to be *wrong*:
 
 - F-01 most likely confirms the current attachment.
-- F-02, F-03, and F-04 are representational choices that need a human decision
-  first.
-- A new version that only changed a status flag would be a pointless duplicate.
+- F-02, F-03 and F-04 are representational choices that need a human decision.
 
-If the reviewer requests changes, they go into a NEW fixture version (e.g.
-`tep-process-graph` 0.2.0 with its own pin). Because the evaluator fixture is
-hash-bound to the graph's canonical content hash, **any** graph content change (Q2, Q3, Q4 or Q5, not only F-03) requires re-publishing it as a new version bound to the new hash. Bindings stay
-`HUMAN_VERIFIED_MAPPING` only for the rows the human accepted.
+Whether the promoted version also carries semantic changes is the reviewer's call.
+That it is a new version is not optional.
 
 ## 9. Questions requiring human sign-off
 
@@ -386,7 +418,10 @@ that does all of the following together:
 2. Updates the guard test so it checks the signed-off state.
 3. Re-renders the decision columns in this document. The column-by-column
    mirroring test still applies.
-4. Publishes any approved mapping as a new fixture version (§8).
+4. Leaves fixture publication to a separate, human-authored promotion change. That
+   change MUST publish a new verified graph fixture version, together with the
+   matching evaluator fixture version, even if no mapping changed (§8). The
+   0.1.0 baseline is never edited.
 
 | Field | Value |
 |---|---|
