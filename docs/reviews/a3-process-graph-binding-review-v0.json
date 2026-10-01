@@ -1,7 +1,7 @@
 {
   "review_package_id": "a3-process-graph-human-verification",
-  "review_package_version": "0.1.0",
-  "status": "PENDING_HUMAN_SIGNOFF",
+  "review_package_version": "0.2.0",
+  "status": "HUMAN_SIGNOFF_RECORDED",
   "prepared_by": "automated coding agent (not a human reviewer)",
   "base_commit": "4261dc7ab4994348778133190964c6d59b17bb82",
   "upstream_revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005",
@@ -101,8 +101,9 @@
       "id": "MS-1",
       "needed_for": "comparison against an official DEXPI representation",
       "missing": "DEXPI Process 1.0 TennesseeEastman.xml (official example) is not vendored; the fixture is CURATED_EQUIVALENT_GRAPH",
-      "status": "NEEDS_SOURCE",
-      "blocks_bindings": false
+      "status": "NOT_REQUIRED_FOR_D0",
+      "blocks_bindings": false,
+      "resolution": "Official DEXPI XML is not a D0 blocker; MS-1 becomes NOT_REQUIRED_FOR_D0. Reviewer's rationale: the spec already accepts a curated equivalent graph as input (Input boundary); D0 needs a reviewed, versioned, reproducible ProcessGraph, not necessarily the official XML."
     }
   ],
   "bindings": [
@@ -143,14 +144,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 1",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1001",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -160,9 +163,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-02",
@@ -201,14 +204,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 2",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1002",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -218,9 +223,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-03",
@@ -259,14 +264,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 3",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1003",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -276,9 +283,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-04",
@@ -317,14 +324,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 4",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1004",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -334,9 +343,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-05",
@@ -375,14 +384,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 8 (compressor discharge, downstream of recycle-valve spillback)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -392,9 +403,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-06",
@@ -433,14 +444,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 6",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -450,9 +463,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-07",
@@ -491,14 +504,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PIAZ+ 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -508,9 +523,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-08",
@@ -549,14 +564,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -566,9 +583,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-09",
@@ -607,14 +624,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TIAZ+ 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -624,9 +643,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-10",
@@ -665,14 +684,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 9",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -682,9 +703,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-11",
@@ -723,14 +744,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -740,9 +763,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-12",
@@ -781,14 +804,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -798,9 +823,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-13",
@@ -839,14 +864,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -856,9 +883,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-14",
@@ -897,14 +924,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 10",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -914,9 +943,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-15",
@@ -955,14 +984,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on stripper",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -972,9 +1003,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-16",
@@ -1013,14 +1044,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI drawn on stripper overhead line 5",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1030,9 +1063,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-02",
       "agent_notes": "Runtime computes XMEAS(16) from PTV, the pressure of the compressor-discharge/reactor-feed vapor zone (fixture node reactor_feed_mixer); the model has no separate stripper pressure state. D&V Fig. 1 draws the PI on the stripper overhead line 5. Attachment to the stripper node matches the nomenclature but not the runtime state it reports.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q2: keep attachment on stripper (canonical name and D&V Fig. 1 instrument are stripper pressure). Runtime value is sourced from the PTV vapor-zone state; record this in the promoted fixture provenance. Do not move the attachment to the mixer."
     },
     {
       "review_id": "B-17",
@@ -1071,14 +1104,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 11",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1502",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1088,9 +1123,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-18",
@@ -1129,14 +1164,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on stripper",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1146,9 +1183,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-19",
@@ -1187,14 +1224,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on steam supply line to stripper reboiler",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1204,9 +1243,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": "F-08",
       "agent_notes": "Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-20",
@@ -1245,14 +1284,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): JI on compressor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): JI 1401",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1262,9 +1303,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-21",
@@ -1303,14 +1344,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on reactor cooling-water return line 12",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1103 (unit 11 = reactor)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1320,9 +1363,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-22",
@@ -1361,14 +1404,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on condenser cooling-water return line 13",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1202 (unit 12 = condenser)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1378,9 +1423,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-01",
       "agent_notes": "Special review item. Upstream/Fortran/D&V Table 4 name it 'Separator cooling water outlet temperature'; runtime state TWS is the outlet of the cooling loop whose flow is XMV(11) 'Condenser cooling water flow'; both figures place the TI on the condenser cooling-water return line 13. See XMEAS(22) adjudication package.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q1: Option A, retain the condenser attachment. Runtime loop (XMV(11)), D&V flowsheet and Bathelt Fig. 3 all point to the condenser cooling-water loop; the 'Separator cooling water outlet' label is treated as a lumping/naming legacy of the original model. The runtime name is not renamed."
     },
     {
       "review_id": "B-23",
@@ -1419,14 +1464,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1436,9 +1483,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-24",
@@ -1477,14 +1524,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1494,9 +1543,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-25",
@@ -1535,14 +1584,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1552,9 +1603,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-26",
@@ -1593,14 +1644,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1610,9 +1663,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-27",
@@ -1651,14 +1704,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1668,9 +1723,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-28",
@@ -1709,14 +1764,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1726,9 +1783,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-29",
@@ -1767,14 +1824,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1784,9 +1843,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-30",
@@ -1825,14 +1884,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1842,9 +1903,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-31",
@@ -1883,14 +1944,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1900,9 +1963,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-32",
@@ -1941,14 +2004,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1958,9 +2023,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-33",
@@ -1999,14 +2064,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2016,9 +2083,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-34",
@@ -2057,14 +2124,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2074,9 +2143,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-35",
@@ -2115,14 +2184,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2132,9 +2203,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-36",
@@ -2173,14 +2244,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2190,9 +2263,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-37",
@@ -2231,14 +2304,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2248,9 +2323,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-38",
@@ -2289,14 +2364,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2306,9 +2383,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-39",
@@ -2347,14 +2424,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2364,9 +2443,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-40",
@@ -2405,14 +2484,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2422,9 +2503,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-41",
@@ -2463,14 +2544,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2480,9 +2563,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-42",
@@ -2521,14 +2604,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 2",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1002",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2538,9 +2623,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-43",
@@ -2579,14 +2664,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 3",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1003",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2596,9 +2683,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-44",
@@ -2637,14 +2724,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 1",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1001",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2654,9 +2743,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-45",
@@ -2695,14 +2784,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 4",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1004",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2712,9 +2803,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-46",
@@ -2753,14 +2844,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): valve on spillback loop around the compressor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1401",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2770,9 +2863,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": "F-09",
       "agent_notes": "Spillback/recycle valve around the compressor; runtime subtracts the valve flow from the compressor throughput that becomes stream 8.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-47",
@@ -2811,14 +2904,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 9",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2828,9 +2923,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-48",
@@ -2869,14 +2964,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 10",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2886,9 +2983,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-49",
@@ -2927,14 +3024,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 11",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2944,9 +3043,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-50",
@@ -2985,14 +3084,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on steam supply to stripper reboiler",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1502",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3002,9 +3103,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-51",
@@ -3043,14 +3144,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on reactor cooling-water RETURN line 12",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1101 (on line 12)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3060,9 +3163,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-03",
       "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 12; fixture attaches the actuator to reactor_cooling_water_in. Flow is identical along the single-path loop; human decides whether the inlet-edge attachment is acceptable.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q3: accept the inlet-edge attachment for v0. On the single-path cooling loop the flow is identical; ACTUATES is a functional-control relation in v0, not physical valve coordinates. The return-side valve location stays recorded as a note."
     },
     {
       "review_id": "B-52",
@@ -3101,14 +3204,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on condenser cooling-water RETURN line 13",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1201 (on line 13)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3118,9 +3223,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-03",
       "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 13; fixture attaches the actuator to condenser_cooling_water_in. Same question as XMV(10).",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q3: accept the inlet-edge attachment for v0 (same rationale as B-51)."
     },
     {
       "review_id": "B-53",
@@ -3159,14 +3264,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): SC (speed controller) on reactor agitator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): SC 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3176,9 +3283,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     }
   ],
   "topology": {
@@ -3199,15 +3306,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Compressor throughput and work CPDH computed from PTV-PTS.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-02",
@@ -3225,15 +3333,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": "F-05",
         "agent_notes": "D&V Fig. 1 and Table 1 (condenser heat duty -2140.6 kW) define the unit; runtime has no condenser holdup - its duty QUS is lumped into the separator energy balance. Static topology node is justified by the flowsheet, not by a dynamic state.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-03",
@@ -3247,15 +3356,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-04",
@@ -3269,15 +3379,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-05",
@@ -3293,15 +3404,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-06",
@@ -3317,15 +3429,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-07",
@@ -3341,15 +3454,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-08",
@@ -3365,15 +3479,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-09",
@@ -3389,15 +3504,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-10",
@@ -3413,15 +3529,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-11",
@@ -3439,7 +3556,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3451,9 +3569,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-12",
@@ -3467,15 +3585,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-13",
@@ -3489,15 +3608,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-14",
@@ -3519,7 +3639,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3531,9 +3652,9 @@
         "finding": "F-06",
         "agent_notes": "Runtime models a vapor holdup 'V' (UCVV/ETV, pressure PTV; upstream constant VTV 'Compressor volume') that receives streams 1, 2, 3, 5, 8 and discharges stream 6. D&V Fig. 1 draws only a piping header; the node is a modeled zone, not drawn equipment.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-15",
@@ -3553,7 +3674,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3565,9 +3687,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-16",
@@ -3587,7 +3709,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3599,9 +3722,9 @@
         "finding": "F-08",
         "agent_notes": "Reboiler is lumped into the stripper; D&V Fig. 1 also shows a condensate return that the fixture does not model.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q5: accept the lumped reboiler and the missing condensate return for v0."
       },
       {
         "review_id": "N-17",
@@ -3615,15 +3738,16 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       }
     ],
     "edges": [
@@ -3640,7 +3764,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3652,9 +3777,9 @@
         "finding": "F-03",
         "agent_notes": "Carries XMV(11) in the fixture; both figures put the control valve on the return line 13.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q3: accept the actuator on this inlet edge for v0."
       },
       {
         "review_id": "E-02",
@@ -3669,7 +3794,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3681,9 +3807,9 @@
         "finding": "F-04",
         "agent_notes": "Numbered line 13 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null. Carries XMEAS(22).",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q1: Option A (carries XMEAS(22)). Q4: stream_number stays null; D&V Table 1 process streams are 1-11 and figure utility line numbers are not stream numbers."
       },
       {
         "review_id": "E-03",
@@ -3698,7 +3824,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3710,9 +3837,9 @@
         "finding": "F-05",
         "agent_notes": "No runtime stream: the condenser is lumped into the separator. Unnumbered in D&V Fig. 1 and Table 1.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-04",
@@ -3727,7 +3854,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3739,9 +3867,9 @@
         "finding": "F-03",
         "agent_notes": "Carries XMV(10) in the fixture; both figures put the control valve on the return line 12.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q3: accept the actuator on this inlet edge for v0."
       },
       {
         "review_id": "E-05",
@@ -3756,7 +3884,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3768,9 +3897,9 @@
         "finding": "F-04",
         "agent_notes": "Numbered line 12 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q4: stream_number stays null (same rationale as E-02)."
       },
       {
         "review_id": "E-06",
@@ -3785,7 +3914,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3797,9 +3927,9 @@
         "finding": null,
         "agent_notes": "Unnumbered in D&V; runtime compressor suction is separator vapor (XST(.,9)=XVS).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-07",
@@ -3814,7 +3944,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 1; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3826,9 +3957,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-08",
@@ -3843,7 +3974,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 10; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3855,9 +3987,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-09",
@@ -3872,7 +4004,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 11; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3884,9 +4017,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-10",
@@ -3901,7 +4034,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 2; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3913,9 +4047,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-11",
@@ -3930,7 +4064,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 3; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3942,9 +4077,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-12",
@@ -3959,7 +4094,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 4; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3971,9 +4107,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-13",
@@ -3988,7 +4124,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 5; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4000,9 +4137,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-14",
@@ -4017,7 +4154,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 6; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4029,9 +4167,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-15",
@@ -4046,7 +4184,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 7; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4058,9 +4197,9 @@
         "finding": null,
         "agent_notes": "Runtime flow FTM(8) goes reactor -> separator energy balance directly; the condenser is lumped (F-05).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-16",
@@ -4075,7 +4214,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 8; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4087,9 +4227,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-17",
@@ -4104,7 +4244,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 9; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4116,9 +4257,9 @@
         "finding": null,
         "agent_notes": "D&V Fig. 1 draws the purge off the separator vapor line upstream of the compressor; fixture connects separator -> purge_outlet directly (no junction node). Runtime purge composition is separator vapor and its flow is driven by separator pressure, so the attachment is equivalent (finding F-07).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-18",
@@ -4133,7 +4274,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4145,10 +4287,34 @@
         "finding": "F-08",
         "agent_notes": "Steam supply only; D&V Fig. 1 also shows a condensate return (Cond) that is not modeled as an edge.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q5: accept the missing condensate return for v0."
       }
     ]
+  },
+  "supersedes": {
+    "review_package_version": "0.1.0",
+    "state": "PENDING_HUMAN_SIGNOFF",
+    "commit": "f38a1987c8361567958c93748e72e7e8d93ff7fb"
+  },
+  "signoff": {
+    "reviewer": "chengting",
+    "date": "2026-10-01",
+    "recorded_by": "automated coding agent, transcribing decisions the reviewer stated explicitly and authorized it to record; the agent made no decision",
+    "package_decision": "ACCEPT",
+    "visual_readings_confirmed_by_reviewer": true,
+    "decisions": {
+      "Q1": "Option A: retain the condenser attachment. Reviewer's rationale: the runtime loop, XMV(11), the D&V flowsheet and the Bathelt figure all point to the condenser cooling-water loop; 'Separator cooling water outlet' reads as a lumping/naming legacy of the original model. The runtime name is not renamed.",
+      "Q2": "Keep the attachment on stripper. Reviewer's rationale: the canonical variable name and the figure instrument are stripper pressure, although the value comes from the PTV vapor-zone state. Record 'runtime state sourced from PTV' in provenance; do not move the engineering attachment to the mixer.",
+      "Q3": "Accept the current inlet-edge attachment for v0. Reviewer's rationale: the figures draw the valves on the return side, but flow is identical along the single-path cooling loop; ACTUATES in v0 is a functional-control relation, not physical valve coordinates. Keep the note.",
+      "Q4": "stream_number stays null. Reviewer's rationale: D&V Table 1 process streams are 1-11; putting figure utility line numbers into the same field would confuse the ontology.",
+      "Q5": "Condensate return / reboiler omission accepted for v0. Reviewer's rationale: the simulator itself lumps the reboiler, and this topology is not needed for D0 RCA; add it later for a more complete P&ID.",
+      "Q6": "Visual figure readings (all visual_reading evidence items): personally checked by the reviewer against D&V Fig. 1 and Bathelt et al. Fig. 3 and confirmed correct.",
+      "Q7": "Official DEXPI XML is not a D0 blocker; MS-1 becomes NOT_REQUIRED_FOR_D0. Reviewer's rationale: the spec already accepts a curated equivalent graph as input (Input boundary); D0 needs a reviewed, versioned, reproducible ProcessGraph, not necessarily the official XML.",
+      "Q8": "F-11 PDF rename approved, as a separate provenance-hygiene PR not mixed with fixture verification.",
+      "Q9": "Bulk ACCEPT of the 49 ACCEPT_CANDIDATE bindings and 31 topology candidates after Q6; the 4 binding and 4 topology HUMAN_DECISION_REQUIRED rows are ACCEPT per Q1-Q5. Result: 88/88 ACCEPT."
+    },
+    "fixture_promotion": "NOT_PERFORMED: a separate human-authored promotion change must publish a new verified graph fixture version and the matching evaluator fixture version (review doc section 8)"
   }
 }

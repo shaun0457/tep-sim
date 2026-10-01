@@ -25,6 +25,8 @@ REVIEW_DOC = REVIEWS / "a3-process-graph-human-verification.md"
 FIXTURES = Path(tep_sim.__file__).with_name("fixtures")
 GRAPH_FIXTURE = FIXTURES / "tep_process_graph_v0.json"
 HUMAN_DECISIONS = frozenset({"PENDING", "ACCEPT", "REJECT", "NEEDS_SOURCE"})
+# chengting's sign-off of 2026-10-01; changing it requires a new human-authored record
+SIGNED_RECORD_SHA256 = "f76210a9a59db110b50b57c147e5596e1f46d5fa7cd8fcb88ec1851484a00a7a"
 DISTURBANCE_REF = re.compile(r"(?<![A-Za-z])IDV[\s_\-(]*\d+", re.IGNORECASE)
 BINDING_FIELDS = ("semantic_entity_id", "runtime_variable_id", "runtime_variable_kind",
                   "relation", "attached_to", "quantity")
@@ -43,6 +45,15 @@ def package():
 @pytest.fixture(scope="module")
 def graph():
     return load_process_graph()
+
+
+def signed_record_sha256(package):
+    """Hash of everything the human signed: decision record plus per-row decisions."""
+    record = {"status": package["status"], "version": package["review_package_version"],
+              "signoff": package["signoff"], "missing_sources": package["missing_sources"],
+              "rows": [(r["review_id"], r["human_reviewer_decision"], r["reviewer"],
+                        r["review_notes"]) for r in all_rows(package)]}
+    return canonical_sha256(record)
 
 
 def lf_sha256(path):
@@ -239,17 +250,37 @@ def test_pinned_fixtures_are_byte_and_content_immutable(package, graph):
             assert data.get("fixture_id") not in subject_ids, path.name
 
 
-def test_package_stays_unsigned_until_a_human_signoff_change(package, graph):
-    """No automated edit may fill a decision. Real sign-off updates this test (doc §10)."""
-    assert package["status"] == "PENDING_HUMAN_SIGNOFF"
+def test_signoff_is_a_recorded_human_decision_not_a_fixture_promotion(package, graph):
+    """Decisions belong to the named human reviewer; promotion is a separate change (§8)."""
+    signoff = package["signoff"]
+    assert package["status"] == "HUMAN_SIGNOFF_RECORDED"
+    assert package["review_package_version"] == "0.2.0"
+    assert package["supersedes"]["state"] == "PENDING_HUMAN_SIGNOFF"
+    assert signoff["reviewer"] == "chengting" and signoff["date"]
+    assert signoff["visual_readings_confirmed_by_reviewer"] is True
+    assert "made no decision" in signoff["recorded_by"]
+    assert set(signoff["decisions"]) == {f"Q{n}" for n in range(1, 10)}
+    assert set(package["human_decision_values"]) == HUMAN_DECISIONS
+    decisions = Counter(row["human_reviewer_decision"] for row in all_rows(package))
+    assert "PENDING" not in decisions and set(decisions) <= HUMAN_DECISIONS
+    if signoff["package_decision"] == "ACCEPT":
+        assert set(decisions) == {"ACCEPT"}
+    for row in all_rows(package):
+        assert row["reviewer"] == signoff["reviewer"], row["review_id"]
+        cited = re.findall(r"\bQ(\d)\b", row["review_notes"])
+        assert cited and {f"Q{n}" for n in cited} <= set(signoff["decisions"]), \
+            row["review_id"]  # every note cites a recorded decision
+        for item in row["evidence"]:
+            if item.get("visual_reading"):
+                assert item["visual_reading_confirmed_by"] == signoff["reviewer"]  # Q6
+    # the signed record is pinned: any later edit to a decision, note or Q text fails
+    assert signed_record_sha256(package) == SIGNED_RECORD_SHA256
+    # recording decisions does not promote anything: the 0.1.0 baseline stays curated
+    assert signoff["fixture_promotion"].startswith("NOT_PERFORMED")
     assert graph.provenance.review_status == "PENDING_HUMAN_REVIEW"
     assert all(b.provenance.method.value == "CURATED_MAPPING" for b in graph.bindings())
     for path in [*FIXTURES.glob("*.json"), MATRIX]:
         assert "HUMAN_VERIFIED" not in path.read_text(encoding="utf-8"), path.name
-    assert set(package["human_decision_values"]) == HUMAN_DECISIONS
-    for row in all_rows(package):
-        assert row["human_reviewer_decision"] == "PENDING", row["review_id"]
-        assert row["reviewer"] is None, row["review_id"]
 
 
 def test_review_document_mirrors_the_matrix_column_by_column(package):
@@ -267,6 +298,20 @@ def test_review_document_mirrors_the_matrix_column_by_column(package):
             row["review_id"]
         for column, value in expected.items():
             assert cells[column] == value, (row["review_id"], column)
+
+
+def test_review_document_mirrors_the_signoff_record(package):
+    text = REVIEW_DOC.read_text(encoding="utf-8")
+    signoff_section = text.split("### Recorded decisions", 1)[1]
+    for key, decision in package["signoff"]["decisions"].items():
+        assert f"| {decision} |" in signoff_section, key
+    tally = Counter(r["human_reviewer_decision"] for r in package["bindings"])
+    expected = ", ".join(f"{k} {v}" for k, v in sorted(tally.items()))
+    assert f"| Human decision | {expected} |" in text
+    assert f"(Status: `{package['missing_sources'][0]['status']}`" in text
+    assert f"`a3-process-graph-human-verification` {package['review_package_version']}" in text
+    assert "must be confirmed by the human reviewer" not in text
+    assert "The human reviewer must choose" not in text
 
 
 def test_promotion_always_requires_a_new_human_authored_fixture_version():
