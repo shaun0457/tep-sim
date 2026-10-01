@@ -1,0 +1,4154 @@
+{
+  "review_package_id": "a3-process-graph-human-verification",
+  "review_package_version": "0.1.0",
+  "status": "PENDING_HUMAN_SIGNOFF",
+  "prepared_by": "automated coding agent (not a human reviewer)",
+  "base_commit": "4261dc7ab4994348778133190964c6d59b17bb82",
+  "upstream_revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005",
+  "subject_fixtures": [
+    {
+      "fixture_id": "tep-process-graph",
+      "fixture_version": "0.1.0",
+      "locator": "src/tep_sim/fixtures/tep_process_graph_v0.json",
+      "canonical_sha256": "2b4adf9406674fd7c91f3ee48a6a96ef23992d682036059dcb6706e825d01f2b",
+      "pinned_sha256": "2b4adf9406674fd7c91f3ee48a6a96ef23992d682036059dcb6706e825d01f2b",
+      "file_sha256_lf": "66fec5a175bdab3b9c12b3f091ab770b7eef8474953c61813b586fa5f44988ba",
+      "review_status": "PENDING_HUMAN_REVIEW"
+    },
+    {
+      "fixture_id": "tep-evaluator-disturbance-bindings",
+      "fixture_version": "0.1.0",
+      "locator": "src/tep_sim/fixtures/tep_evaluator_disturbance_bindings_v0.json",
+      "visibility": "EVALUATOR_ONLY",
+      "pinned_sha256": "b497fdca4c4e436ba084bd120b989fe51e0b33a449164fe553be1f0c6b9b6a22",
+      "file_sha256_lf": "92afc404031017bc8d2f9adee92f76091fde812c11d44e0e9dd5818e966e79e8",
+      "reviewed_here": "boundary only"
+    }
+  ],
+  "human_decision_values": [
+    "PENDING",
+    "ACCEPT",
+    "REJECT",
+    "NEEDS_SOURCE"
+  ],
+  "proposed_disposition_values": [
+    "ACCEPT_CANDIDATE",
+    "HUMAN_DECISION_REQUIRED",
+    "NEEDS_SOURCE"
+  ],
+  "sources": {
+    "sim_python_backend": {
+      "kind": "VENDORED_SIMULATOR_SOURCE",
+      "rank": 1,
+      "title": "Vendored upstream pure-Python TEP backend (the backend tep-sim executes)",
+      "locator": "vendor/tep-sim-upstream/src/tep/python_backend.py",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    },
+    "sim_fortran": {
+      "kind": "VENDORED_SIMULATOR_SOURCE",
+      "rank": 1,
+      "title": "Vendored original TEP Fortran model teprob.f (comments + equations)",
+      "locator": "vendor/tep-sim-upstream/teprob.f",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    },
+    "upstream_constants": {
+      "kind": "VENDORED_SIMULATOR_SOURCE",
+      "rank": 1,
+      "title": "Vendored simulator variable metadata (names/units)",
+      "locator": "vendor/tep-sim-upstream/src/tep/constants.py",
+      "revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005"
+    },
+    "canonical_registry": {
+      "kind": "CANONICAL_RUNTIME_REGISTRY",
+      "rank": 2,
+      "title": "tep_sim.registry.REGISTRY (derived from upstream_constants)",
+      "locator": "src/tep_sim/registry.py",
+      "revision": null
+    },
+    "downs_vogel_1993": {
+      "kind": "PRIMARY_LITERATURE",
+      "rank": 3,
+      "title": "Downs & Vogel (1993), A plant-wide industrial process control problem, Comput. Chem. Eng. 17(3):245-255",
+      "locator": "docs/papers/Downs1993_TEP.pdf",
+      "sha256": "5f19b0bf7f0e5c052335943fff263769a28757066582c3166e16ac163e0e9538"
+    },
+    "bathelt_ricker_jelali_2015": {
+      "kind": "PRIMARY_LITERATURE",
+      "rank": 4,
+      "title": "Bathelt, Ricker & Jelali (2015), Revision of the Tennessee Eastman Process Model, IFAC ADCHEM 2015 (Fig. 3 P&ID with unit-coded tags)",
+      "locator": "docs/papers/Reinartz2021_RevisedTEP.pdf",
+      "sha256": "3e1d75ea1772ae42cbb08331cdfff22715c84921e2457787da9c4cc5a3f7d864",
+      "note": "file name does not match content; see finding F-11"
+    },
+    "reinartz_kulahci_ravn_2021": {
+      "kind": "SECONDARY_LITERATURE",
+      "rank": 4,
+      "title": "Reinartz, Kulahci & Ravn (2021), An extended Tennessee Eastman simulation dataset for fault-detection and decision support systems, Comput. Chem. Eng. 149:107281",
+      "locator": "docs/papers/Bathelt2015_ExtendedTEP.pdf",
+      "sha256": "4c0f6e88ecb05c4dbba9e671dc99927786789e118015c38b75c99e829bda2610",
+      "note": "file name does not match content; see finding F-11"
+    },
+    "ricker_1996": {
+      "kind": "PRIMARY_LITERATURE",
+      "rank": 4,
+      "title": "Ricker (1996), Decentralized control of the Tennessee Eastman Challenge Process, J. Proc. Cont. 6(4):205-221",
+      "locator": "docs/papers/Ricker1996_DecentralizedTEP.pdf",
+      "sha256": "d78863e9db918f1c50ff13436f1ce36e9b120f238d09b0b4da730a81feab4490"
+    }
+  },
+  "missing_sources": [
+    {
+      "id": "MS-1",
+      "needed_for": "comparison against an official DEXPI representation",
+      "missing": "DEXPI Process 1.0 TennesseeEastman.xml (official example) is not vendored; the fixture is CURATED_EQUIVALENT_GRAPH",
+      "status": "NEEDS_SOURCE",
+      "blocks_bindings": false
+    }
+  ],
+  "bindings": [
+    {
+      "review_id": "B-01",
+      "semantic_entity_id": "stream_1.flow_measurement",
+      "runtime_variable_id": "XMEAS(1)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "A Feed (stream 1)",
+      "relation": "MEASURES",
+      "attached_to": "stream_1",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 257,
+          "anchor": "# XMEAS(1)",
+          "supports": "runtime name of XMEAS(1)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1135,
+          "anchor": "self._xmeas[0] = tp.ftm[2]",
+          "supports": "runtime computation of XMEAS(1) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 679,
+          "anchor": "XMEAS(1)=FTM(3)",
+          "supports": "original Fortran definition of XMEAS(1)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: A feed (stream 1)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 1",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1001",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-02",
+      "semantic_entity_id": "stream_2.flow_measurement",
+      "runtime_variable_id": "XMEAS(2)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "D Feed (stream 2)",
+      "relation": "MEASURES",
+      "attached_to": "stream_2",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 258,
+          "anchor": "# XMEAS(2)",
+          "supports": "runtime name of XMEAS(2)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1136,
+          "anchor": "self._xmeas[1] = tp.ftm[0]",
+          "supports": "runtime computation of XMEAS(2) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 680,
+          "anchor": "XMEAS(2)=FTM(1)",
+          "supports": "original Fortran definition of XMEAS(2)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: D feed (stream 2)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 2",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1002",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-03",
+      "semantic_entity_id": "stream_3.flow_measurement",
+      "runtime_variable_id": "XMEAS(3)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "E Feed (stream 3)",
+      "relation": "MEASURES",
+      "attached_to": "stream_3",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 259,
+          "anchor": "# XMEAS(3)",
+          "supports": "runtime name of XMEAS(3)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1137,
+          "anchor": "self._xmeas[2] = tp.ftm[1]",
+          "supports": "runtime computation of XMEAS(3) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 681,
+          "anchor": "XMEAS(3)=FTM(2)",
+          "supports": "original Fortran definition of XMEAS(3)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: E feed (stream 3)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 3",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1003",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-04",
+      "semantic_entity_id": "stream_4.flow_measurement",
+      "runtime_variable_id": "XMEAS(4)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "A and C Feed (stream 4)",
+      "relation": "MEASURES",
+      "attached_to": "stream_4",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 260,
+          "anchor": "# XMEAS(4)",
+          "supports": "runtime name of XMEAS(4)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1138,
+          "anchor": "self._xmeas[3] = tp.ftm[3]",
+          "supports": "runtime computation of XMEAS(4) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 682,
+          "anchor": "XMEAS(4)=FTM(4)",
+          "supports": "original Fortran definition of XMEAS(4)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: A and C feed (stream 4)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 4",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1004",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-05",
+      "semantic_entity_id": "stream_8.flow_measurement",
+      "runtime_variable_id": "XMEAS(5)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Recycle Flow (stream 8)",
+      "relation": "MEASURES",
+      "attached_to": "stream_8",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 261,
+          "anchor": "# XMEAS(5)",
+          "supports": "runtime name of XMEAS(5)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1139,
+          "anchor": "self._xmeas[4] = tp.ftm[8]",
+          "supports": "runtime computation of XMEAS(5) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 683,
+          "anchor": "XMEAS(5)=FTM(9)",
+          "supports": "original Fortran definition of XMEAS(5)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Recycle flow (stream 8)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 8 (compressor discharge, downstream of recycle-valve spillback)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-06",
+      "semantic_entity_id": "stream_6.flow_measurement",
+      "runtime_variable_id": "XMEAS(6)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Rate (stream 6)",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 262,
+          "anchor": "# XMEAS(6)",
+          "supports": "runtime name of XMEAS(6)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1140,
+          "anchor": "self._xmeas[5] = tp.ftm[5]",
+          "supports": "runtime computation of XMEAS(6) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 684,
+          "anchor": "XMEAS(6)=FTM(6)",
+          "supports": "original Fortran definition of XMEAS(6)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Reactor feed rate (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 6",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-07",
+      "semantic_entity_id": "reactor.pressure_measurement",
+      "runtime_variable_id": "XMEAS(7)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Pressure",
+      "relation": "MEASURES",
+      "attached_to": "reactor",
+      "quantity": "pressure",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 263,
+          "anchor": "# XMEAS(7)",
+          "supports": "runtime name of XMEAS(7)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1141,
+          "anchor": "self._xmeas[6] = (tp.ptr",
+          "supports": "runtime computation of XMEAS(7) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 685,
+          "anchor": "XMEAS(7)=(PTR",
+          "supports": "original Fortran definition of XMEAS(7)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Reactor pressure",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): PI on reactor",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): PIAZ+ 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-08",
+      "semantic_entity_id": "reactor.level_measurement",
+      "runtime_variable_id": "XMEAS(8)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Level",
+      "relation": "MEASURES",
+      "attached_to": "reactor",
+      "quantity": "level",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 264,
+          "anchor": "# XMEAS(8)",
+          "supports": "runtime name of XMEAS(8)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1142,
+          "anchor": "self._xmeas[7] = (tp.vlr",
+          "supports": "runtime computation of XMEAS(8) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 686,
+          "anchor": "XMEAS(8)=(VLR",
+          "supports": "original Fortran definition of XMEAS(8)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Reactor level",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): LI on reactor",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): LIAZ+- 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-09",
+      "semantic_entity_id": "reactor.temperature_measurement",
+      "runtime_variable_id": "XMEAS(9)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Temperature",
+      "relation": "MEASURES",
+      "attached_to": "reactor",
+      "quantity": "temperature",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 265,
+          "anchor": "# XMEAS(9)",
+          "supports": "runtime name of XMEAS(9)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1143,
+          "anchor": "self._xmeas[8] = tp.tcr",
+          "supports": "runtime computation of XMEAS(9) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 687,
+          "anchor": "XMEAS(9)=TCR",
+          "supports": "original Fortran definition of XMEAS(9)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Reactor temperature",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): TI on reactor",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): TIAZ+ 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-10",
+      "semantic_entity_id": "stream_9.flow_measurement",
+      "runtime_variable_id": "XMEAS(10)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Rate (stream 9)",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 266,
+          "anchor": "# XMEAS(10)",
+          "supports": "runtime name of XMEAS(10)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1144,
+          "anchor": "self._xmeas[9] = tp.ftm[9]",
+          "supports": "runtime computation of XMEAS(10) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 688,
+          "anchor": "XMEAS(10)=FTM(10)",
+          "supports": "original Fortran definition of XMEAS(10)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Purge rate (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 9",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-11",
+      "semantic_entity_id": "separator.temperature_measurement",
+      "runtime_variable_id": "XMEAS(11)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Sep Temp",
+      "relation": "MEASURES",
+      "attached_to": "separator",
+      "quantity": "temperature",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 267,
+          "anchor": "# XMEAS(11)",
+          "supports": "runtime name of XMEAS(11)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1145,
+          "anchor": "self._xmeas[10] = tp.tcs",
+          "supports": "runtime computation of XMEAS(11) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 689,
+          "anchor": "XMEAS(11)=TCS",
+          "supports": "original Fortran definition of XMEAS(11)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Product separator temperature",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): TI on separator",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): TI 1301",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-12",
+      "semantic_entity_id": "separator.level_measurement",
+      "runtime_variable_id": "XMEAS(12)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Sep Level",
+      "relation": "MEASURES",
+      "attached_to": "separator",
+      "quantity": "level",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 268,
+          "anchor": "# XMEAS(12)",
+          "supports": "runtime name of XMEAS(12)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1146,
+          "anchor": "self._xmeas[11] = (tp.vls",
+          "supports": "runtime computation of XMEAS(12) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 690,
+          "anchor": "XMEAS(12)=(VLS",
+          "supports": "original Fortran definition of XMEAS(12)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Product separator level",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): LI on separator",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): LIAZ+- 1301",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-13",
+      "semantic_entity_id": "separator.pressure_measurement",
+      "runtime_variable_id": "XMEAS(13)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Prod Sep Pressure",
+      "relation": "MEASURES",
+      "attached_to": "separator",
+      "quantity": "pressure",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 269,
+          "anchor": "# XMEAS(13)",
+          "supports": "runtime name of XMEAS(13)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1147,
+          "anchor": "self._xmeas[12] = (tp.pts",
+          "supports": "runtime computation of XMEAS(13) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 691,
+          "anchor": "XMEAS(13)=(PTS",
+          "supports": "original Fortran definition of XMEAS(13)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Product separator pressure",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): PI on separator",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): PI 1301",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-14",
+      "semantic_entity_id": "stream_10.flow_measurement",
+      "runtime_variable_id": "XMEAS(14)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Prod Sep Underflow (stream 10)",
+      "relation": "MEASURES",
+      "attached_to": "stream_10",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 270,
+          "anchor": "# XMEAS(14)",
+          "supports": "runtime name of XMEAS(14)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1148,
+          "anchor": "self._xmeas[13] = tp.ftm[10]",
+          "supports": "runtime computation of XMEAS(14) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 692,
+          "anchor": "XMEAS(14)=FTM(11)",
+          "supports": "original Fortran definition of XMEAS(14)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Product separator underflow (stream 10)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 10",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1301",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-15",
+      "semantic_entity_id": "stripper.level_measurement",
+      "runtime_variable_id": "XMEAS(15)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Stripper Level",
+      "relation": "MEASURES",
+      "attached_to": "stripper",
+      "quantity": "level",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 271,
+          "anchor": "# XMEAS(15)",
+          "supports": "runtime name of XMEAS(15)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1149,
+          "anchor": "self._xmeas[14] = (tp.vlc",
+          "supports": "runtime computation of XMEAS(15) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 693,
+          "anchor": "XMEAS(15)=(VLC",
+          "supports": "original Fortran definition of XMEAS(15)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Stripper level",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): LI on stripper",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): LIAZ+- 1501",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-16",
+      "semantic_entity_id": "stripper.pressure_measurement",
+      "runtime_variable_id": "XMEAS(16)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Stripper Pressure",
+      "relation": "MEASURES",
+      "attached_to": "stripper",
+      "quantity": "pressure",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 272,
+          "anchor": "# XMEAS(16)",
+          "supports": "runtime name of XMEAS(16)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1150,
+          "anchor": "self._xmeas[15] = (tp.ptv",
+          "supports": "runtime computation of XMEAS(16) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 694,
+          "anchor": "XMEAS(16)=(PTV",
+          "supports": "original Fortran definition of XMEAS(16)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Stripper pressure",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): PI drawn on stripper overhead line 5",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): PI 1501",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "PARTIAL",
+      "evidence_assessment": "MODERATE",
+      "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+      "finding": "F-02",
+      "agent_notes": "Runtime computes XMEAS(16) from PTV, the pressure of the compressor-discharge/reactor-feed vapor zone (fixture node reactor_feed_mixer); the model has no separate stripper pressure state. D&V Fig. 1 draws the PI on the stripper overhead line 5. Attachment to the stripper node matches the nomenclature but not the runtime state it reports.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-17",
+      "semantic_entity_id": "stream_11.flow_measurement",
+      "runtime_variable_id": "XMEAS(17)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Stripper Underflow (stream 11)",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 273,
+          "anchor": "# XMEAS(17)",
+          "supports": "runtime name of XMEAS(17)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1151,
+          "anchor": "self._xmeas[16] = tp.ftm[12]",
+          "supports": "runtime computation of XMEAS(17) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 695,
+          "anchor": "XMEAS(17)=FTM(13)",
+          "supports": "original Fortran definition of XMEAS(17)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Stripper underflow (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on stream 11",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1502",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-18",
+      "semantic_entity_id": "stripper.temperature_measurement",
+      "runtime_variable_id": "XMEAS(18)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Stripper Temperature",
+      "relation": "MEASURES",
+      "attached_to": "stripper",
+      "quantity": "temperature",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 274,
+          "anchor": "# XMEAS(18)",
+          "supports": "runtime name of XMEAS(18)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1152,
+          "anchor": "self._xmeas[17] = tp.tcc",
+          "supports": "runtime computation of XMEAS(18) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 696,
+          "anchor": "XMEAS(18)=TCC",
+          "supports": "original Fortran definition of XMEAS(18)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Stripper temperature",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): TI on stripper",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): TI 1501",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-19",
+      "semantic_entity_id": "stripper_steam.flow_measurement",
+      "runtime_variable_id": "XMEAS(19)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Stripper Steam Flow",
+      "relation": "MEASURES",
+      "attached_to": "stripper_steam",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 275,
+          "anchor": "# XMEAS(19)",
+          "supports": "runtime name of XMEAS(19)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1153,
+          "anchor": "self._xmeas[18] = tp.quc",
+          "supports": "runtime computation of XMEAS(19) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 697,
+          "anchor": "XMEAS(19)=QUC",
+          "supports": "original Fortran definition of XMEAS(19)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Stripper steam flow",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): FI on steam supply line to stripper reboiler",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): FI 1501",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "MODERATE",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": "F-08",
+      "agent_notes": "Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-20",
+      "semantic_entity_id": "compressor.work_measurement",
+      "runtime_variable_id": "XMEAS(20)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Compressor Work",
+      "relation": "MEASURES",
+      "attached_to": "compressor",
+      "quantity": "power",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 276,
+          "anchor": "# XMEAS(20)",
+          "supports": "runtime name of XMEAS(20)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1154,
+          "anchor": "self._xmeas[19] = tp.cpdh",
+          "supports": "runtime computation of XMEAS(20) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 699,
+          "anchor": "XMEAS(20)=CPDH*0.29307D3",
+          "supports": "original Fortran definition of XMEAS(20)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Compressor work",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): JI on compressor",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): JI 1401",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-21",
+      "semantic_entity_id": "reactor_cooling.outlet_temperature",
+      "runtime_variable_id": "XMEAS(21)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Cooling Water Outlet Temp",
+      "relation": "MEASURES",
+      "attached_to": "reactor_cooling_water_out",
+      "quantity": "temperature",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 277,
+          "anchor": "# XMEAS(21)",
+          "supports": "runtime name of XMEAS(21)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1155,
+          "anchor": "self._xmeas[20] = tp.twr",
+          "supports": "runtime computation of XMEAS(21) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 700,
+          "anchor": "XMEAS(21)=TWR",
+          "supports": "original Fortran definition of XMEAS(21)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Reactor cooling water outlet temperature",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): TI on reactor cooling-water return line 12",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): TI 1103 (unit 11 = reactor)",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-22",
+      "semantic_entity_id": "condenser_cooling.outlet_temperature",
+      "runtime_variable_id": "XMEAS(22)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Separator Cooling Water Outlet Temp",
+      "relation": "MEASURES",
+      "attached_to": "condenser_cooling_water_out",
+      "quantity": "temperature",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 278,
+          "anchor": "# XMEAS(22)",
+          "supports": "runtime name of XMEAS(22)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1156,
+          "anchor": "self._xmeas[21] = tp.tws",
+          "supports": "runtime computation of XMEAS(22) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 701,
+          "anchor": "XMEAS(22)=TWS",
+          "supports": "original Fortran definition of XMEAS(22)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 4: Separator cooling water outlet temperature",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): TI on condenser cooling-water return line 13",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): TI 1202 (unit 12 = condenser)",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "NO",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG_FOR_LOOP_IDENTITY",
+      "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+      "finding": "F-01",
+      "agent_notes": "Special review item. Upstream/Fortran/D&V Table 4 name it 'Separator cooling water outlet temperature'; runtime state TWS is the outlet of the cooling loop whose flow is XMV(11) 'Condenser cooling water flow'; both figures place the TI on the condenser cooling-water return line 13. See XMEAS(22) adjudication package.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-23",
+      "semantic_entity_id": "stream_6.composition_a_measurement",
+      "runtime_variable_id": "XMEAS(23)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component A",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 279,
+          "anchor": "# XMEAS(23)",
+          "supports": "runtime name of XMEAS(23)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1184,
+          "anchor": "xcmp[22] = tp.xst[0, 6]",
+          "supports": "runtime computation of XMEAS(23) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 717,
+          "anchor": "XCMP(23)=XST(1,7)",
+          "supports": "original Fortran definition of XMEAS(23)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-24",
+      "semantic_entity_id": "stream_6.composition_b_measurement",
+      "runtime_variable_id": "XMEAS(24)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component B",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 280,
+          "anchor": "# XMEAS(24)",
+          "supports": "runtime name of XMEAS(24)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1185,
+          "anchor": "xcmp[23] = tp.xst[1, 6]",
+          "supports": "runtime computation of XMEAS(24) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 718,
+          "anchor": "XCMP(24)=XST(2,7)",
+          "supports": "original Fortran definition of XMEAS(24)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-25",
+      "semantic_entity_id": "stream_6.composition_c_measurement",
+      "runtime_variable_id": "XMEAS(25)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component C",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 281,
+          "anchor": "# XMEAS(25)",
+          "supports": "runtime name of XMEAS(25)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1186,
+          "anchor": "xcmp[24] = tp.xst[2, 6]",
+          "supports": "runtime computation of XMEAS(25) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 719,
+          "anchor": "XCMP(25)=XST(3,7)",
+          "supports": "original Fortran definition of XMEAS(25)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-26",
+      "semantic_entity_id": "stream_6.composition_d_measurement",
+      "runtime_variable_id": "XMEAS(26)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component D",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 282,
+          "anchor": "# XMEAS(26)",
+          "supports": "runtime name of XMEAS(26)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1187,
+          "anchor": "xcmp[25] = tp.xst[3, 6]",
+          "supports": "runtime computation of XMEAS(26) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 720,
+          "anchor": "XCMP(26)=XST(4,7)",
+          "supports": "original Fortran definition of XMEAS(26)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-27",
+      "semantic_entity_id": "stream_6.composition_e_measurement",
+      "runtime_variable_id": "XMEAS(27)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component E",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 283,
+          "anchor": "# XMEAS(27)",
+          "supports": "runtime name of XMEAS(27)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1188,
+          "anchor": "xcmp[26] = tp.xst[4, 6]",
+          "supports": "runtime computation of XMEAS(27) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 721,
+          "anchor": "XCMP(27)=XST(5,7)",
+          "supports": "original Fortran definition of XMEAS(27)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-28",
+      "semantic_entity_id": "stream_6.composition_f_measurement",
+      "runtime_variable_id": "XMEAS(28)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Reactor Feed Component F",
+      "relation": "MEASURES",
+      "attached_to": "stream_6",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 284,
+          "anchor": "# XMEAS(28)",
+          "supports": "runtime name of XMEAS(28)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1189,
+          "anchor": "xcmp[27] = tp.xst[5, 6]",
+          "supports": "runtime computation of XMEAS(28) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 722,
+          "anchor": "XCMP(28)=XST(6,7)",
+          "supports": "original Fortran definition of XMEAS(28)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Reactor feed analysis (stream 6)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-29",
+      "semantic_entity_id": "stream_9.composition_a_measurement",
+      "runtime_variable_id": "XMEAS(29)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component A",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 285,
+          "anchor": "# XMEAS(29)",
+          "supports": "runtime name of XMEAS(29)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1190,
+          "anchor": "xcmp[28] = tp.xst[0, 9]",
+          "supports": "runtime computation of XMEAS(29) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 723,
+          "anchor": "XCMP(29)=XST(1,10)",
+          "supports": "original Fortran definition of XMEAS(29)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-30",
+      "semantic_entity_id": "stream_9.composition_b_measurement",
+      "runtime_variable_id": "XMEAS(30)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component B",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 286,
+          "anchor": "# XMEAS(30)",
+          "supports": "runtime name of XMEAS(30)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1191,
+          "anchor": "xcmp[29] = tp.xst[1, 9]",
+          "supports": "runtime computation of XMEAS(30) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 724,
+          "anchor": "XCMP(30)=XST(2,10)",
+          "supports": "original Fortran definition of XMEAS(30)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-31",
+      "semantic_entity_id": "stream_9.composition_c_measurement",
+      "runtime_variable_id": "XMEAS(31)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component C",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 287,
+          "anchor": "# XMEAS(31)",
+          "supports": "runtime name of XMEAS(31)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1192,
+          "anchor": "xcmp[30] = tp.xst[2, 9]",
+          "supports": "runtime computation of XMEAS(31) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 725,
+          "anchor": "XCMP(31)=XST(3,10)",
+          "supports": "original Fortran definition of XMEAS(31)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-32",
+      "semantic_entity_id": "stream_9.composition_d_measurement",
+      "runtime_variable_id": "XMEAS(32)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component D",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 288,
+          "anchor": "# XMEAS(32)",
+          "supports": "runtime name of XMEAS(32)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1193,
+          "anchor": "xcmp[31] = tp.xst[3, 9]",
+          "supports": "runtime computation of XMEAS(32) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 726,
+          "anchor": "XCMP(32)=XST(4,10)",
+          "supports": "original Fortran definition of XMEAS(32)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-33",
+      "semantic_entity_id": "stream_9.composition_e_measurement",
+      "runtime_variable_id": "XMEAS(33)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component E",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 289,
+          "anchor": "# XMEAS(33)",
+          "supports": "runtime name of XMEAS(33)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1194,
+          "anchor": "xcmp[32] = tp.xst[4, 9]",
+          "supports": "runtime computation of XMEAS(33) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 727,
+          "anchor": "XCMP(33)=XST(5,10)",
+          "supports": "original Fortran definition of XMEAS(33)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-34",
+      "semantic_entity_id": "stream_9.composition_f_measurement",
+      "runtime_variable_id": "XMEAS(34)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component F",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 290,
+          "anchor": "# XMEAS(34)",
+          "supports": "runtime name of XMEAS(34)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1195,
+          "anchor": "xcmp[33] = tp.xst[5, 9]",
+          "supports": "runtime computation of XMEAS(34) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 728,
+          "anchor": "XCMP(34)=XST(6,10)",
+          "supports": "original Fortran definition of XMEAS(34)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-35",
+      "semantic_entity_id": "stream_9.composition_g_measurement",
+      "runtime_variable_id": "XMEAS(35)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component G",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 291,
+          "anchor": "# XMEAS(35)",
+          "supports": "runtime name of XMEAS(35)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1196,
+          "anchor": "xcmp[34] = tp.xst[6, 9]",
+          "supports": "runtime computation of XMEAS(35) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 729,
+          "anchor": "XCMP(35)=XST(7,10)",
+          "supports": "original Fortran definition of XMEAS(35)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-36",
+      "semantic_entity_id": "stream_9.composition_h_measurement",
+      "runtime_variable_id": "XMEAS(36)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Purge Gas Component H",
+      "relation": "MEASURES",
+      "attached_to": "stream_9",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 292,
+          "anchor": "# XMEAS(36)",
+          "supports": "runtime name of XMEAS(36)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1197,
+          "anchor": "xcmp[35] = tp.xst[7, 9]",
+          "supports": "runtime computation of XMEAS(36) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 730,
+          "anchor": "XCMP(36)=XST(8,10)",
+          "supports": "original Fortran definition of XMEAS(36)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Purge gas analysis (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-37",
+      "semantic_entity_id": "stream_11.composition_d_measurement",
+      "runtime_variable_id": "XMEAS(37)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Component D",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 293,
+          "anchor": "# XMEAS(37)",
+          "supports": "runtime name of XMEAS(37)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1198,
+          "anchor": "xcmp[36] = tp.xst[3, 12]",
+          "supports": "runtime computation of XMEAS(37) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 731,
+          "anchor": "XCMP(37)=XST(4,13)",
+          "supports": "original Fortran definition of XMEAS(37)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Product analysis (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-38",
+      "semantic_entity_id": "stream_11.composition_e_measurement",
+      "runtime_variable_id": "XMEAS(38)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Component E",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 294,
+          "anchor": "# XMEAS(38)",
+          "supports": "runtime name of XMEAS(38)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1199,
+          "anchor": "xcmp[37] = tp.xst[4, 12]",
+          "supports": "runtime computation of XMEAS(38) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 732,
+          "anchor": "XCMP(38)=XST(5,13)",
+          "supports": "original Fortran definition of XMEAS(38)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Product analysis (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-39",
+      "semantic_entity_id": "stream_11.composition_f_measurement",
+      "runtime_variable_id": "XMEAS(39)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Component F",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 295,
+          "anchor": "# XMEAS(39)",
+          "supports": "runtime name of XMEAS(39)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1200,
+          "anchor": "xcmp[38] = tp.xst[5, 12]",
+          "supports": "runtime computation of XMEAS(39) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 733,
+          "anchor": "XCMP(39)=XST(6,13)",
+          "supports": "original Fortran definition of XMEAS(39)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Product analysis (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-40",
+      "semantic_entity_id": "stream_11.composition_g_measurement",
+      "runtime_variable_id": "XMEAS(40)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Component G",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 296,
+          "anchor": "# XMEAS(40)",
+          "supports": "runtime name of XMEAS(40)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1201,
+          "anchor": "xcmp[39] = tp.xst[6, 12]",
+          "supports": "runtime computation of XMEAS(40) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 734,
+          "anchor": "XCMP(40)=XST(7,13)",
+          "supports": "original Fortran definition of XMEAS(40)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Product analysis (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-41",
+      "semantic_entity_id": "stream_11.composition_h_measurement",
+      "runtime_variable_id": "XMEAS(41)",
+      "runtime_variable_kind": "XMEAS",
+      "runtime_variable_name": "Product Component H",
+      "relation": "MEASURES",
+      "attached_to": "stream_11",
+      "quantity": "composition",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 297,
+          "anchor": "# XMEAS(41)",
+          "supports": "runtime name of XMEAS(41)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1202,
+          "anchor": "xcmp[40] = tp.xst[7, 12]",
+          "supports": "runtime computation of XMEAS(41) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 735,
+          "anchor": "XCMP(41)=XST(8,13)",
+          "supports": "original Fortran definition of XMEAS(41)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 5: Product analysis (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): XI 1006",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-42",
+      "semantic_entity_id": "stream_2.flow_actuator",
+      "runtime_variable_id": "XMV(1)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "D Feed Flow (stream 2)",
+      "relation": "ACTUATES",
+      "attached_to": "stream_2",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 313,
+          "anchor": "# XMV(1)",
+          "supports": "runtime name of XMV(1)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1000,
+          "anchor": "tp.ftm[0] = vpos[0]",
+          "supports": "runtime effect of XMV(1) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 96,
+          "anchor": "C    XMV(1)",
+          "supports": "original Fortran nomenclature of XMV(1)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: D feed flow (stream 2)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 2",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1002",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-43",
+      "semantic_entity_id": "stream_3.flow_actuator",
+      "runtime_variable_id": "XMV(2)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "E Feed Flow (stream 3)",
+      "relation": "ACTUATES",
+      "attached_to": "stream_3",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 314,
+          "anchor": "# XMV(2)",
+          "supports": "runtime name of XMV(2)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1001,
+          "anchor": "tp.ftm[1] = vpos[1]",
+          "supports": "runtime effect of XMV(2) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 97,
+          "anchor": "C    XMV(2)",
+          "supports": "original Fortran nomenclature of XMV(2)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: E feed flow (stream 3)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 3",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1003",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-44",
+      "semantic_entity_id": "stream_1.flow_actuator",
+      "runtime_variable_id": "XMV(3)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "A Feed Flow (stream 1)",
+      "relation": "ACTUATES",
+      "attached_to": "stream_1",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 315,
+          "anchor": "# XMV(3)",
+          "supports": "runtime name of XMV(3)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1002,
+          "anchor": "tp.ftm[2] = vpos[2]",
+          "supports": "runtime effect of XMV(3) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 98,
+          "anchor": "C    XMV(3)",
+          "supports": "original Fortran nomenclature of XMV(3)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: A feed flow (stream 1)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 1",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1001",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-45",
+      "semantic_entity_id": "stream_4.flow_actuator",
+      "runtime_variable_id": "XMV(4)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "A and C Feed Flow (stream 4)",
+      "relation": "ACTUATES",
+      "attached_to": "stream_4",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 316,
+          "anchor": "# XMV(4)",
+          "supports": "runtime name of XMV(4)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1003,
+          "anchor": "tp.ftm[3] = vpos[3]",
+          "supports": "runtime effect of XMV(4) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 99,
+          "anchor": "C    XMV(4)",
+          "supports": "original Fortran nomenclature of XMV(4)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: A and C feed flow (stream 4)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 4",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1004",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-46",
+      "semantic_entity_id": "compressor.recycle_valve_actuator",
+      "runtime_variable_id": "XMV(5)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Compressor Recycle Valve",
+      "relation": "ACTUATES",
+      "attached_to": "compressor",
+      "quantity": "valve_position",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 317,
+          "anchor": "# XMV(5)",
+          "supports": "runtime name of XMV(5)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1044,
+          "anchor": "flms = flms - vpos[4]",
+          "supports": "runtime effect of XMV(5) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 100,
+          "anchor": "C    XMV(5)",
+          "supports": "original Fortran nomenclature of XMV(5)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Compressor recycle valve",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): valve on spillback loop around the compressor",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1401",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": "F-09",
+      "agent_notes": "Spillback/recycle valve around the compressor; runtime subtracts the valve flow from the compressor throughput that becomes stream 8.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-47",
+      "semantic_entity_id": "stream_9.purge_valve_actuator",
+      "runtime_variable_id": "XMV(6)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Purge Valve (stream 9)",
+      "relation": "ACTUATES",
+      "attached_to": "stream_9",
+      "quantity": "valve_position",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 318,
+          "anchor": "# XMV(6)",
+          "supports": "runtime name of XMV(6)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1028,
+          "anchor": "flms = vpos[5] * 0.151169",
+          "supports": "runtime effect of XMV(6) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 101,
+          "anchor": "C    XMV(6)",
+          "supports": "original Fortran nomenclature of XMV(6)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Purge valve (stream 9)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 9",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1005",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-48",
+      "semantic_entity_id": "stream_10.flow_actuator",
+      "runtime_variable_id": "XMV(7)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Separator Pot Liquid Flow",
+      "relation": "ACTUATES",
+      "attached_to": "stream_10",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 319,
+          "anchor": "# XMV(7)",
+          "supports": "runtime name of XMV(7)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1004,
+          "anchor": "tp.ftm[10] = vpos[6]",
+          "supports": "runtime effect of XMV(7) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 102,
+          "anchor": "C    XMV(7)",
+          "supports": "original Fortran nomenclature of XMV(7)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Separator pot liquid flow (stream 10)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 10",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1301",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-49",
+      "semantic_entity_id": "stream_11.flow_actuator",
+      "runtime_variable_id": "XMV(8)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Stripper Liquid Product Flow",
+      "relation": "ACTUATES",
+      "attached_to": "stream_11",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 320,
+          "anchor": "# XMV(8)",
+          "supports": "runtime name of XMV(8)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1005,
+          "anchor": "tp.ftm[12] = vpos[7]",
+          "supports": "runtime effect of XMV(8) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 103,
+          "anchor": "C    XMV(8)",
+          "supports": "original Fortran nomenclature of XMV(8)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Stripper liquid product flow (stream 11)",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on stream 11",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1501",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-50",
+      "semantic_entity_id": "stripper_steam.valve_actuator",
+      "runtime_variable_id": "XMV(9)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Stripper Steam Valve",
+      "relation": "ACTUATES",
+      "attached_to": "stripper_steam",
+      "quantity": "valve_position",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 321,
+          "anchor": "# XMV(9)",
+          "supports": "runtime name of XMV(9)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1007,
+          "anchor": "uac = vpos[8]",
+          "supports": "runtime effect of XMV(9) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 104,
+          "anchor": "C    XMV(9)",
+          "supports": "original Fortran nomenclature of XMV(9)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Stripper steam valve",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on steam supply to stripper reboiler",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1502",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-51",
+      "semantic_entity_id": "reactor_cooling.flow_actuator",
+      "runtime_variable_id": "XMV(10)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Reactor Cooling Water Flow",
+      "relation": "ACTUATES",
+      "attached_to": "reactor_cooling_water_in",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 322,
+          "anchor": "# XMV(10)",
+          "supports": "runtime name of XMV(10)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1008,
+          "anchor": "tp.fwr = vpos[9]",
+          "supports": "runtime effect of XMV(10) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 105,
+          "anchor": "C    XMV(10)",
+          "supports": "original Fortran nomenclature of XMV(10)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Reactor cooling water flow",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on reactor cooling-water RETURN line 12",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1101 (on line 12)",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "PARTIAL",
+      "evidence_assessment": "STRONG_FOR_LOOP_IDENTITY",
+      "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+      "finding": "F-03",
+      "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 12; fixture attaches the actuator to reactor_cooling_water_in. Flow is identical along the single-path loop; human decides whether the inlet-edge attachment is acceptable.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-52",
+      "semantic_entity_id": "condenser_cooling.flow_actuator",
+      "runtime_variable_id": "XMV(11)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Condenser Cooling Water Flow",
+      "relation": "ACTUATES",
+      "attached_to": "condenser_cooling_water_in",
+      "quantity": "flow",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 323,
+          "anchor": "# XMV(11)",
+          "supports": "runtime name of XMV(11)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1009,
+          "anchor": "tp.fws = vpos[10]",
+          "supports": "runtime effect of XMV(11) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 106,
+          "anchor": "C    XMV(11)",
+          "supports": "original Fortran nomenclature of XMV(11)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Condenser cooling water flow",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): control valve on condenser cooling-water RETURN line 13",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): V-1201 (on line 13)",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "PARTIAL",
+      "evidence_assessment": "STRONG_FOR_LOOP_IDENTITY",
+      "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+      "finding": "F-03",
+      "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 13; fixture attaches the actuator to condenser_cooling_water_in. Same question as XMV(10).",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    },
+    {
+      "review_id": "B-53",
+      "semantic_entity_id": "reactor.agitator_speed_actuator",
+      "runtime_variable_id": "XMV(12)",
+      "runtime_variable_kind": "XMV",
+      "runtime_variable_name": "Agitator Speed",
+      "relation": "ACTUATES",
+      "attached_to": "reactor",
+      "quantity": "speed",
+      "current_provenance_method": "CURATED_MAPPING",
+      "evidence": [
+        {
+          "source_id": "upstream_constants",
+          "line": 324,
+          "anchor": "# XMV(12)",
+          "supports": "runtime name of XMV(12)"
+        },
+        {
+          "source_id": "sim_python_backend",
+          "line": 1010,
+          "anchor": "tp.agsp = (vpos[11]",
+          "supports": "runtime effect of XMV(12) in the executed backend"
+        },
+        {
+          "source_id": "sim_fortran",
+          "line": 107,
+          "anchor": "C    XMV(12)",
+          "supports": "original Fortran nomenclature of XMV(12)"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Table 3: Agitator speed",
+          "supports": "nomenclature"
+        },
+        {
+          "source_id": "downs_vogel_1993",
+          "where": "Fig. 1 (p. 246): SC (speed controller) on reactor agitator",
+          "supports": "instrument location (visual reading; human to confirm)",
+          "visual_reading": true
+        },
+        {
+          "source_id": "bathelt_ricker_jelali_2015",
+          "where": "Fig. 3 (p. 311): SC 1101",
+          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
+          "visual_reading": true
+        }
+      ],
+      "runtime_identity_check": "PASS",
+      "nomenclature_agreement": "YES",
+      "topology_agreement": "YES",
+      "evidence_assessment": "STRONG",
+      "proposed_disposition": "ACCEPT_CANDIDATE",
+      "finding": null,
+      "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
+      "human_reviewer_decision": "PENDING",
+      "reviewer": null,
+      "review_notes": ""
+    }
+  ],
+  "topology": {
+    "nodes": [
+      {
+        "review_id": "N-01",
+        "node_id": "compressor",
+        "kind": "COMPRESSOR",
+        "name": "Recycle compressor",
+        "material_upstream": [
+          "separator"
+        ],
+        "material_downstream": [
+          "reactor_feed_mixer"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Compressor throughput and work CPDH computed from PTV-PTS.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-02",
+        "node_id": "condenser",
+        "kind": "CONDENSER",
+        "name": "Product condenser",
+        "material_upstream": [
+          "reactor"
+        ],
+        "material_downstream": [
+          "separator"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": "F-05",
+        "agent_notes": "D&V Fig. 1 and Table 1 (condenser heat duty -2140.6 kW) define the unit; runtime has no condenser holdup - its duty QUS is lumped into the separator energy balance. Static topology node is justified by the flowsheet, not by a dynamic state.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-03",
+        "node_id": "condenser_cooling_water_return",
+        "kind": "UTILITY_SINK",
+        "name": "Condenser cooling water return",
+        "material_upstream": [],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-04",
+        "node_id": "condenser_cooling_water_supply",
+        "kind": "UTILITY_SOURCE",
+        "name": "Condenser cooling water supply",
+        "material_upstream": [],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-05",
+        "node_id": "feed_a_supply",
+        "kind": "FEED_SOURCE",
+        "name": "A feed supply",
+        "material_upstream": [],
+        "material_downstream": [
+          "reactor_feed_mixer"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-06",
+        "node_id": "feed_ac_supply",
+        "kind": "FEED_SOURCE",
+        "name": "A and C feed supply",
+        "material_upstream": [],
+        "material_downstream": [
+          "stripper"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-07",
+        "node_id": "feed_d_supply",
+        "kind": "FEED_SOURCE",
+        "name": "D feed supply",
+        "material_upstream": [],
+        "material_downstream": [
+          "reactor_feed_mixer"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-08",
+        "node_id": "feed_e_supply",
+        "kind": "FEED_SOURCE",
+        "name": "E feed supply",
+        "material_upstream": [],
+        "material_downstream": [
+          "reactor_feed_mixer"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-09",
+        "node_id": "product_outlet",
+        "kind": "PRODUCT_SINK",
+        "name": "Product outlet",
+        "material_upstream": [
+          "stripper"
+        ],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-10",
+        "node_id": "purge_outlet",
+        "kind": "PRODUCT_SINK",
+        "name": "Purge outlet",
+        "material_upstream": [
+          "separator"
+        ],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-11",
+        "node_id": "reactor",
+        "kind": "REACTOR",
+        "name": "Reactor",
+        "material_upstream": [
+          "reactor_feed_mixer"
+        ],
+        "material_downstream": [
+          "condenser"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 771,
+            "anchor": "      YP(9)=HST(7)*FTM(7)-",
+            "supports": "runtime energy balance of this unit (in/out streams)"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-12",
+        "node_id": "reactor_cooling_water_return",
+        "kind": "UTILITY_SINK",
+        "name": "Reactor cooling water return",
+        "material_upstream": [],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-13",
+        "node_id": "reactor_cooling_water_supply",
+        "kind": "UTILITY_SOURCE",
+        "name": "Reactor cooling water supply",
+        "material_upstream": [],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-14",
+        "node_id": "reactor_feed_mixer",
+        "kind": "MIXER",
+        "name": "Reactor feed mixing zone",
+        "material_upstream": [
+          "compressor",
+          "feed_a_supply",
+          "feed_d_supply",
+          "feed_e_supply",
+          "stripper"
+        ],
+        "material_downstream": [
+          "reactor"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 783,
+            "anchor": "      YP(36)=HST(1)*FTM(1)+",
+            "supports": "runtime energy balance of this unit (in/out streams)"
+          }
+        ],
+        "finding": "F-06",
+        "agent_notes": "Runtime models a vapor holdup 'V' (UCVV/ETV, pressure PTV; upstream constant VTV 'Compressor volume') that receives streams 1, 2, 3, 5, 8 and discharges stream 6. D&V Fig. 1 draws only a piping header; the node is a modeled zone, not drawn equipment.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-15",
+        "node_id": "separator",
+        "kind": "SEPARATOR",
+        "name": "Vapor-liquid separator",
+        "material_upstream": [
+          "condenser"
+        ],
+        "material_downstream": [
+          "compressor",
+          "purge_outlet",
+          "stripper"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 773,
+            "anchor": "      YP(18)=HST(8)*FTM(8)-",
+            "supports": "runtime energy balance of this unit (in/out streams)"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-16",
+        "node_id": "stripper",
+        "kind": "STRIPPER",
+        "name": "Product stripper",
+        "material_upstream": [
+          "feed_ac_supply",
+          "separator"
+        ],
+        "material_downstream": [
+          "product_outlet",
+          "reactor_feed_mixer"
+        ],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 778,
+            "anchor": "      YP(27)=HST(4)*FTM(4)+",
+            "supports": "runtime energy balance of this unit (in/out streams)"
+          }
+        ],
+        "finding": "F-08",
+        "agent_notes": "Reboiler is lumped into the stripper; D&V Fig. 1 also shows a condensate return that the fixture does not model.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "N-17",
+        "node_id": "stripper_steam_supply",
+        "kind": "UTILITY_SOURCE",
+        "name": "Stripper steam supply",
+        "material_upstream": [],
+        "material_downstream": [],
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "equipment/terminal exists on flowsheet",
+            "visual_reading": true
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Flowsheet terminal/unit.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      }
+    ],
+    "edges": [
+      {
+        "review_id": "E-01",
+        "edge_id": "condenser_cooling_water_in",
+        "kind": "UTILITY_STREAM",
+        "source_node": "condenser_cooling_water_supply",
+        "target_node": "condenser",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 574,
+            "anchor": "      FWS=VPOS(11)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-03",
+        "agent_notes": "Carries XMV(11) in the fixture; both figures put the control valve on the return line 13.",
+        "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-02",
+        "edge_id": "condenser_cooling_water_out",
+        "kind": "UTILITY_STREAM",
+        "source_node": "condenser",
+        "target_node": "condenser_cooling_water_return",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 791,
+            "anchor": "      YP(38)=(FWS*500.53*",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-04",
+        "agent_notes": "Numbered line 13 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null. Carries XMEAS(22).",
+        "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-03",
+        "edge_id": "condenser_outlet",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "condenser",
+        "target_node": "separator",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 675,
+            "anchor": "      QUS=UAS*(TWS-TST(8))",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-05",
+        "agent_notes": "No runtime stream: the condenser is lumped into the separator. Unnumbered in D&V Fig. 1 and Table 1.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-04",
+        "edge_id": "reactor_cooling_water_in",
+        "kind": "UTILITY_STREAM",
+        "source_node": "reactor_cooling_water_supply",
+        "target_node": "reactor",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 573,
+            "anchor": "      FWR=VPOS(10)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-03",
+        "agent_notes": "Carries XMV(10) in the fixture; both figures put the control valve on the return line 12.",
+        "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-05",
+        "edge_id": "reactor_cooling_water_out",
+        "kind": "UTILITY_STREAM",
+        "source_node": "reactor",
+        "target_node": "reactor_cooling_water_return",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 789,
+            "anchor": "      YP(37)=(FWR*500.53*",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-04",
+        "agent_notes": "Numbered line 12 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null.",
+        "proposed_disposition": "HUMAN_DECISION_REQUIRED",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-06",
+        "edge_id": "separator_vapor",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "separator",
+        "target_node": "compressor",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 594,
+            "anchor": "      CPDH=FLMS*(TCS+273.15D0)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Unnumbered in D&V; runtime compressor suction is separator vapor (XST(.,9)=XVS).",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-07",
+        "edge_id": "stream_1",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "feed_a_supply",
+        "target_node": "reactor_feed_mixer",
+        "stream_number": 1,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 1; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 567,
+            "anchor": "      FTM(3)=VPOS(3)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-08",
+        "edge_id": "stream_10",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "separator",
+        "target_node": "stripper",
+        "stream_number": 10,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 10; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 570,
+            "anchor": "      FTM(11)=VPOS(7)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-09",
+        "edge_id": "stream_11",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "stripper",
+        "target_node": "product_outlet",
+        "stream_number": 11,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 11; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 571,
+            "anchor": "      FTM(13)=VPOS(8)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-10",
+        "edge_id": "stream_2",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "feed_d_supply",
+        "target_node": "reactor_feed_mixer",
+        "stream_number": 2,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 2; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 565,
+            "anchor": "      FTM(1)=VPOS(1)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-11",
+        "edge_id": "stream_3",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "feed_e_supply",
+        "target_node": "reactor_feed_mixer",
+        "stream_number": 3,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 3; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 566,
+            "anchor": "      FTM(2)=VPOS(2)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-12",
+        "edge_id": "stream_4",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "feed_ac_supply",
+        "target_node": "stripper",
+        "stream_number": 4,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 4; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 568,
+            "anchor": "      FTM(4)=VPOS(4)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-13",
+        "edge_id": "stream_5",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "stripper",
+        "target_node": "reactor_feed_mixer",
+        "stream_number": 5,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 5; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 649,
+            "anchor": "      XST(I,5)=FCM(I,5)/FTM(5)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-14",
+        "edge_id": "stream_6",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "reactor_feed_mixer",
+        "target_node": "reactor",
+        "stream_number": 6,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 6; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 579,
+            "anchor": "      FTM(6)=FLMS/XMWS(6)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-15",
+        "edge_id": "stream_7",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "reactor",
+        "target_node": "condenser",
+        "stream_number": 7,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 7; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 584,
+            "anchor": "      FTM(8)=FLMS/XMWS(8)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Runtime flow FTM(8) goes reactor -> separator energy balance directly; the condenser is lumped (F-05).",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-16",
+        "edge_id": "stream_8",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "compressor",
+        "target_node": "reactor_feed_mixer",
+        "stream_number": 8,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 8; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 600,
+            "anchor": "      FTM(9)=FLMS/XMWS(9)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-17",
+        "edge_id": "stream_9",
+        "kind": "MATERIAL_STREAM",
+        "source_node": "separator",
+        "target_node": "purge_outlet",
+        "stream_number": 9,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246) stream 9; Table 1 (p. 247)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 588,
+            "anchor": "      FTM(10)=FLMS/XMWS(10)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": null,
+        "agent_notes": "D&V Fig. 1 draws the purge off the separator vapor line upstream of the compressor; fixture connects separator -> purge_outlet directly (no junction node). Runtime purge composition is separator vapor and its flow is driven by separator pressure, so the attachment is equivalent (finding F-07).",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      },
+      {
+        "review_id": "E-18",
+        "edge_id": "stripper_steam",
+        "kind": "UTILITY_STREAM",
+        "source_node": "stripper_steam_supply",
+        "target_node": "stripper",
+        "stream_number": null,
+        "direction_check": "AGREES",
+        "evidence": [
+          {
+            "source_id": "downs_vogel_1993",
+            "where": "Fig. 1 (p. 246)",
+            "supports": "connection and flow direction",
+            "visual_reading": true
+          },
+          {
+            "source_id": "sim_fortran",
+            "line": 572,
+            "anchor": "      UAC=VPOS(9)",
+            "supports": "runtime flow/heat term for this connection"
+          }
+        ],
+        "finding": "F-08",
+        "agent_notes": "Steam supply only; D&V Fig. 1 also shows a condensate return (Cond) that is not modeled as an edge.",
+        "proposed_disposition": "ACCEPT_CANDIDATE",
+        "human_reviewer_decision": "PENDING",
+        "reviewer": null,
+        "review_notes": ""
+      }
+    ]
+  }
+}

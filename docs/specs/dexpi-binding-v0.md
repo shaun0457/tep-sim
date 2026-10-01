@@ -173,3 +173,14 @@ Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bin
   pinned hash rejects in-place edits.
 - `tests/test_process_graph.py::test_xmeas22_known_nomenclature_disagreement_stays_pending_review`
   locks the current state so any re-binding is an explicit, reviewed change.
+
+### Human-verification review package (status: PENDING_HUMAN_SIGNOFF)
+
+The evidence package for the D0 human review lives in
+`docs/reviews/a3-process-graph-human-verification.md`, with the machine-readable
+matrix in `docs/reviews/a3-process-graph-binding-review-v0.json`. It covers every
+Agent-visible binding and graph entity, plus a separate XMEAS(22) adjudication
+package. An automated agent prepared it. All human decisions are still `PENDING`,
+and the pinned 0.1.0 fixtures are unchanged. `tests/test_a3_review_package.py`
+checks that the evidence is complete and consistent. It does not replace the human
+sign-off.
