@@ -10,31 +10,83 @@ This program studies **AI agents operating inside a trustworthy industrial simul
 3. Domain / Information / Lab      -> tep-agent-lab
 ```
 
-Existing knowledge projects remain optional services.
+Existing knowledge projects remain optional services. The Playground Application Plane is a logical outer layer, not a fourth core repository in v0.
 
 ## Program architecture
 
 ```text
+                    User / Researcher
+                           |
+                           v
+               Playground Application Plane
+       run lifecycle / manifest / canonical context
+          read projections / events / artifacts
+                           |
+                           v
                 industrial-agent-runtime
                     CONTROL PLANE
              Main Agent + deterministic
        gates / Executor / result verification
     explicit state-update + WorkBatch contracts
-                       |
-                       v
+                           |
+                           v
                     Information Plane
         refs / run log / state / records / rules
-                       |
-                       v
+                           |
+                           v
                     tep-agent-lab
              TEP-specific domain layer
-                       |
-                       v
+                           |
+                           v
                      tep-sim
                     WORLD PLANE
 ```
 
-The Information Plane is a logical ownership/reference layer across existing repos, not a fourth repo and not multiple mandatory databases.
+The Information Plane is a logical ownership/reference layer across existing repos, not a fourth repo and not multiple mandatory databases. The Application Plane is likewise a logical hosting/projection layer and initially lives in `tep-agent-lab`.
+
+## Application / Playground principle
+
+The Application Plane assembles one reproducible run and exposes read/query projections for people and future UI clients. It does not replace the generic Agent runtime or grant tool authority.
+
+```text
+Application/UI request
+        !=
+Agent ToolCallRequest
+```
+
+Agent execution still passes through:
+
+```text
+ToolSpec -> gates -> consumer validation -> Executor -> result verifier
+```
+
+Blind-playground views default to Agent-visible information. Evaluator/debug views are explicit trusted projections and must not silently contaminate Agent context.
+
+## Canonical Context principle
+
+Reviewed/versioned engineering and research truth lives in repository-controlled sources and is materialized locally at exact revisions for reproducible runs.
+
+```text
+Git canonical source
+      |
+      | exact revision / local checkout
+      v
+CanonicalContextRegistry
+      |
+ visibility + authority + provenance
+      |
+      v
+bounded ContextProjection
+      |
+      v
+Agent
+```
+
+Examples include ProcessGraph, variable metadata, reviewed bindings, safety limits, capability/scenario mappings, benchmark manifests, visibility/scoring policy, and evaluator ground truth.
+
+Local availability is not permission: evaluator-only sources may be present on disk while remaining inaccessible to Agent projections/tools. The entire repository checkout is never automatically injected into model context.
+
+Run-specific mutable investigation/runtime state stays in its existing owning stores and is not promoted to Git-backed canonical knowledge.
 
 ## 1. `tep-sim` — trusted process world
 
@@ -78,7 +130,7 @@ Owns:
 - tracing/provenance;
 - fake provider/test contracts.
 
-Does not own TEP/domain state, Tool Bridge implementations, DEXPI parsing, rules/safety truth, RCA/HAZOP/recovery, or benchmark scoring.
+Does not own TEP/domain state, Tool Bridge implementations, DEXPI parsing, rules/safety truth, RCA/HAZOP/recovery, benchmark scoring, or Playground persistence/projection semantics.
 
 v0 does not require:
 
@@ -103,6 +155,7 @@ Owns:
 - Engineering Records;
 - benchmark design/identifiability/C0;
 - RCA/evaluation;
+- initial Playground application/backend assembly;
 - later HAZOP/recovery/AutoProcessResearch.
 
 It is the only core repo that intentionally knows both generic runtime contracts and TEP domain semantics.
@@ -135,7 +188,8 @@ Trace != Observation != Evidence != EngineeringRecord != Rule/Knowledge != Conte
 - an explicit link makes an observation evidence for a claim/hypothesis;
 - Engineering Records archive completed work;
 - reusable rules/knowledge have separate provenance/validation/authority;
-- model Context is a bounded task-specific projection.
+- model Context is a bounded task-specific projection;
+- Playground views are derived projections, not new canonical truth.
 
 v0 may implement logical information views using one append-only run log plus artifacts.
 
@@ -239,7 +293,8 @@ Rules:
 - `industrial-agent-runtime` depends on no TEP/domain repo;
 - `tep-agent-lab` pins both;
 - scientific/remote tools remain behind adapters;
-- public contracts have one owning repo.
+- public contracts have one owning repo;
+- Application Plane code initially stays in `tep-agent-lab`, not a fourth repo.
 
 ## Design Freeze state — COMPLETE
 
@@ -249,6 +304,8 @@ The program completed:
 2. formal adjudication;
 3. focused independent re-review;
 4. closure of the final MAJOR-R1 state-update contract gap.
+
+The Application/Playground re-baseline is an additive implementation-driven extension and does not reopen the accepted World/Control/Information/Investigation contracts.
 
 Final record:
 
@@ -263,10 +320,13 @@ Supporting review records:
 Implementation status:
 
 ```text
-tep-sim A1-A4          GO
-runtime B1-B5          GO in dependency order
-lab C1-C5              GO in dependency order
-D0 benchmark pilot     GO after upstream dependencies
+tep-sim A1-A4          implemented; A3 human verification remains before D0 freeze
+runtime B1-B3          implemented
+lab C1-C4              implemented
+B2.1 + C5              next focused implementation milestones
+P0 Playground Backend  required before D0 benchmark freeze
+B5 provider            required before first D1 real-model run
+B4 subagents            required only before O5/D2 bounded-subagent study
 ```
 
 Deferred/open-research items remain explicitly non-blocking.
@@ -274,22 +334,37 @@ Deferred/open-research items remain explicitly non-blocking.
 ## Research / implementation sequence
 
 ```text
-tep-sim A1-A4
-     |
-runtime B1 -> B2/B3 -> B4 -> provider
-     |
-lab C1/C2/C3 -> C4/C5
-     |
-D0 benchmark identifiability + C0
-     |
-D1 blind RCA capability study
-     |
-D2 orchestration O0-O5
-     |
-later HAZOP / recovery / AutoProcessResearch
-     |
-optional knowledge / organizational-memory studies
+A1-A4 / B1-B3 / C1-C4 complete
+                |
+                v
+        Program re-baseline
+                |
+      +---------+---------+
+      |         |         |
+     B2.1      C5     A3 human review
+      |         |         |
+      +---------+---------+
+                |
+        +-------+-------+
+        |               |
+       P0              B5 provider
+        |               |
+        +-------+-------+
+                |
+        D0 benchmark / C0
+                |
+          +-----+-----+
+          |           |
+        P1 UI      D1 blind RCA
+                      |
+                      v
+                  B4 + D2/O5
+                      |
+             later HAZOP / recovery /
+              AutoProcessResearch
 ```
+
+P1 UI is not a D0 blocker. B4 is deliberately delayed until the orchestration study that needs SUBTASK capability.
 
 Independent branches may run in parallel where frozen upstream contracts and file/module ownership permit.
 
@@ -312,6 +387,10 @@ Blueprints:
 - `blueprints/industrial-agent-runtime/`
 - `blueprints/tep-agent-lab/`
 
+Application/backend contract:
+
+- `tep-agent-lab/docs/specs/playground-backend-v0.md`
+
 Environment:
 
 - [`../architecture.md`](../architecture.md)
@@ -327,4 +406,6 @@ Environment:
 - full Dynamic DAG engine before measured need;
 - LangGraph/MCP integration before concrete need;
 - automatic cross-run memory before clean baselines;
-- arbitrary Agent Python/shell/package installation as normal Tool Bridge behavior.
+- arbitrary Agent Python/shell/package installation as normal Tool Bridge behavior;
+- a mandatory vector database/RAG layer for canonical context;
+- production microservice/distributed infrastructure for P0.
