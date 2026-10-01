@@ -31,3 +31,18 @@ class ProcessGraphValidationError(EnvironmentError):
 
 class UnknownProcessEntity(EnvironmentError):
     pass
+
+class ScenarioRejected(EnvironmentError):
+    """Base for semantic scenarios that did not compile to supported interventions."""
+    def __init__(self, result):
+        self.result = result
+        super().__init__(getattr(result, "reason", repr(result)))
+
+class UnsupportedScenarioError(ScenarioRejected, UnsupportedCapability):
+    pass
+
+class AmbiguousScenarioError(ScenarioRejected, InvalidIntervention):
+    pass
+
+class InvalidScenarioError(ScenarioRejected, InvalidIntervention):
+    pass
