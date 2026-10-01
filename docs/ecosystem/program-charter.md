@@ -106,6 +106,8 @@ The Application/UI API and the Agent Tool Surface are distinct authority surface
 ToolSpec -> deterministic gates -> consumer validation -> Executor -> post-execution verification
 ```
 
+Application `RunStatus` describes hosting lifecycle and is distinct from runtime/consumer `TaskStatus`.
+
 Blind-playground read projections expose only Agent-visible information by default. Evaluator/debug projections are explicit trusted views and must never silently enter Agent context or tool results.
 
 ## Information Plane
@@ -146,13 +148,13 @@ Examples include:
 The local checkout is a **persistent context substrate**, not the model context itself:
 
 ```text
-Git repository canonical source
+Repository-controlled canonical source
         |
         | exact revision / local checkout
         v
 CanonicalContextRegistry
         |
- visibility + authority + provenance
+ visibility + governance + provenance
         |
         v
 bounded ContextProjection
@@ -162,6 +164,8 @@ Agent
 ```
 
 Local availability does not imply Agent visibility. Evaluator-only records may be materialized on the same machine while remaining inaccessible to Agent projections/tools.
+
+The canonical-context source inventory used by a run is trusted application/harness state, frozen when the run becomes READY, and is not model-authored mutable investigation state.
 
 Run-specific mutable state is not promoted to Git-backed canonical knowledge. Current hypotheses, observations, evidence links, simulation branches, budgets, traces, and temporary telemetry remain owned by their existing runtime/lab/world stores.
 
@@ -244,6 +248,8 @@ K0–K4 may be used only as human-facing shorthand/presets.
 
 Paper/Agent/simulation evidence cannot self-promote execution authority. Authority is assigned independently by explicit policy.
 
+These Rule authority categories are reused by Canonical Context only when the owning source contract actually defines them; non-rule sources are not forced into Rule Registry authority semantics.
+
 ## Information semantics
 
 ```text
@@ -314,6 +320,7 @@ MCP may later be one external provider protocol, not a core safety/runtime depen
 15. Numeric optimization should use deterministic/seeded search tools where appropriate rather than repeated LLM floating-point guessing.
 16. Application/UI projections are derived views and do not replace runtime/lab/world canonical state.
 17. Version-controlled canonical context is materialized by exact source revision; local materialization never overrides visibility policy.
+18. Canonical context source inventory is frozen for a READY run and cannot be mutated by model output.
 
 ## Success criteria for first meaningful v1 research slice
 
@@ -352,7 +359,7 @@ Implementation proceeds according to `implementation-plan.md`. Implementation ev
 Current direction:
 
 - `tep-sim` A1–A4: implemented; A3 semantic fixture still requires human verification before D0 benchmark freeze;
-- runtime B1–B3: implemented; focused B2.1 request-bound reservation is required before D0; B5 real provider may proceed independently of B4 after core contracts;
+- runtime B1–B3: implemented; focused B2.1 request-bound reservation is required before D0; B5 real provider may proceed independently of B4 and is required before D1, not D0;
 - lab C1–C4: implemented; C5 minimal Tool Bridge remains;
 - P0 Playground Backend is required before D0 benchmark freeze;
 - B4 bounded subagents are required for the later O5/D2 orchestration condition, not for the first single-Agent D1 run.
