@@ -125,10 +125,13 @@ CI runs Python 3.11 and 3.13.
   this `tep-sim`, it will see `HUMAN_VERIFIED` and the new graph hash, and its
   recorded world/tool-set versions change. That assertion must be updated in
   `tep-agent-lab`; this PR does not edit sibling repos.
-- The `pyproject.toml` package version stays `0.1.0`. The downstream pin
-  `tep-sim==0.1.0` therefore cannot tell the two defaults apart. The graph
-  `content_sha256` in provenance does tell them apart. Bumping the package version
-  is a release decision and is left open here.
+- `tep-sim` package version = `0.2.0` (`pyproject.toml`). This PR changes public
+  package behavior: the default graph, evaluator selection, new public types and
+  stricter validation. The package version identifies the release, while
+  `fixture_version` identifies fixture content. Both identities are related, but
+  they are separate contracts, and the four fixture identities above are
+  unchanged. `tep-agent-lab` pins `tep-sim==0.1.0`, so it must move its pin to
+  `0.2.0` when it adopts this release.
 
 ## Review items not adopted
 
