@@ -3,7 +3,7 @@
 Status: **HUMAN_SIGNOFF_RECORDED**. The decisions of human reviewer `chengting` were
 recorded on 2026-10-01 (§10). **Fixture promotion is still pending.** No verified
 fixture exists yet.
-Package: `a3-process-graph-human-verification` 0.1.0
+Package: `a3-process-graph-human-verification` 0.2.0. This is the signed decision record; the unsigned evidence package is 0.1.0, PR #10 head `f38a198`.
 Base commit: `4261dc7ab4994348778133190964c6d59b17bb82` · Upstream: `9a6c8e5fcef4a2850778704e7793c87b0a187005`
 Owning spec: [`docs/specs/dexpi-binding-v0.md`](../specs/dexpi-binding-v0.md)
 Machine-readable matrix (canonical decision record): [`a3-process-graph-binding-review-v0.json`](a3-process-graph-binding-review-v0.json)
@@ -58,7 +58,7 @@ These were not used as evidence:
   misnamed.
 
 Figure readings (D&V Fig. 1, Bathelt Fig. 3) are **visual readings by the automated
-agent** and must be confirmed by the human reviewer.
+agent**. The human reviewer confirmed them personally (§10, Q6).
 
 In the JSON, every evidence item names a `source_id`, whose `locator` and pin live
 once in `sources`:
@@ -124,7 +124,7 @@ Column legend:
 | B-16 | `stripper.pressure_measurement` | `XMEAS(16)` | XMEAS | MEASURES | `stripper` | Stripper Pressure | const:L272; py:L1150; f77:L694; DV T4; F1: PI drawn on stripper overhead line 5; BRJ PI 1501 | YES | PARTIAL | MODERATE | HUMAN_DECISION_REQUIRED | ACCEPT | F-02: Runtime computes XMEAS(16) from PTV, the pressure of the compressor-discharge/reactor-feed vapor zone (fixture node reactor_feed_mixer); the model has no separate stripper pressure state. D&V Fig. 1 draws the PI on the stripper overhead line 5. Attachment to the stripper node matches the nomenclature but not the runtime state it reports. | Q2: keep attachment on stripper (canonical name and D&V Fig. 1 instrument are stripper pressure). Runtime value is sourced from the PTV vapor-zone state; record this in the promoted fixture provenance. Do not move the attachment to the mixer. |
 | B-17 | `stream_11.flow_measurement` | `XMEAS(17)` | XMEAS | MEASURES | `stream_11` | Stripper Underflow (stream 11) | const:L273; py:L1151; f77:L695; DV T4; F1: FI on stream 11; BRJ FI 1502 | YES | YES | STRONG | ACCEPT_CANDIDATE | ACCEPT |  | Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
 | B-18 | `stripper.temperature_measurement` | `XMEAS(18)` | XMEAS | MEASURES | `stripper` | Stripper Temperature | const:L274; py:L1152; f77:L696; DV T4; F1: TI on stripper; BRJ TI 1501 | YES | YES | STRONG | ACCEPT_CANDIDATE | ACCEPT |  | Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
-| B-19 | `stripper_steam.flow_measurement` | `XMEAS(19)` | XMEAS | MEASURES | `stripper_steam` | Stripper Steam Flow | const:L275; py:L1153; f77:L697; DV T4; F1: FI on steam supply line to stripper reboiler; BRJ FI 1501 | YES | YES | MODERATE | ACCEPT_CANDIDATE | ACCEPT | F-08: Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures. | Q5 / Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
+| B-19 | `stripper_steam.flow_measurement` | `XMEAS(19)` | XMEAS | MEASURES | `stripper_steam` | Stripper Steam Flow | const:L275; py:L1153; f77:L697; DV T4; F1: FI on steam supply line to stripper reboiler; BRJ FI 1501 | YES | YES | MODERATE | ACCEPT_CANDIDATE | ACCEPT | F-08: Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures. | Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
 | B-20 | `compressor.work_measurement` | `XMEAS(20)` | XMEAS | MEASURES | `compressor` | Compressor Work | const:L276; py:L1154; f77:L699; DV T4; F1: JI on compressor; BRJ JI 1401 | YES | YES | STRONG | ACCEPT_CANDIDATE | ACCEPT |  | Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
 | B-21 | `reactor_cooling.outlet_temperature` | `XMEAS(21)` | XMEAS | MEASURES | `reactor_cooling_water_out` | Reactor Cooling Water Outlet Temp | const:L277; py:L1155; f77:L700; DV T4; F1: TI on reactor cooling-water return line 12; BRJ TI 1103 (unit 11 = reactor) | YES | YES | STRONG | ACCEPT_CANDIDATE | ACCEPT |  | Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6). |
 | B-22 | `condenser_cooling.outlet_temperature` | `XMEAS(22)` | XMEAS | MEASURES | `condenser_cooling_water_out` | Separator Cooling Water Outlet Temp | const:L278; py:L1156; f77:L701; DV T4; F1: TI on condenser cooling-water return line 13; BRJ TI 1202 (unit 12 = condenser) | NO | YES | STRONG_FOR_LOOP_IDENTITY | HUMAN_DECISION_REQUIRED | ACCEPT | F-01: Special review item. Upstream/Fortran/D&V Table 4 name it 'Separator cooling water outlet temperature'; runtime state TWS is the outlet of the cooling loop whose flow is XMV(11) 'Condenser cooling water flow'; both figures place the TI on the condenser cooling-water return line 13. See XMEAS(22) adjudication package. | Q1: Option A, retain the condenser attachment. Runtime loop (XMV(11)), D&V flowsheet and Bathelt Fig. 3 all point to the condenser cooling-water loop; the 'Separator cooling water outlet' label is treated as a lumping/naming legacy of the original model. The runtime name is not renamed. |
@@ -168,7 +168,7 @@ Summary:
 | Proposed `ACCEPT_CANDIDATE` | 49 |
 | Proposed `HUMAN_DECISION_REQUIRED` | 4 (XMEAS(16), XMEAS(22), XMV(10), XMV(11)) |
 | Proposed `NEEDS_SOURCE` | 0 |
-| Human decision `PENDING` | 53 |
+| Human decision | ACCEPT 53 |
 
 ## 5. XMEAS(22) adjudication package (special review item)
 
@@ -248,7 +248,9 @@ evaluator-only note linked in the header.
 the options above first):** the evidence is strong that
 XMEAS(22) belongs to the condenser cooling-water loop, which favours Option A. The
 label disagreement looks historical/nomenclatural and comes from the original
-paper; it is not an upstream port error. The human reviewer must choose A, B, or C.
+paper; it is not an upstream port error. The human reviewer had to choose A, B, or C.
+
+**Recorded decision: Option A** (§10, Q1).
 
 ## 6. Topology review
 
@@ -404,8 +406,7 @@ That it is a new version is not optional.
 6. Confirm the agent's **visual figure readings** (Fig. 1 instruments, Bathelt tags)
    in the matrix.
 7. **MS-1**: is the official DEXPI `TennesseeEastman.xml` required before D0, or is
-   the curated equivalent acceptable? (Currently `NEEDS_SOURCE`, and it blocks no
-   binding.)
+   the curated equivalent acceptable? (Status: `NOT_REQUIRED_FOR_D0`; see §10, Q7.)
 8. **F-11**: approve renaming the misnamed paper PDFs (separate change)?
 9. For each of the 49 `ACCEPT_CANDIDATE` binding rows and 31 topology rows: record
    ACCEPT / REJECT / NEEDS_SOURCE.
@@ -427,17 +428,19 @@ This sign-off is the separate change that §10 of that package required. It:
 
 ### Recorded decisions (reviewer: chengting, 2026-10-01)
 
+Each decision and its rationale is the reviewer's own statement; the agent transcribed them. The canonical text is `signoff.decisions` in the JSON. This table is rendered from it, and the test compares the two.
+
 | Question | Decision |
 |---|---|
-| Q1 XMEAS(22) | **Option A**: retain the condenser attachment. The "Separator…" label is a lumping/naming legacy of the original model, and the runtime name is not renamed |
-| Q2 XMEAS(16) | Keep the attachment on `stripper`. The promoted fixture provenance records that the runtime value is sourced from the `PTV` vapor-zone state |
-| Q3 XMV(10)/XMV(11) | Accept the inlet-edge attachment for v0. ACTUATES is a functional-control relation in v0, not physical valve coordinates. The return-side valve location stays a note |
-| Q4 CW lines 12/13 | `stream_number` stays `null`. Figure utility line numbers are not process stream numbers |
-| Q5 Condensate return / reboiler | Omission accepted for v0 |
-| Q6 Visual readings | **Personally checked** by the reviewer against D&V Fig. 1 and Bathelt et al. Fig. 3, and confirmed correct |
-| Q7 Official DEXPI XML (MS-1) | Not required for D0; the curated equivalent graph is accepted. MS-1 is now `NOT_REQUIRED_FOR_D0` |
-| Q8 F-11 PDF misnaming | Rename approved, to be done in a separate provenance-hygiene PR |
-| Q9 Row decisions | Bulk ACCEPT of 49 binding and 31 topology `ACCEPT_CANDIDATE` rows. The 4 binding and 4 topology `HUMAN_DECISION_REQUIRED` rows are ACCEPT per Q1–Q5. Result: **88 / 88 ACCEPT** |
+| Q1 XMEAS(22) | Option A: retain the condenser attachment. Reviewer's rationale: the runtime loop, XMV(11), the D&V flowsheet and the Bathelt figure all point to the condenser cooling-water loop; 'Separator cooling water outlet' reads as a lumping/naming legacy of the original model. The runtime name is not renamed. |
+| Q2 XMEAS(16) | Keep the attachment on stripper. Reviewer's rationale: the canonical variable name and the figure instrument are stripper pressure, although the value comes from the PTV vapor-zone state. Record 'runtime state sourced from PTV' in provenance; do not move the engineering attachment to the mixer. |
+| Q3 XMV(10)/XMV(11) | Accept the current inlet-edge attachment for v0. Reviewer's rationale: the figures draw the valves on the return side, but flow is identical along the single-path cooling loop; ACTUATES in v0 is a functional-control relation, not physical valve coordinates. Keep the note. |
+| Q4 CW lines 12/13 | stream_number stays null. Reviewer's rationale: D&V Table 1 process streams are 1-11; putting figure utility line numbers into the same field would confuse the ontology. |
+| Q5 Condensate return / reboiler | Condensate return / reboiler omission accepted for v0. Reviewer's rationale: the simulator itself lumps the reboiler, and this topology is not needed for D0 RCA; add it later for a more complete P&ID. |
+| Q6 Visual readings | Visual figure readings (all visual_reading evidence items): personally checked by the reviewer against D&V Fig. 1 and Bathelt et al. Fig. 3 and confirmed correct. |
+| Q7 Official DEXPI XML (MS-1) | Official DEXPI XML is not a D0 blocker; MS-1 becomes NOT_REQUIRED_FOR_D0. Reviewer's rationale: the spec already accepts a curated equivalent graph as input (Input boundary); D0 needs a reviewed, versioned, reproducible ProcessGraph, not necessarily the official XML. |
+| Q8 F-11 PDF misnaming | F-11 PDF rename approved, as a separate provenance-hygiene PR not mixed with fixture verification. |
+| Q9 Row decisions | Bulk ACCEPT of the 49 ACCEPT_CANDIDATE bindings and 31 topology candidates after Q6; the 4 binding and 4 topology HUMAN_DECISION_REQUIRED rows are ACCEPT per Q1-Q5. Result: 88/88 ACCEPT. |
 
 | Field | Value |
 |---|---|
@@ -460,6 +463,9 @@ Follow-ups this sign-off implies (none of them is done here):
   The v0 binding provenance schema has no free-text field for the Q2 note, so the
   promotion must either extend the schema (a spec change) or reference this decision
   record.
+- **F-10 provenance.** The promoted fixture's `source_refs` must also cite the
+  vendored model source (`python_backend.py`/`teprob.f`) and Bathelt et al. Fig. 3,
+  the evidence the reviewer relied on.
 - **F-11 rename PR.**
 
 The A3 human-review milestone in `docs/ecosystem/implementation-plan.md` stays

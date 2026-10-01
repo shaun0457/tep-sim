@@ -1,6 +1,6 @@
 {
   "review_package_id": "a3-process-graph-human-verification",
-  "review_package_version": "0.1.0",
+  "review_package_version": "0.2.0",
   "status": "HUMAN_SIGNOFF_RECORDED",
   "prepared_by": "automated coding agent (not a human reviewer)",
   "base_commit": "4261dc7ab4994348778133190964c6d59b17bb82",
@@ -103,7 +103,7 @@
       "missing": "DEXPI Process 1.0 TennesseeEastman.xml (official example) is not vendored; the fixture is CURATED_EQUIVALENT_GRAPH",
       "status": "NOT_REQUIRED_FOR_D0",
       "blocks_bindings": false,
-      "resolution": "Official DEXPI XML (MS-1): not required for D0; the curated equivalent graph is accepted by the frozen spec."
+      "resolution": "Official DEXPI XML is not a D0 blocker; MS-1 becomes NOT_REQUIRED_FOR_D0. Reviewer's rationale: the spec already accepts a curated equivalent graph as input (Input boundary); D0 needs a reviewed, versioned, reproducible ProcessGraph, not necessarily the official XML."
     }
   ],
   "bindings": [
@@ -144,14 +144,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 1",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1001",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -202,14 +204,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 2",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1002",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -260,14 +264,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 3",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1003",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -318,14 +324,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 4",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1004",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -376,14 +384,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 8 (compressor discharge, downstream of recycle-valve spillback)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -434,14 +444,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 6",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -492,14 +504,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PIAZ+ 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -550,14 +564,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -608,14 +624,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on reactor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TIAZ+ 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -666,14 +684,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 9",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -724,14 +744,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -782,14 +804,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -840,14 +864,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI on separator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -898,14 +924,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 10",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -956,14 +984,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): LI on stripper",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): LIAZ+- 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1014,14 +1044,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): PI drawn on stripper overhead line 5",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): PI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1072,14 +1104,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on stream 11",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1502",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1130,14 +1164,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on stripper",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1188,14 +1224,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): FI on steam supply line to stripper reboiler",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): FI 1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1207,7 +1245,7 @@
       "agent_notes": "Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures.",
       "human_reviewer_decision": "ACCEPT",
       "reviewer": "chengting",
-      "review_notes": "Q5 / Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-20",
@@ -1246,14 +1284,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): JI on compressor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): JI 1401",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1304,14 +1344,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on reactor cooling-water return line 12",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1103 (unit 11 = reactor)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1362,14 +1404,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): TI on condenser cooling-water return line 13",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): TI 1202 (unit 12 = condenser)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1420,14 +1464,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1478,14 +1524,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1536,14 +1584,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1594,14 +1644,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1652,14 +1704,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1710,14 +1764,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on reactor feed header (stream 6)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1768,14 +1824,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1826,14 +1884,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1884,14 +1944,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -1942,14 +2004,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2000,14 +2064,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2058,14 +2124,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2116,14 +2184,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2174,14 +2244,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on purge line (stream 9)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2232,14 +2304,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2290,14 +2364,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2348,14 +2424,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2406,14 +2484,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2464,14 +2544,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): analyzer on product line (stream 11)",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): XI 1006",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2522,14 +2604,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 2",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1002",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2580,14 +2664,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 3",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1003",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2638,14 +2724,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 1",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1001",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2696,14 +2784,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 4",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1004",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2754,14 +2844,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): valve on spillback loop around the compressor",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1401",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2812,14 +2904,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 9",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1005",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2870,14 +2964,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 10",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1301",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2928,14 +3024,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on stream 11",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1501",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -2986,14 +3084,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on steam supply to stripper reboiler",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1502",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3044,14 +3144,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on reactor cooling-water RETURN line 12",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1101 (on line 12)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3102,14 +3204,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): control valve on condenser cooling-water RETURN line 13",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): V-1201 (on line 13)",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3160,14 +3264,16 @@
         {
           "source_id": "downs_vogel_1993",
           "where": "Fig. 1 (p. 246): SC (speed controller) on reactor agitator",
-          "supports": "instrument location (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         },
         {
           "source_id": "bathelt_ricker_jelali_2015",
           "where": "Fig. 3 (p. 311): SC 1101",
-          "supports": "instrument location / unit-coded tag (visual reading; human to confirm)",
-          "visual_reading": true
+          "supports": "instrument location / unit-coded tag (visual reading; confirmed by reviewer, Q6)",
+          "visual_reading": true,
+          "visual_reading_confirmed_by": "chengting"
         }
       ],
       "runtime_identity_check": "PASS",
@@ -3200,7 +3306,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3226,7 +3333,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": "F-05",
@@ -3248,7 +3356,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3270,7 +3379,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3294,7 +3404,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3318,7 +3429,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3342,7 +3454,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3366,7 +3479,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3390,7 +3504,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3414,7 +3529,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3440,7 +3556,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3468,7 +3585,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3490,7 +3608,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3520,7 +3639,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3554,7 +3674,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3588,7 +3709,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3616,7 +3738,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "equipment/terminal exists on flowsheet",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           }
         ],
         "finding": null,
@@ -3641,7 +3764,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3670,7 +3794,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3699,7 +3824,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3728,7 +3854,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3757,7 +3884,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3786,7 +3914,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3815,7 +3944,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 1; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3844,7 +3974,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 10; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3873,7 +4004,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 11; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3902,7 +4034,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 2; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3931,7 +4064,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 3; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3960,7 +4094,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 4; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -3989,7 +4124,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 5; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4018,7 +4154,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 6; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4047,7 +4184,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 7; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4076,7 +4214,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 8; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4105,7 +4244,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246) stream 9; Table 1 (p. 247)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4134,7 +4274,8 @@
             "source_id": "downs_vogel_1993",
             "where": "Fig. 1 (p. 246)",
             "supports": "connection and flow direction",
-            "visual_reading": true
+            "visual_reading": true,
+            "visual_reading_confirmed_by": "chengting"
           },
           {
             "source_id": "sim_fortran",
@@ -4152,6 +4293,11 @@
       }
     ]
   },
+  "supersedes": {
+    "review_package_version": "0.1.0",
+    "state": "PENDING_HUMAN_SIGNOFF",
+    "commit": "f38a1987c8361567958c93748e72e7e8d93ff7fb"
+  },
   "signoff": {
     "reviewer": "chengting",
     "date": "2026-10-01",
@@ -4159,15 +4305,15 @@
     "package_decision": "ACCEPT",
     "visual_readings_confirmed_by_reviewer": true,
     "decisions": {
-      "Q1": "XMEAS(22): Option A, retain the condenser attachment.",
-      "Q2": "XMEAS(16): keep on stripper; record runtime source PTV in provenance.",
-      "Q3": "XMV(10)/XMV(11): accept inlet-edge attachment for v0 (functional-control relation).",
-      "Q4": "CW lines 12/13: stream_number stays null.",
-      "Q5": "Condensate return / reboiler omission: accepted for v0.",
-      "Q6": "Visual figure readings (all visual_reading items): personally checked against D&V Fig. 1 and Bathelt et al. Fig. 3 and confirmed correct by the reviewer.",
-      "Q7": "Official DEXPI XML (MS-1): not required for D0; the curated equivalent graph is accepted by the frozen spec.",
-      "Q8": "F-11 PDF misnaming: rename approved, to be done in a separate provenance-hygiene PR.",
-      "Q9": "Bulk ACCEPT of all 49 ACCEPT_CANDIDATE bindings and 31 topology candidates; the remaining human-decision rows decided per Q1-Q5 (all ACCEPT)."
+      "Q1": "Option A: retain the condenser attachment. Reviewer's rationale: the runtime loop, XMV(11), the D&V flowsheet and the Bathelt figure all point to the condenser cooling-water loop; 'Separator cooling water outlet' reads as a lumping/naming legacy of the original model. The runtime name is not renamed.",
+      "Q2": "Keep the attachment on stripper. Reviewer's rationale: the canonical variable name and the figure instrument are stripper pressure, although the value comes from the PTV vapor-zone state. Record 'runtime state sourced from PTV' in provenance; do not move the engineering attachment to the mixer.",
+      "Q3": "Accept the current inlet-edge attachment for v0. Reviewer's rationale: the figures draw the valves on the return side, but flow is identical along the single-path cooling loop; ACTUATES in v0 is a functional-control relation, not physical valve coordinates. Keep the note.",
+      "Q4": "stream_number stays null. Reviewer's rationale: D&V Table 1 process streams are 1-11; putting figure utility line numbers into the same field would confuse the ontology.",
+      "Q5": "Condensate return / reboiler omission accepted for v0. Reviewer's rationale: the simulator itself lumps the reboiler, and this topology is not needed for D0 RCA; add it later for a more complete P&ID.",
+      "Q6": "Visual figure readings (all visual_reading evidence items): personally checked by the reviewer against D&V Fig. 1 and Bathelt et al. Fig. 3 and confirmed correct.",
+      "Q7": "Official DEXPI XML is not a D0 blocker; MS-1 becomes NOT_REQUIRED_FOR_D0. Reviewer's rationale: the spec already accepts a curated equivalent graph as input (Input boundary); D0 needs a reviewed, versioned, reproducible ProcessGraph, not necessarily the official XML.",
+      "Q8": "F-11 PDF rename approved, as a separate provenance-hygiene PR not mixed with fixture verification.",
+      "Q9": "Bulk ACCEPT of the 49 ACCEPT_CANDIDATE bindings and 31 topology candidates after Q6; the 4 binding and 4 topology HUMAN_DECISION_REQUIRED rows are ACCEPT per Q1-Q5. Result: 88/88 ACCEPT."
     },
     "fixture_promotion": "NOT_PERFORMED: a separate human-authored promotion change must publish a new verified graph fixture version and the matching evaluator fixture version (review doc section 8)"
   }
