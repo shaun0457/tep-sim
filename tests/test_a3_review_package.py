@@ -239,17 +239,26 @@ def test_pinned_fixtures_are_byte_and_content_immutable(package, graph):
             assert data.get("fixture_id") not in subject_ids, path.name
 
 
-def test_package_stays_unsigned_until_a_human_signoff_change(package, graph):
-    """No automated edit may fill a decision. Real sign-off updates this test (doc §10)."""
-    assert package["status"] == "PENDING_HUMAN_SIGNOFF"
+def test_signoff_is_a_recorded_human_decision_not_a_fixture_promotion(package, graph):
+    """Decisions belong to the named human reviewer; promotion is a separate change (§8)."""
+    signoff = package["signoff"]
+    assert package["status"] == "HUMAN_SIGNOFF_RECORDED"
+    assert signoff["reviewer"] == "chengting" and signoff["date"]
+    assert signoff["visual_readings_confirmed_by_reviewer"] is True
+    assert "made no decision" in signoff["recorded_by"]
+    assert set(signoff["decisions"]) == {f"Q{n}" for n in range(1, 10)}
+    assert set(package["human_decision_values"]) == HUMAN_DECISIONS
+    for row in all_rows(package):
+        assert row["human_reviewer_decision"] in HUMAN_DECISIONS - {"PENDING"}, \
+            row["review_id"]
+        assert row["reviewer"] == signoff["reviewer"], row["review_id"]
+        assert row["review_notes"].startswith("Q"), row["review_id"]  # cites its decision
+    # recording decisions does not promote anything: the 0.1.0 baseline stays curated
+    assert signoff["fixture_promotion"].startswith("NOT_PERFORMED")
     assert graph.provenance.review_status == "PENDING_HUMAN_REVIEW"
     assert all(b.provenance.method.value == "CURATED_MAPPING" for b in graph.bindings())
     for path in [*FIXTURES.glob("*.json"), MATRIX]:
         assert "HUMAN_VERIFIED" not in path.read_text(encoding="utf-8"), path.name
-    assert set(package["human_decision_values"]) == HUMAN_DECISIONS
-    for row in all_rows(package):
-        assert row["human_reviewer_decision"] == "PENDING", row["review_id"]
-        assert row["reviewer"] is None, row["review_id"]
 
 
 def test_review_document_mirrors_the_matrix_column_by_column(package):

@@ -6,7 +6,7 @@
 > [`../a3-process-graph-human-verification.md`](../a3-process-graph-human-verification.md).
 > The conclusion there does not depend on this file.
 
-Status: PENDING_HUMAN_SIGNOFF · prepared by an automated coding agent, not a human reviewer.
+Status: HUMAN_SIGNOFF_RECORDED (promotion pending) · prepared by an automated coding agent, not a human reviewer.
 
 ## 1. Loop identity via the inlet-temperature disturbance
 
@@ -42,4 +42,7 @@ valve-sticking attachments must move with them. The evaluator fixture must then 
 re-published as a new version bound to the new graph hash. The inlet-temperature
 disturbances stay on the inlet edges.
 
-Human decision: PENDING.
+Human decision (chengting, 2026-10-01): XMV(10)/XMV(11) stay on the inlet edges for
+v0 (review Q3). The evaluator attachments therefore stay as they are. The promotion
+change still publishes a new evaluator fixture version, because the graph hash
+changes.

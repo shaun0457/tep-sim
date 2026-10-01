@@ -1,7 +1,7 @@
 {
   "review_package_id": "a3-process-graph-human-verification",
   "review_package_version": "0.1.0",
-  "status": "PENDING_HUMAN_SIGNOFF",
+  "status": "HUMAN_SIGNOFF_RECORDED",
   "prepared_by": "automated coding agent (not a human reviewer)",
   "base_commit": "4261dc7ab4994348778133190964c6d59b17bb82",
   "upstream_revision": "9a6c8e5fcef4a2850778704e7793c87b0a187005",
@@ -101,8 +101,9 @@
       "id": "MS-1",
       "needed_for": "comparison against an official DEXPI representation",
       "missing": "DEXPI Process 1.0 TennesseeEastman.xml (official example) is not vendored; the fixture is CURATED_EQUIVALENT_GRAPH",
-      "status": "NEEDS_SOURCE",
-      "blocks_bindings": false
+      "status": "NOT_REQUIRED_FOR_D0",
+      "blocks_bindings": false,
+      "resolution": "Official DEXPI XML (MS-1): not required for D0; the curated equivalent graph is accepted by the frozen spec."
     }
   ],
   "bindings": [
@@ -160,9 +161,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-02",
@@ -218,9 +219,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-03",
@@ -276,9 +277,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-04",
@@ -334,9 +335,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-05",
@@ -392,9 +393,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-06",
@@ -450,9 +451,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-07",
@@ -508,9 +509,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-08",
@@ -566,9 +567,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-09",
@@ -624,9 +625,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-10",
@@ -682,9 +683,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-11",
@@ -740,9 +741,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-12",
@@ -798,9 +799,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-13",
@@ -856,9 +857,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-14",
@@ -914,9 +915,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-15",
@@ -972,9 +973,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-16",
@@ -1030,9 +1031,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-02",
       "agent_notes": "Runtime computes XMEAS(16) from PTV, the pressure of the compressor-discharge/reactor-feed vapor zone (fixture node reactor_feed_mixer); the model has no separate stripper pressure state. D&V Fig. 1 draws the PI on the stripper overhead line 5. Attachment to the stripper node matches the nomenclature but not the runtime state it reports.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q2: keep attachment on stripper (canonical name and D&V Fig. 1 instrument are stripper pressure). Runtime value is sourced from the PTV vapor-zone state; record this in the promoted fixture provenance. Do not move the attachment to the mixer."
     },
     {
       "review_id": "B-17",
@@ -1088,9 +1089,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-18",
@@ -1146,9 +1147,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-19",
@@ -1204,9 +1205,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": "F-08",
       "agent_notes": "Runtime derives the reported steam flow from the stripper heat duty QUC (driven by XMV(9)); there is no separate steam-flow state. Attachment to the stripper_steam utility edge matches D&V and the figures.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q5 / Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-20",
@@ -1262,9 +1263,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-21",
@@ -1320,9 +1321,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-22",
@@ -1378,9 +1379,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-01",
       "agent_notes": "Special review item. Upstream/Fortran/D&V Table 4 name it 'Separator cooling water outlet temperature'; runtime state TWS is the outlet of the cooling loop whose flow is XMV(11) 'Condenser cooling water flow'; both figures place the TI on the condenser cooling-water return line 13. See XMEAS(22) adjudication package.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q1: Option A, retain the condenser attachment. Runtime loop (XMV(11)), D&V flowsheet and Bathelt Fig. 3 all point to the condenser cooling-water loop; the 'Separator cooling water outlet' label is treated as a lumping/naming legacy of the original model. The runtime name is not renamed."
     },
     {
       "review_id": "B-23",
@@ -1436,9 +1437,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-24",
@@ -1494,9 +1495,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-25",
@@ -1552,9 +1553,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-26",
@@ -1610,9 +1611,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-27",
@@ -1668,9 +1669,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-28",
@@ -1726,9 +1727,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-29",
@@ -1784,9 +1785,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-30",
@@ -1842,9 +1843,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-31",
@@ -1900,9 +1901,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-32",
@@ -1958,9 +1959,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-33",
@@ -2016,9 +2017,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-34",
@@ -2074,9 +2075,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-35",
@@ -2132,9 +2133,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-36",
@@ -2190,9 +2191,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-37",
@@ -2248,9 +2249,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-38",
@@ -2306,9 +2307,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-39",
@@ -2364,9 +2365,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-40",
@@ -2422,9 +2423,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-41",
@@ -2480,9 +2481,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-42",
@@ -2538,9 +2539,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-43",
@@ -2596,9 +2597,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-44",
@@ -2654,9 +2655,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-45",
@@ -2712,9 +2713,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-46",
@@ -2770,9 +2771,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": "F-09",
       "agent_notes": "Spillback/recycle valve around the compressor; runtime subtracts the valve flow from the compressor throughput that becomes stream 8.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-47",
@@ -2828,9 +2829,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-48",
@@ -2886,9 +2887,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-49",
@@ -2944,9 +2945,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-50",
@@ -3002,9 +3003,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     },
     {
       "review_id": "B-51",
@@ -3060,9 +3061,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-03",
       "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 12; fixture attaches the actuator to reactor_cooling_water_in. Flow is identical along the single-path loop; human decides whether the inlet-edge attachment is acceptable.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q3: accept the inlet-edge attachment for v0. On the single-path cooling loop the flow is identical; ACTUATES is a functional-control relation in v0, not physical valve coordinates. The return-side valve location stays recorded as a note."
     },
     {
       "review_id": "B-52",
@@ -3118,9 +3119,9 @@
       "proposed_disposition": "HUMAN_DECISION_REQUIRED",
       "finding": "F-03",
       "agent_notes": "Correct cooling loop. Both figures place the control valve on the RETURN (outlet) line 13; fixture attaches the actuator to condenser_cooling_water_in. Same question as XMV(10).",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q3: accept the inlet-edge attachment for v0 (same rationale as B-51)."
     },
     {
       "review_id": "B-53",
@@ -3176,9 +3177,9 @@
       "proposed_disposition": "ACCEPT_CANDIDATE",
       "finding": null,
       "agent_notes": "Runtime equation, D&V table entry and both figures agree with the attachment.",
-      "human_reviewer_decision": "PENDING",
-      "reviewer": null,
-      "review_notes": ""
+      "human_reviewer_decision": "ACCEPT",
+      "reviewer": "chengting",
+      "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
     }
   ],
   "topology": {
@@ -3205,9 +3206,9 @@
         "finding": null,
         "agent_notes": "Compressor throughput and work CPDH computed from PTV-PTS.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-02",
@@ -3231,9 +3232,9 @@
         "finding": "F-05",
         "agent_notes": "D&V Fig. 1 and Table 1 (condenser heat duty -2140.6 kW) define the unit; runtime has no condenser holdup - its duty QUS is lumped into the separator energy balance. Static topology node is justified by the flowsheet, not by a dynamic state.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-03",
@@ -3253,9 +3254,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-04",
@@ -3275,9 +3276,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-05",
@@ -3299,9 +3300,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-06",
@@ -3323,9 +3324,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-07",
@@ -3347,9 +3348,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-08",
@@ -3371,9 +3372,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-09",
@@ -3395,9 +3396,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-10",
@@ -3419,9 +3420,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-11",
@@ -3451,9 +3452,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-12",
@@ -3473,9 +3474,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-13",
@@ -3495,9 +3496,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-14",
@@ -3531,9 +3532,9 @@
         "finding": "F-06",
         "agent_notes": "Runtime models a vapor holdup 'V' (UCVV/ETV, pressure PTV; upstream constant VTV 'Compressor volume') that receives streams 1, 2, 3, 5, 8 and discharges stream 6. D&V Fig. 1 draws only a piping header; the node is a modeled zone, not drawn equipment.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-15",
@@ -3565,9 +3566,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "N-16",
@@ -3599,9 +3600,9 @@
         "finding": "F-08",
         "agent_notes": "Reboiler is lumped into the stripper; D&V Fig. 1 also shows a condensate return that the fixture does not model.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q5: accept the lumped reboiler and the missing condensate return for v0."
       },
       {
         "review_id": "N-17",
@@ -3621,9 +3622,9 @@
         "finding": null,
         "agent_notes": "Flowsheet terminal/unit.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       }
     ],
     "edges": [
@@ -3652,9 +3653,9 @@
         "finding": "F-03",
         "agent_notes": "Carries XMV(11) in the fixture; both figures put the control valve on the return line 13.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q3: accept the actuator on this inlet edge for v0."
       },
       {
         "review_id": "E-02",
@@ -3681,9 +3682,9 @@
         "finding": "F-04",
         "agent_notes": "Numbered line 13 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null. Carries XMEAS(22).",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q1: Option A (carries XMEAS(22)). Q4: stream_number stays null; D&V Table 1 process streams are 1-11 and figure utility line numbers are not stream numbers."
       },
       {
         "review_id": "E-03",
@@ -3710,9 +3711,9 @@
         "finding": "F-05",
         "agent_notes": "No runtime stream: the condenser is lumped into the separator. Unnumbered in D&V Fig. 1 and Table 1.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-04",
@@ -3739,9 +3740,9 @@
         "finding": "F-03",
         "agent_notes": "Carries XMV(10) in the fixture; both figures put the control valve on the return line 12.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q3: accept the actuator on this inlet edge for v0."
       },
       {
         "review_id": "E-05",
@@ -3768,9 +3769,9 @@
         "finding": "F-04",
         "agent_notes": "Numbered line 12 in D&V Fig. 1 and BRJ Fig. 3; fixture stream_number is null.",
         "proposed_disposition": "HUMAN_DECISION_REQUIRED",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q4: stream_number stays null (same rationale as E-02)."
       },
       {
         "review_id": "E-06",
@@ -3797,9 +3798,9 @@
         "finding": null,
         "agent_notes": "Unnumbered in D&V; runtime compressor suction is separator vapor (XST(.,9)=XVS).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-07",
@@ -3826,9 +3827,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-08",
@@ -3855,9 +3856,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-09",
@@ -3884,9 +3885,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-10",
@@ -3913,9 +3914,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-11",
@@ -3942,9 +3943,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-12",
@@ -3971,9 +3972,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-13",
@@ -4000,9 +4001,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-14",
@@ -4029,9 +4030,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-15",
@@ -4058,9 +4059,9 @@
         "finding": null,
         "agent_notes": "Runtime flow FTM(8) goes reactor -> separator energy balance directly; the condenser is lumped (F-05).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-16",
@@ -4087,9 +4088,9 @@
         "finding": null,
         "agent_notes": "Connection and direction agree with D&V Fig. 1 and the runtime unit balances.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-17",
@@ -4116,9 +4117,9 @@
         "finding": null,
         "agent_notes": "D&V Fig. 1 draws the purge off the separator vapor line upstream of the compressor; fixture connects separator -> purge_outlet directly (no junction node). Runtime purge composition is separator vapor and its flow is driven by separator pressure, so the attachment is equivalent (finding F-07).",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q9: ACCEPT (bulk acceptance of ACCEPT_CANDIDATE rows after the reviewer personally confirmed all visual figure readings, Q6)."
       },
       {
         "review_id": "E-18",
@@ -4145,10 +4146,29 @@
         "finding": "F-08",
         "agent_notes": "Steam supply only; D&V Fig. 1 also shows a condensate return (Cond) that is not modeled as an edge.",
         "proposed_disposition": "ACCEPT_CANDIDATE",
-        "human_reviewer_decision": "PENDING",
-        "reviewer": null,
-        "review_notes": ""
+        "human_reviewer_decision": "ACCEPT",
+        "reviewer": "chengting",
+        "review_notes": "Q5: accept the missing condensate return for v0."
       }
     ]
+  },
+  "signoff": {
+    "reviewer": "chengting",
+    "date": "2026-10-01",
+    "recorded_by": "automated coding agent, transcribing decisions the reviewer stated explicitly and authorized it to record; the agent made no decision",
+    "package_decision": "ACCEPT",
+    "visual_readings_confirmed_by_reviewer": true,
+    "decisions": {
+      "Q1": "XMEAS(22): Option A, retain the condenser attachment.",
+      "Q2": "XMEAS(16): keep on stripper; record runtime source PTV in provenance.",
+      "Q3": "XMV(10)/XMV(11): accept inlet-edge attachment for v0 (functional-control relation).",
+      "Q4": "CW lines 12/13: stream_number stays null.",
+      "Q5": "Condensate return / reboiler omission: accepted for v0.",
+      "Q6": "Visual figure readings (all visual_reading items): personally checked against D&V Fig. 1 and Bathelt et al. Fig. 3 and confirmed correct by the reviewer.",
+      "Q7": "Official DEXPI XML (MS-1): not required for D0; the curated equivalent graph is accepted by the frozen spec.",
+      "Q8": "F-11 PDF misnaming: rename approved, to be done in a separate provenance-hygiene PR.",
+      "Q9": "Bulk ACCEPT of all 49 ACCEPT_CANDIDATE bindings and 31 topology candidates; the remaining human-decision rows decided per Q1-Q5 (all ACCEPT)."
+    },
+    "fixture_promotion": "NOT_PERFORMED: a separate human-authored promotion change must publish a new verified graph fixture version and the matching evaluator fixture version (review doc section 8)"
   }
 }

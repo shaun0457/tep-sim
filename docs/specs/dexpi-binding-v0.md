@@ -174,13 +174,17 @@ Implemented in `tep_sim.process`, `tep_sim.bindings`, and `tep_sim.evaluator_bin
 - `tests/test_process_graph.py::test_xmeas22_known_nomenclature_disagreement_stays_pending_review`
   locks the current state so any re-binding is an explicit, reviewed change.
 
-### Human-verification review package (status: PENDING_HUMAN_SIGNOFF)
+### Human-verification review package (status: HUMAN_SIGNOFF_RECORDED, promotion pending)
 
 The evidence package for the D0 human review lives in
 `docs/reviews/a3-process-graph-human-verification.md`, with the machine-readable
 matrix in `docs/reviews/a3-process-graph-binding-review-v0.json`. It covers every
 Agent-visible binding and graph entity, plus a separate XMEAS(22) adjudication
-package. An automated agent prepared it. All human decisions are still `PENDING`,
-and the pinned 0.1.0 fixtures are unchanged. `tests/test_a3_review_package.py`
-checks that the evidence is complete and consistent. It does not replace the human
-sign-off.
+package. An automated agent prepared it. The decisions of human reviewer
+`chengting` (2026-10-01) are recorded there: 88/88 rows ACCEPT, and XMEAS(22)
+Option A.
+
+No verified fixture exists yet. The pinned 0.1.0 fixtures remain the curated
+baseline. A separate promotion change must publish a new verified fixture version
+plus the matching evaluator fixture version. `tests/test_a3_review_package.py` checks
+that the evidence and the decision record are complete and consistent.
