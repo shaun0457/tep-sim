@@ -52,8 +52,8 @@ This register summarizes current program decisions. Detailed rationale belongs i
 | D-046 | A minimal **P0 Playground Backend** is required before D0 benchmark freeze so benchmark, later UI, and post-run inspection share one reproducible run/lifecycle/context/projection path instead of growing separate persistence stacks. | accepted | D0 can demonstrate equivalent reproducibility without a shared run contract, or P0 proves to add more complexity than it removes. |
 | D-047 | P0 is local-first/single-process. Existing runtime/lab/world logs, state and artifacts remain canonical; application views are derived. No mandatory microservices, distributed scheduler, Postgres, Redis, Kafka, vector DB, RAG framework, or Kubernetes. | accepted | Scale/multi-user/remote-worker requirements become concrete and measured. |
 | D-048 | C4 SC-5 becomes focused runtime milestone **B2.1 request-bound reservation**. Preserve D-037: no expression DSL/eval. The owning runtime contract must define the exact trusted request-specific reservation hook/order and fail-closed checks before implementation. | accepted | A safer/simpler request-budget mechanism is demonstrated or max-only reservation proves sufficient. |
-| D-049 | B5 first real provider is independent of B4 after B1–B3. B5 blocks the first real-model D1 Blind RCA run; B4 blocks only orchestration conditions that actually require bounded SUBTASK work, such as D2/O5. | accepted | Provider integration is found to depend on generic subtask contracts in a way not represented by B1–B3. |
-| D-050 | Versioned canonical engineering/research truth resides in repository-controlled sources and is materialized locally at exact revisions for reproducible runs. Local availability does not grant Agent visibility: resolution and `ContextProjection` remain bounded, authority/provenance-aware, and visibility-aware. Run-specific mutable runtime/investigation state is not Git-backed canonical knowledge. | accepted | A non-Git authoritative source becomes required, or a second domain demonstrates that repository-controlled source refs are insufficient. |
+| D-049 | B5 first real provider is independent of B4 after B1–B3. B5 blocks the first real-model D1 Blind RCA run; B4 blocks only orchestration conditions that actually require bounded SUBTASK work, such as D2/O5. B5 is not a D0 benchmark/C0 prerequisite. | accepted | Provider integration is found to depend on generic subtask contracts in a way not represented by B1–B3. |
+| D-050 | Versioned canonical engineering/research truth resides in repository-controlled sources and is materialized locally at exact revisions for reproducible runs. Local availability does not grant Agent visibility: resolution and `ContextProjection` remain bounded, governance/provenance-aware, and visibility-aware. Existing rule/policy authority semantics are carried only where the owning source contract defines them; non-rule sources are not forced into Rule Registry authority categories. Run-specific mutable runtime/investigation state is not Git-backed canonical knowledge. | accepted | A non-Git authoritative source becomes required, or a second domain demonstrates that repository-controlled source refs are insufficient. |
 
 ## Canonical supporting documents
 
@@ -74,18 +74,21 @@ Runtime:
 - `blueprints/industrial-agent-runtime/docs/specs/deterministic-gates-v0.md`
 - `blueprints/industrial-agent-runtime/docs/specs/subagents-v0.md`
 
-Lab:
+Lab design blueprints:
 
 - `blueprints/tep-agent-lab/docs/specs/investigation-state-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/knowledge-rule-registry-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/hypothesis-experiment-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/tool-surface-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/tool-bridge-v0.md`
-- `blueprints/tep-agent-lab/docs/specs/playground-backend-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/engineering-records-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/benchmark-design-v0.md`
 - `blueprints/tep-agent-lab/docs/specs/evaluation-v0.md`
 - task-specific RCA/HAZOP/recovery/AutoResearch specs.
+
+Live Lab owning contract added by Program Re-baseline v1:
+
+- `shaun0457/tep-agent-lab:docs/specs/playground-backend-v0.md`
 
 Review records:
 
